@@ -1,0 +1,17 @@
+{
+  "name": "claude-config",
+  "owner": {
+    "name": "Angelo Pirola",
+    "url": "https://github.com/AngeloDotNet"
+  },
+  "metadata": {
+    "description": "Plugin di configurazione personale di Claude Code collegati al template di regole."
+  },
+  "plugins": [
+    {
+      "name": "kit-config",
+      "source": "./plugins/kit-config",
+      "description": "Hook che fanno rispettare le regole del template: domanda unica, comandi vietati, piano a inizio sessione."
+    }
+  ]
+}

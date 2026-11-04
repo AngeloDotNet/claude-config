@@ -1,0 +1,26 @@
+# Controllo delle deroghe kit-allow (core.md §6, punto 23): elenca nel riepilogo della pull request
+# ogni deroga aggiunta nel diff, con file e riga, e segnala quelle con formato non valido.
+# Non blocca la pull request: serve a far vedere le deroghe in review.
+#
+# Copiare in .github/workflows/ del progetto, insieme a kit-allow-report.mjs (cartella scripts/ o tools/),
+# e aggiornare il percorso dello script qui sotto.
+name: kit-allow
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  kit-allow:
+    runs-on: ubuntu-latest
+    steps:
+      # Storia completa: lo script confronta la base con HEAD.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Elenco delle deroghe kit-allow
+        env:
+          BASE_REF: origin/${{ github.base_ref }}
+        run: node _template/ci/kit-allow-report.mjs

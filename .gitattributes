@@ -1,0 +1,20 @@
+# Normalizza le fine riga: LF nel repository, conversione automatica in checkout
+* text=auto
+
+# Fine riga esplicita per i file che la richiedono
+*.sh   text eol=lf
+*.ps1  text eol=crlf
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+
+# Testo che resta LF su ogni piattaforma
+*.md   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.yaml text eol=lf
+
+# Binari
+*.png  binary
+*.jpg  binary
+*.ico  binary
