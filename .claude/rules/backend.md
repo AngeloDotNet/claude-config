@@ -1,0 +1,123 @@
+---
+paths:
+  - "**/*.{cs,csproj,props}"
+---
+
+# Regole Backend (.NET 10, Architettura & Dati)
+
+> Richiede `core.md` (contratto con il frontend, licenze, workflow). Per la sicurezza vedi anche `security.md`. Il modulo è diviso in tre file con la stessa intestazione `paths:`: questo (stack, regole comuni, mapping, convenzioni), `backend-architecture.md` (§2a Vertical Slice, §2b Clean Architecture, §2c accesso ai dati e pattern) e `backend-app.md` (§4 logica applicativa e infrastruttura). La numerazione dei paragrafi è rimasta quella storica.
+
+## 1. Stack Backend
+- **Runtime:** .NET 10 Web API, C# 14.
+- **Serializzazione JSON:** `System.Text.Json` (NO Newtonsoft.Json).
+- **Architettura:** Vertical Slice Architecture (§2a) o Clean Architecture (§2b), alla pari. Si decide una volta per progetto (vedi `core.md` §6.4) e la scelta sta nel `CLAUDE.md`; in un progetto esistente si rileva dal codice e si conferma con l'utente.
+- **ORM:** Entity Framework Core 10 è il default. **Dapper è l'alternativa da valutare ogni volta**, mai una scelta scontata né da copiare dal progetto precedente: all'avvio si chiede quale usare; se in corso d'opera emerge un caso che sembra adatto (query di lettura molto complesse o critiche per prestazioni, report, operazioni bulk) Claude lo propone con motivazione e **aspetta conferma**, senza introdurlo di sua iniziativa. Se si adotta Dapper (da solo o accanto a EF Core), l'utente decide come gestire schema e migrazioni (le regole di §4.4 valgono per EF Core) e la scelta va nel `CLAUDE.md`; Claude verifica la licenza (vedi `core.md` §3). Le query restano sempre parametrizzate (mai concatenazione di stringhe SQL).
+- **Database:** il motore (SQL Server o PostgreSQL) si **chiede sempre** a ogni progetto: mai darlo per scontato né copiarlo dal progetto precedente. Dalla risposta dipende il provider NuGet di EF Core (`Microsoft.EntityFrameworkCore.SqlServer`, `Npgsql.EntityFrameworkCore.PostgreSQL`). MySQL è escluso per ora. La scelta va nel `CLAUDE.md`.
+- **Finiture:** NO MediatR (approccio custom), NO AutoMapper (mapping manuale tramite metodi di estensione).
+- **Gestione Errori/Risposte:** per ogni sviluppo backend (solo API o fullstack) la libreria per il core business e l'integrazione con le Minimal API è **`OperationResults` di Marco Minerva** (https://github.com/marcominerva/OperationResults). La scelta è fissa e non si chiede. La variante `OperationResults` di AppEngine (https://github.com/AngeloDotNet/AppEngine/tree/main/src/AppEngine.Tools/OperationResults) è **sospesa fino a nuova modifica** delle regole, perché subirà un refactoring completo: non va proposta né usata.
+  Gli esempi e i nomi di queste regole (`Result<T>`, `FailureReasons`, `AddOperationResult()`, `CreateResponse(result)`) si riferiscono a questa libreria, ma ciò non esime dal controllo: prima di scrivere codice, verifica nel repository e nella versione installata nome del pacchetto NuGet, namespace e firme delle API effettivamente usate (la libreria continua a evolversi), oltre alla licenza (vedi `core.md` §3). La versione scelta va nel `CLAUDE.md`.
+
+---
+
+## 2. Regole Backend
+- **Struttura API:** si preferiscono le **Minimal API** ai Controller, con metodi di estensione e `MapGroup`. I Controller classici si usano solo se l'utente li chiede o se un requisito tecnico li impone (es. una libreria che li richiede): in quel caso Claude lo segnala e chiede conferma, non li introduce di iniziativa e non mescola i due stili nello stesso progetto senza averlo concordato.
+- **Punto di ingresso senza top-level statements:** `Program.cs` non usa i top-level statements: contiene una classe `Program` con un metodo `Main` esplicito (`static async Task Main(string[] args)` o `static void Main`) che costruisce e avvia l'host. La configurazione dei servizi e della pipeline sta in metodi di estensione richiamati da `Main` (o in metodi privati statici dedicati), non tutta in un unico blocco. Per i test di integrazione con `WebApplicationFactory<Program>` la classe `Program` deve essere accessibile ai test (pubblica oppure `InternalsVisibleTo`).
+- **C# 14 / .NET 10:** Primary Constructors, Collection Expressions, Implicit Spans. `Nullable` abilitato e `TreatWarningsAsErrors`.
+- **Asincronismo:** `async/await` ovunque.
+- **`CancellationToken`:** va accettato e propagato **ogni volta che è possibile e ha senso**, lungo tutta la catena: parametro `CancellationToken` negli endpoint Minimal API (lo associa il framework a `HttpContext.RequestAborted`), poi in handler/servizi, query e `SaveChangesAsync` di EF Core, `HttpClient`, client RabbitMQ, invio email e qualunque altra chiamata di I/O. Ogni metodo asincrono pubblico che esegue I/O lo riceve come ultimo parametro; nei `BackgroundService`/hosted service si usa lo `stoppingToken` (vedi `core.md` §5, shutdown). Non lo si passa o si usa `CancellationToken.None` solo quando l'operazione deve concludersi comunque (es. commit già avviato, scrittura dell'outbox, audit, compensazioni) e il motivo sta in un commento. Una `OperationCanceledException` dovuta all'annullamento della richiesta non è un errore applicativo: non produce un 500 né un log di errore (vedi l'`IExceptionHandler`).
+- **Validazione:** **si preferisce `FluentValidation` alle Data Annotation** in tutti gli sviluppi backend. I DTO in ingresso si validano con `AbstractValidator<T>` (regole fuori dal DTO, testabili in isolamento), con messaggi basati su chiavi di traduzione (`WithMessage("ERROR_FIELD_REQUIRED")`). I DTO e le entità non portano attributi di validazione (`[Required]`, `[StringLength]`, `[Range]`, ecc.). Lo stesso criterio vale per la validazione delle Options (`ValidateOnStart`): si preferisce `IValidateOptions<T>` (anche con un validatore FluentValidation al suo interno) agli attributi `[Required]` sulla classe. Le Data Annotation restano ammesse solo dove un framework le richiede o dove sono nettamente più semplici (es. attributi richiesti da una libreria esterna; la configurazione della persistenza resta in `IEntityTypeConfiguration`, mai come attributi sul modello): in quel caso Claude **lo segnala e chiede conferma**, non le introduce di iniziativa. Prima dell'uso Claude verifica versione e licenza di FluentValidation (vedi `core.md` §3) e non mescola i due approcci sullo stesso DTO.
+- **Versionamento:** `Asp.Versioning` (es. `/api/v1/...`).
+- **OpenAPI:** il supporto è **sempre abilitato** nei progetti con API: documentazione nativa (`AddOpenApi` e `MapOpenApi`), con commenti XML sugli endpoint (vedi `core.md` §5b), tipi di risposta dichiarati (`Produces`/`ProducesProblem`) e schema usabile per generare i client (`core.md` §1). **UI interattiva solo in ambiente Development, con Swagger UI come scelta preferita** (pacchetto `Swashbuckle.AspNetCore.SwaggerUI`, che legge il documento nativo, senza usare il generatore di Swashbuckle); **Scalar** solo se l'utente lo chiede. Se l'API è autenticata, la UI deve permettere di inserire il token. In produzione la UI non è mai esposta. **L'esposizione del documento OpenAPI** (endpoint `/openapi/...`) fuori da Development **si chiede ogni volta, a ogni progetto**, senza regola fissa e senza copiare la risposta dal progetto precedente: le opzioni sono nessuna esposizione (lo schema si genera solo in fase di build), esposizione solo in Development, oppure esposizione anche in produzione (eventualmente protetta da autorizzazione); la scelta va nel `CLAUDE.md` (campo "Esposizione OpenAPI"). Prima dell'uso Claude verifica versione e licenza dei pacchetti (`core.md` §3).
+- **Principi SOLID:** il codice backend si progetta secondo SOLID (una responsabilità per tipo, dipendenze da astrazioni dove servono, tipi estendibili senza modificarli). SOLID è un criterio, non una cerimonia: per le classi che **non** sono service (vedi "Service e interfacce") niente interfaccia per una classe con una sola implementazione senza un motivo dichiarato (testabilità reale, confine di livello in Clean, più implementazioni), in linea con `core.md` §6.17 e §2c.
+- **Service e interfacce (MUST):** ogni classe service (servizio applicativo o di dominio con la logica dei casi d'uso, in Clean i servizi di `Application`; in VSA il Handler/Service della slice quando la forma scelta è un service) **implementa un'interfaccia dedicata** (`IProductService` per `ProductService`) e la **registrazione nella dependency injection usa entrambe** (`services.AddScoped<IProductService, ProductService>()`, o il lifetime appropriato): mai la sola classe concreta, né iniezione della classe al posto dell'interfaccia. Vale anche con una sola implementazione: qui l'eccezione di SOLID sopra non si applica. Gli handler di una slice che non hanno forma di service restano liberi (§2a).
+- **Registrazione in blocco con Scrutor (PREFER):** quando i service da registrare con lo **stesso lifetime** sono più di uno, si usa il pacchetto NuGet **Scrutor** (scansione e decorazione per la DI nativa di .NET) invece di una riga `AddScoped` per ciascuno: `services.Scan(scan => scan.FromAssemblyOf<...>().AddClasses(c => c.InNamespaceOf<...>()).AsImplementedInterfaces().WithScopedLifetime())`, con il filtro più stretto possibile (namespace o suffisso `Service`), così da non registrare tipi non voluti; un gruppo di scansione per lifetime. Un solo service, o lifetime e registrazioni diversi per caso, restano registrazioni esplicite. Le scansioni stanno nei metodi di estensione di composizione (`AddApplication()`, `AddInfrastructure()`), mai in `Program.cs`. Scrutor è una dipendenza da dichiarare (nome, versione, motivo, `core.md` §6.8); licenza MIT per quanto noto, da verificare sul repository ufficiale al primo uso (`core.md` §3), non a memoria; compatibilità con .NET 10 da verificare. Un test (unit o di integrazione) controlla che ogni interfaccia di service si risolva dal container. Se manca un'interfaccia o il lifetime non è chiaro, vale la regola precedente: si ferma e si chiede.
+- **Cartella `Interfaces/` (MUST):** le interfacce definite dal progetto (service, repository, `IApplicationDbContext`, `ICurrentUser`, `IEmailSender`, ecc.) stanno in **una sola cartella `Interfaces/` alla radice del progetto che le contiene**, anche in Vertical Slice (non dentro la slice) e anche in `Domain`; se diventano molte, sottocartelle per area dentro `Interfaces/`. Le implementazioni restano dove prevede l'architettura (area o slice in `Application`/`Api`, `Infrastructure` per i servizi di infrastruttura). Sono escluse le interfacce dei framework che il progetto solo implementa (`IEntityTypeConfiguration<T>`, `IExceptionHandler`, `IValidateOptions<T>`).
+- **Expression body (MUST, regola generale):** ogni metodo (e proprietà o operatore) il cui corpo è una sola espressione si scrive con expression body (`=>`), **qualunque sia la firma** (numero e lunghezza dei parametri, tipo di ritorno, generici), a partire dagli endpoint Minimal API (metodi statici che delegano al service); vale per tutto il codice C#, non solo per le API. Il blocco si usa solo quando il corpo richiede più istruzioni: la leggibilità o la lunghezza della firma non sono un motivo per derogare.
+- **Using inutilizzati (MUST):** al termine degli sviluppi, dopo aver verificato che la build termini senza errori, si rimuovono gli `using` non necessari (es. `dotnet format style --diagnostics IDE0005`, o l'equivalente dell'IDE), poi si riesegue la build. Vale per tutti i progetti backend.
+- **Using globali in `GlobalUsings.cs` (MUST):** gli `using` di ogni progetto sono centralizzati come `global using` in **un unico file `GlobalUsings.cs`**, nella radice del progetto, e non restano nei singoli file `.cs`. Vale per tutti i progetti backend, test compresi. Un nuovo `using` si aggiunge a `GlobalUsings.cs`; i file `.cs` non ne dichiarano. La rimozione degli `using` inutilizzati (regola precedente) si applica anche a `GlobalUsings.cs`.
+- **Cartella `Validators/` (MUST):** le classi di validazione (`AbstractValidator<T>`) stanno tutte in **una sola cartella `Validators/` per progetto**, senza sottocartelle per entità o funzionalità; il namespace segue la cartella. In Clean Architecture la cartella è nel progetto `Application`; in Vertical Slice è nel progetto API, accanto alla cartella delle slice (anche qui, non dentro la slice).
+- **Cartella `Options/` (MUST):** le classi Options (pattern Options con `ValidateOnStart`, inclusi i relativi `IValidateOptions<T>`) stanno tutte in **una sola cartella `Options/` per progetto che le contiene**, senza sottocartelle; il namespace segue la cartella. In Clean Architecture ogni classe sta nel progetto che la usa (es. SMTP, Redis e JWT in `Infrastructure/Options/`, quelle solo applicative in `Application/Options/`); in Vertical Slice la cartella è nel progetto API.
+- **Cartelle `Requests/` e `Responses/` (MUST):** i tipi di richiesta (`record` DTO di input) stanno in una cartella `Requests/` e quelli di risposta in una cartella `Responses/`, **una per progetto**, senza sottocartelle per funzionalità; il namespace segue la cartella. In Clean Architecture sono nel progetto `Application`; in Vertical Slice nel progetto API, accanto alla cartella delle slice.
+- **Eccezioni globali:** `IExceptionHandler` + `ProblemDetails` (RFC 9457) con `traceId`. Stack trace e messaggi di eccezione compaiono solo in ambiente Development; in qualsiasi altro ambiente (Staging incluso) nessun dettaglio interno nella risposta.
+- **Configurazione:** pattern Options con `ValidateOnStart`. File di configurazione per ambiente.
+- **Variabili d'ambiente:** nomi nel formato di ASP.NET Core `Sezione__Chiave` (doppio underscore), che corrispondono alle sezioni Options (es. `ConnectionStrings__Default`, `Redis__Password`). Nessun prefisso inventato per progetto. Ogni variabile richiesta compare in `.env.example` con un valore finto e un commento; le Options obbligatorie falliscono all'avvio (`ValidateOnStart`) con un messaggio che nomina la variabile mancante.
+- **Resilienza:** `Microsoft.Extensions.Http.Resilience` per le chiamate a servizi esterni.
+- **Tempo:** usa `TimeProvider` (iniettato) invece di `DateTime.UtcNow` / `DateTimeOffset.UtcNow`, per test deterministici.
+- **Enum in JSON:** `JsonStringEnumConverter` come standard, mai numeri.
+- **Identificatori:** `Guid.CreateVersion7()` (ordinabile, adatto agli indici) oppure `long` generato dal DB. Mai GUID casuali come chiave clusterizzata su SQL Server.
+- **Denaro e quantità esatte:** sempre `decimal` con precisione e scala esplicite nel mapping EF; mai `double`/`float`.
+- **Pacchetti:** Central Package Management (`Directory.Packages.props`), `Directory.Build.props` per le impostazioni comuni, `global.json` per fissare l'SDK. Lock file committati (`packages.lock.json` con `RestorePackagesWithLockFile`; `package-lock.json` con `npm ci` in CI se c'è un frontend).
+- **Lavori in background:** le opzioni sono `BackgroundService` di .NET (compiti semplici in memoria), gli **hosted service** (`IHostedService`, per logica di avvio/arresto che non è un ciclo continuo) e **Coravel**. Quartz.NET e Hangfire non si usano. Mai `Task.Run` fire-and-forget dentro una richiesta.
+  - **Natura dei job:** i job in background non sono solo di invio email; possono svolgere qualunque attività (es. generare archivi zip schedulati, pulizie, import/export, report). Gli strumenti elencati sopra (`BackgroundService`, hosted service, Coravel) non sono legati all'invio email: si valutano per qualunque attività in background, e le regole di questo punto valgono per ogni job. **Il tipo di job si chiede ogni volta** (ricorrente/schedulato, a richiesta, di avvio/arresto, ecc.), senza darlo per scontato; il job va scritto idempotente.
+  - **Decisione sempre esplicita:** quando serve un job in background, Claude **chiede** (a) di che tipo è il job e quale strumento usare tra `BackgroundService`, hosted service e Coravel, illustrando in breve i compromessi (persistenza, clustering, retry integrato), e (b) **se prevedere un retry** e con quale politica (numero di tentativi, backoff, cosa fare dopo l'ultimo fallimento). Non presume la risposta dal progetto precedente; in caso di dubbio su una delle due scelte, chiede. La risposta va nel `CLAUDE.md` (campo "Job in background").
+  - Prima di proporre Coravel verifica licenza (MIT) e compatibilità con .NET 10, come per ogni nuova dipendenza.
+- **Real-time:** se serve, SignalR autenticato, con gruppi per utente/tenant. Nessun canale pubblico per dati riservati.
+- **Email e notifiche:** dietro un'astrazione (`IEmailSender`), template localizzati dal database, mai invio sincrono nella richiesta; libreria, disaccoppiamento (coda o job) e outbox/retry si decidono secondo `backend-email.md`.
+- **File storage:** dietro un'astrazione (disco su volume Docker, oppure MinIO come opzione). **Non scegliere mai lo storage da solo:** se il progetto ha bisogno di file e il `CLAUDE.md` non specifica la scelta, chiedi ogni volta se usare MinIO o un'alternativa (disco su volume Docker o altro storage self-hosted gratuito, con licenza verificata). MinIO si introduce solo dopo conferma esplicita. Mai servizi cloud a pagamento come Azure Blob o AWS S3. Nel database solo chiavi o percorsi relativi, mai percorsi assoluti.
+- **Caching HTTP:** `ETag` / `Cache-Control` per risorse statiche e dizionari; mai cache su risposte con dati utente senza `Vary` o `private`; le risposte autenticate escono con `Cache-Control: no-store` (`security.md`, «Configurazione e superficie esposta»).
+
+
+### 2a-2c. Architettura e accesso ai dati
+Vertical Slice (§2a), Clean Architecture (§2b) e accesso ai dati e pattern (§2c) sono in **`backend-architecture.md`**.
+
+---
+
+## 3. Comunicazione, Mapping & Data Transfer
+- **DTO:** ogni richiesta/risposta ha un `record` dedicato. Mai esporre entità EF Core al frontend.
+- **Mapping:** solo metodi di estensione statici in classi dedicate. Niente AutoMapper né factory interne ai DTO.
+- **Naming:** C# PascalCase per tipi, metodi e proprietà; camelCase per parametri e variabili locali; campi privati `_camelCase`; interfacce con prefisso `I`; metodi asincroni con suffisso `Async` (tranne gli handler degli endpoint).
+- **Stile del codice:** file-scoped namespace; un tipo per file, con il nome del file uguale al tipo; `sealed` su classi e record non pensati per l'ereditarietà; **si preferisce `record` (sealed) per i tipi di dati immutabili**: DTO, value object, messaggi ed eventi, comandi/query, Options; `class` per entità EF (identità e change tracking, mai `record`), servizi, handler e tipi con stato mutabile o comportamento; `var` solo quando il tipo è evidente; `using` ordinati (il formato è imposto da `.editorconfig` e dagli analyzer, non a mano).
+- **Serializzazione:** configura esclusivamente `System.Text.Json` (`JsonNamingPolicy.CamelCase`) per la conversione automatica.
+- **Endpoint REST:** risorse al plurale, kebab-case, verbi HTTP corretti e codici di stato coerenti.
+
+---
+
+## 4. Logica Applicativa e Infrastruttura
+Errori e risposte API (§4.1), concorrenza (§4.2), paginazione (§4.3), database ed EF Core (§4.4), integration test (§4.5), utente corrente e controlli di proprietà (§4.6) sono in **`backend-app.md`**.
+
+---
+
+## 5. Messaggistica, Cache, Eventi ed Email (moduli opzionali)
+Le regole su **messaggistica (RabbitMQ), outbox, eventi di dominio e cache applicativa (FusionCache L1 preferita o memory cache nativa, L2 Redis solo se concordato)** stanno in `backend-infra.md`; quelle sull'**invio email** in `backend-email.md`. Si importano solo se il progetto usa quelle funzionalità (domande di avvio in `avvio-progetto.md`). Se una funzionalità serve e il modulo non è incluso, Claude lo segnala e propone di aggiungerlo (`avvio-progetto.md` §4); non improvvisa le regole.
+
+---
+
+## 5b. Esecuzione su Più Container
+Poiché più container applicativi girano in parallelo, nessuno stato deve vivere nel singolo processo.
+- **Job schedulati:** un `BackgroundService` che esegue lavoro "unico" (outbox, pulizie) deve usare un lock distribuito (lock su database o `FOR UPDATE SKIP LOCKED`), altrimenti gira N volte. Per Coravel e per gli hosted service con più container non c'è una regola fissa: **chiedi caso per caso** come garantire che un job unico giri una sola volta.
+- **Consumer RabbitMQ:** più consumer sulla stessa coda sono voluti (competing consumers), ma idempotenti.
+- **Rate limiting:** i limiti in memoria sono per container; per limiti globali precisi serve un contatore condiviso, da chiedere prima di introdurre.
+- **File e sessione:** nessun file locale come stato e nessuna sessione né stato di autenticazione nella memoria del singolo processo; l'eventuale stato (refresh token, denylist di revoca) sta su database o archivio condiviso. Storage dietro astrazione (vedi §2).
+- **SignalR:** con più container richiede un backplane. Redis è riservato alla cache, quindi chiedi prima di introdurne uno.
+- **Data Protection:** le chiavi di ASP.NET Core Data Protection sono persistite su database o volume condiviso, comuni a tutti i container (vedi `security.md`).
+
+---
+
+## 6. Export, Import e Documenti
+- **Export:** CSV (streaming per dataset grandi), Excel e PDF generati dal backend, con endpoint dedicato che rispetta filtri e permessi. Operazioni lunghe come job in background con notifica al termine (tipo di job, strumento e retry si chiedono secondo §2 "Lavori in background").
+- **Librerie:** solo gratuite e con licenza permissiva (es. ClosedXML, PdfSharp). Evita EPPlus, iText e QuestPDF: licenze commerciali o copyleft.
+- **Import:** validazione riga per riga, report degli errori per riga, dry-run prima dell'applicazione e transazione, mai import parziale silenzioso.
+
+---
+
+## 7. Convenzioni Database
+- **Naming:** tabelle al plurale (`Products`) in PascalCase su SQL Server; `snake_case` su PostgreSQL (`UseSnakeCaseNamingConvention`). Chiavi `PK_`, esterne `FK_`, indici `IX_`.
+- **Indici:** sulle chiavi esterne e su ogni colonna usata in filtri e ordinamenti frequenti; verificati con il piano di esecuzione. Niente indici speculativi.
+- **Seeding:** dati di riferimento (ruoli, lingue, chiavi di traduzione base) tramite migrazione o script idempotente, mai a mano. I dati di sviluppo sono separati e non vanno in produzione.
+- **Primo amministratore:** se il progetto ha utenti, l'account amministratore iniziale si crea con un comando o uno step one-shot dedicato (vedi `docker.md`), non nel seeding della migrazione e non all'avvio dell'app. Email e password iniziali arrivano da variabili d'ambiente o `secrets` di Compose, mai nel codice né nel repository; la password non viene mai scritta nei log. Lo step è idempotente (se l'amministratore esiste non fa nulla) e impone il cambio password al primo accesso. Dove il progetto usa Keycloak, l'amministratore iniziale è un'operazione dell'IdP, da documentare nel README.
+- **Vincoli:** integrità nel database (not null, unique, check, FK), non solo nel codice.
+
+---
+
+## 8. Feature Flag, Deprecazione e Performance
+- **Feature flag:** `Microsoft.FeatureManagement` (MIT), con flag a vita breve da rimuovere dopo il rilascio completo. Mai flag per la sicurezza.
+- **Deprecazione API:** versione nuova affiancata alla vecchia, header `Deprecation` e `Sunset`, data di dismissione dichiarata. Mai cambiare un contratto esistente in modo incompatibile senza nuova versione.
+- **Performance:** obiettivo p95 < 300 ms per letture semplici e < 1 s per scritture, salvo diversa indicazione. Misura prima di ottimizzare (OpenTelemetry, `EXPLAIN`). Per i progetti critici, test di carico con uno strumento gratuito a licenza permissiva (es. Bombardier, MIT); verifica la licenza prima di proporne altri.
+
+---
+
+## 9. Localizzazione, Temi e Date (lato server)
+- **Dizionario:** stringhe, messaggi di errore e dizionari sono su database (Chiave-Valore-Lingua) ed esposti da un endpoint dedicato (es. `/api/localization/dictionary?lang=it`).
+- **Cache:** il dizionario è cacheato lato server (con la cache concordata per il progetto, vedi `backend-infra.md`) con invalidazione alla modifica e supporto ETag/`If-None-Match`.
+- **Preferenze utente:** tema e fuso orario IANA (es. `Europe/Rome`) sono salvati nel profilo e inclusi nel payload del profilo, se il progetto ha un profilo utente; altrimenti la sede si concorda (vedi `frontend.md` §4.1).
+- **Date:** storage SEMPRE in UTC. In C# usa `DateTimeOffset` oppure `DateTime` con `Kind=Utc`. Su PostgreSQL `timestamp with time zone`.
