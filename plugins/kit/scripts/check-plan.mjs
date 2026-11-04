@@ -6,7 +6,7 @@
 // motivo su stderr: Claude lo riceve e corregge il piano. Il file già scritto non viene annullato.
 // Fail-open: file assente, input illeggibile o errore interno -> nessun blocco.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";

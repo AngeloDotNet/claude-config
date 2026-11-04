@@ -13,7 +13,7 @@
 // L'avviso arriva a Claude (additionalContext) e all'utente (systemMessage).
 // Fail-open: input illeggibile o errore interno -> nessun output.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import path from "node:path";
 import { writtenText } from "./lib/text.mjs";

@@ -1,5 +1,5 @@
-// Test dell'hook check-quality di kit-config: avvisi (non bloccanti) su Docker, dipendenze e frontend.
-// Eseguire con: node --test plugins/kit-config/tests/quality.test.mjs
+// Test dell'hook check-quality di kit: avvisi (non bloccanti) su Docker, dipendenze e frontend.
+// Eseguire con: node --test plugins/kit/tests/quality.test.mjs
 
 import { test } from "node:test";
 import assert from "node:assert/strict";

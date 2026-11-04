@@ -9,7 +9,7 @@
 - **Domande, una alla volta:** se è installata e autenticata, Claude chiede separatamente per PR, push, tag e rilasci se il progetto li autorizza. Una domanda per messaggio, in attesa della risposta prima della successiva.
 - **Registrazione:** le risposte approvate si scrivono nel `CLAUDE.md` di progetto, nella sezione «Eccezioni alle regole globali», in una riga fissa: `- **Integrazione GitHub approvata:** PR sì/no, push sì/no, tag sì/no, rilasci sì/no (AAAA-MM-GG)`. Un'approvazione vale solo per il progetto in cui è registrata.
 - **Uso:** con l'approvazione Claude usa `gh` solo per l'operazione autorizzata, senza altri usi (né lettura di stato, CI o PR).
-- **Sempre bloccati:** anche con approvazione restano vietati `push --force` (e varianti), `reset --hard`, `--no-verify`, `clean -f`, `rm -rf` e `git init`: riscrivono la storia, saltano i controlli o cancellano dati. Il hook `guard-commands` del plugin `kit-config` applica questo elenco.
+- **Sempre bloccati:** anche con approvazione restano vietati `push --force` (e varianti), `reset --hard`, `--no-verify`, `clean -f`, `rm -rf` e `git init`: riscrivono la storia, saltano i controlli o cancellano dati. Il hook `guard-commands` del plugin `kit` applica questo elenco.
 - **Senza riga o con riga non valida:** non c'è approvazione: nessuna operazione di integrazione.
 
 ## Branch (git flow)
@@ -23,7 +23,7 @@
 - Branch di breve durata. Aggiornamento dal branch di partenza, push e merge (squash o rebase secondo la politica del progetto) sono a cura dell'utente. Con git flow la politica ha una regola fissa, vedi "Pull Request": squash solo per le PR verso `develop`, merge commit per ogni PR che coinvolge `main`.
 
 ## Messaggi di commit (Conventional Commits, in inglese)
-▲ Verificato dal plugin `kit-config` (hook `guard-commands`): un messaggio non conforme viene bloccato.
+▲ Verificato dal plugin `kit` (hook `guard-commands`): un messaggio non conforme viene bloccato.
 - Formato: `tipo(scope): descrizione` — tipi ammessi: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `revert`.
 - Oggetto all'imperativo, minuscolo, senza punto finale, al massimo 72 caratteri. `scope` opzionale (modulo o slice, es. `orders`, `auth`).
 - Il corpo, se serve, spiega il **perché** e non il cosa, andando a capo a 100 caratteri circa.

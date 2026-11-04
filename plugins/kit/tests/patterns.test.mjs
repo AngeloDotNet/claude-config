@@ -1,5 +1,5 @@
 // Test del hook guard-patterns (batch A): blocchi con deroga kit-allow, attivo solo nei progetti del template.
-// Eseguire con: node --test plugins/kit-config/tests/patterns.test.mjs
+// Eseguire con: node --test plugins/kit/tests/patterns.test.mjs
 
 import { test } from "node:test";
 import assert from "node:assert/strict";

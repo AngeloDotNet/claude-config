@@ -14,7 +14,7 @@
 // ma non obbligare Claude a farla.
 // Fail-open: qualunque errore -> nessun output, nessun blocco.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import { headKey, loadState, projectKey, recordSnapshot, ruleFingerprints, rulesDiff, saveState } from "./lib/rules.mjs";
 import { templateSection } from "./lib/template.mjs";
