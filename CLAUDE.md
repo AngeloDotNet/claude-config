@@ -122,7 +122,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `g
 <!-- Ogni deroga va motivata. Se vuota, vale tutto il resto. -->
 - [nessuna]
 <!-- Integrazione GitHub: riga fissa letta dal hook guard-commands (git.md, «Integrazione GitHub: verifica e approvazione per progetto»). Si scrive sì solo con la risposta dell'utente, aggiungendo la data tra parentesi. -->
-- **Integrazione GitHub approvata:** PR no, push no, tag no, rilasci no
+- **Integrazione GitHub approvata:** PR sì, push sì, tag sì, rilasci sì (2026-11-05)
 
 ## Note per Claude
 - [Particolarità del dominio, termini di business, vincoli del cliente, aree del codice delicate]
