@@ -1,5 +1,5 @@
 // Test del hook check-practice (batch B): avvisi non bloccanti su pratiche. Eseguire con:
-// node --test plugins/kit-config/tests/practice.test.mjs
+// node --test plugins/kit/tests/practice.test.mjs
 
 import { test } from "node:test";
 import assert from "node:assert/strict";

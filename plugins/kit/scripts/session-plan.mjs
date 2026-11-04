@@ -13,7 +13,7 @@
 // L'hook può ordinare la rilettura ma non obbligare Claude a farla.
 // Fail-open: qualunque errore -> nessun output, nessun blocco.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";

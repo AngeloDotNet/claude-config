@@ -4,7 +4,7 @@
 // domanda alla volta"). Claude riceve il motivo (stderr, exit 2) e riformula.
 // Fail-open: input illeggibile o formato inatteso -> nessun blocco.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 let raw = "";
 process.stdin.setEncoding("utf8");

@@ -19,7 +19,7 @@
 // o commenti non conta (es. git commit -m "docs: git push" passa). Fail-open: input
 // illeggibile o errore interno -> nessun blocco.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`.
+// Registrato in hooks/hooks.json del plugin `kit`.
 // Richiede Node.js e, per il controllo del branch, git nel PATH.
 
 import { execFileSync } from "node:child_process";

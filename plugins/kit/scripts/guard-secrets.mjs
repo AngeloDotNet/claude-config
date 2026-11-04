@@ -10,7 +10,7 @@
 // Un segnaposto è valido solo se il valore intero ha una forma nota (vedi PLACEHOLDER_FULL).
 // Fail-open: input illeggibile o errore interno -> nessun blocco.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import path from "node:path";
 import { writtenText } from "./lib/text.mjs";

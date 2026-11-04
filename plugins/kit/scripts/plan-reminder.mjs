@@ -4,7 +4,7 @@
 // lascia a metà senza che nessuno se ne accorga (core.md §6.15-16). Non blocca la chiusura.
 // Fail-open: file assente, input illeggibile o errore interno -> nessun output.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
