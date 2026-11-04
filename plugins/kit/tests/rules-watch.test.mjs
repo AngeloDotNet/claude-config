@@ -1,5 +1,5 @@
 // Test degli hook che sorvegliano le regole (rules-watch.mjs, session-plan.mjs e lib/).
-// Esecuzione, dalla root del repository:  node --test "plugins/kit-config/tests/*.test.mjs"
+// Esecuzione, dalla root del repository:  node --test "plugins/kit/tests/*.test.mjs"
 // Richiede Node.js e git. Nessuna dipendenza esterna (node:test).
 //
 // Ogni test lavora in cartelle temporanee e con una "home" finta (USERPROFILE/HOME), così

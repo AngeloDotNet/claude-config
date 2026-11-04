@@ -2,6 +2,15 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-05
+
+### Rinomina del plugin da `kit-config` a `kit`
+
+**Perché:** i comandi personalizzati devono uscire come `/kit:...`, senza il suffisso `-config`. Il nome del plugin è anche la chiave in `enabledPlugins`, quindi chi lo ha installato deve reinstallarlo.
+**Cosa / Dove:** cartella `plugins/kit-config/` copiata in `plugins/kit/` (la vecchia rimossa nel commit); `plugin.json` con `name: kit` (versione invariata, 1.8.0); `.claude-plugin/marketplace.json` con la voce `kit`; riferimenti in `core.md`, `git.md`, `security.md`, `_template/avvio-progetto.md`, `README.md`, test e commenti degli script. Installazione: `claude plugin install kit@claude-config`.
+**Verifica:** `node --test tests/*.test.mjs` in `plugins/kit`: 98/98 verdi.
+**Note:** la versione resta 1.8.0 (si alza al rilascio). Il rilascio sarà `2.0.0` o `1.9.0` a seconda che la rinomina sia considerata incompatibile: decisione rinviata al rilascio. Su ogni macchina serve la reinstallazione e l'aggiornamento della voce in `~/.claude/settings.json`. Le voci storiche del CHANGELOG restano con il vecchio nome.
+
 ## 2026-11-04
 
 ### Riepilogo di rilascio per categorie (core.md v3.30)

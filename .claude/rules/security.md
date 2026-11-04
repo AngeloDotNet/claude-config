@@ -126,7 +126,7 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 - **Confronti a tempo costante:** credenziali, token, hash e firme si confrontano con `CryptographicOperations.FixedTimeEquals`, mai con `==` o `string.Equals`.
 
 ## Dati e Segreti
-▲ Verificato dal plugin `kit-config`: hook `guard-secrets` (valori reali in `appsettings*.json`, password in chiaro in compose e Dockerfile, chiavi PEM, token JWT bloccati) e `check-quality` (avvisi).
+▲ Verificato dal plugin `kit`: hook `guard-secrets` (valori reali in `appsettings*.json`, password in chiaro in compose e Dockerfile, chiavi PEM, token JWT bloccati) e `check-quality` (avvisi).
 - Data Protection di ASP.NET Core: con più container le chiavi sono persistite in un archivio condiviso (database o volume), altrimenti cookie e antiforgery token si invalidano tra repliche. Le chiavi persistite sono in chiaro per impostazione predefinita: se cifrarle a riposo e con quale meccanismo (es. un certificato come secret) si **chiede per progetto** e la scelta va nel `CLAUDE.md` (sezione "Note per Claude").
 - Rotazione dei segreti: i segreti hanno una data di scadenza o rotazione dichiarata nel `CLAUDE.md` di progetto; un segreto compromesso o finito per errore nel repository si considera bruciato e va sostituito, non solo rimosso.
 - Nessun segreto nel repository: User Secrets in sviluppo; in produzione `secrets` di Docker Compose, file esterni al repository o variabili d'ambiente (mai servizi cloud a pagamento come Azure Key Vault o AWS Secrets Manager).

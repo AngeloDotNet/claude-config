@@ -1,7 +1,7 @@
 // Test di guard-commands per le operazioni GitHub con approvazione per progetto (git.md,
 // «Integrazione GitHub: verifica e approvazione per progetto»): push, tag, gh pr, gh release.
 // Ogni caso usa una cartella temporanea con (o senza) CLAUDE.md. Il hook è un processo con input JSON su stdin.
-// Eseguire con: node --test plugins/kit-config/tests/github.test.mjs
+// Eseguire con: node --test plugins/kit/tests/github.test.mjs
 
 import { test } from "node:test";
 import assert from "node:assert/strict";

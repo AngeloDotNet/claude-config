@@ -9,8 +9,8 @@
   },
   "plugins": [
     {
-      "name": "kit-config",
-      "source": "./plugins/kit-config",
+      "name": "kit",
+      "source": "./plugins/kit",
       "description": "Hook che fanno rispettare le regole del template: domanda unica, comandi vietati, piano a inizio sessione."
     }
   ]

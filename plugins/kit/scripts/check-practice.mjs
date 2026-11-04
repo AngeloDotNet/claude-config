@@ -11,7 +11,7 @@
 // Le deroghe usano lo stesso formato del batch A: kit-allow: <id> — <motivo> (core.md §6, punto 23).
 // Attivo solo nei progetti con .claude/rules/core.md. Fail-open: errori -> nessun output.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";

@@ -6,7 +6,7 @@
 // npm install nel Dockerfile, TLS disattivato in appsettings. Vedi la tabella RULES.
 // Attivo solo nei progetti con .claude/rules/core.md (lib/text.mjs). Fail-open: errori -> nessun blocco.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import path from "node:path";
 import { isWaived, projectUsesKit, writtenText } from "./lib/text.mjs";

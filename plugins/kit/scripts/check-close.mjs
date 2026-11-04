@@ -7,7 +7,7 @@
 // Usa `git status` (senza git o con errori: nessun output). Attivo solo nei progetti con .claude/rules/core.md.
 // Fail-open: qualunque errore -> nessun output.
 //
-// Registrato in hooks/hooks.json del plugin `kit-config`. Richiede Node.js e git nel PATH.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js e git nel PATH.
 
 import { execFileSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";

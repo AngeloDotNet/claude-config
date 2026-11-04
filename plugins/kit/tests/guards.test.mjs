@@ -1,6 +1,6 @@
-// Test dei hook di controllo di kit-config: guard-commands (git), guard-secrets, check-plan, plan-reminder.
+// Test dei hook di controllo di kit: guard-commands (git), guard-secrets, check-plan, plan-reminder.
 // Ogni hook è eseguito come processo con l'input JSON su stdin, come fa Claude Code.
-// Eseguire con: node --test plugins/kit-config/tests/guards.test.mjs
+// Eseguire con: node --test plugins/kit/tests/guards.test.mjs
 
 import { test } from "node:test";
 import assert from "node:assert/strict";

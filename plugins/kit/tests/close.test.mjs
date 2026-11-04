@@ -1,5 +1,5 @@
 // Test del hook check-close (batch C): promemoria a fine sessione in un repository git temporaneo.
-// Eseguire con: node --test plugins/kit-config/tests/close.test.mjs
+// Eseguire con: node --test plugins/kit/tests/close.test.mjs
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
