@@ -62,6 +62,24 @@ const RULES = [
     re: /TrustServerCertificate\s*=\s*true|SslMode\s*=\s*(?:Disable|Prefer|Allow)\b|Encrypt\s*=\s*(?:false|no)\b/i,
     why: "connessione al database senza cifratura o senza verifica del certificato (security.md, Dati e Segreti)",
   },
+  {
+    id: "attesa-test",
+    files: TEST_FILE,
+    re: /\bTask\.Delay\s*\(|\bThread\.Sleep\s*\(/,
+    why: "attesa arbitraria nel test (core.md §4: i test instabili si correggono alla causa, mai con attese o sleep arbitrari)",
+  },
+  {
+    id: "nowarn",
+    files: /\.(csproj|props)$/i,
+    re: /<NoWarn>[^<]*<\/NoWarn>/i,
+    why: "soppressione di warning a livello di progetto (core.md §4: build senza warning; NoWarn di progetto non ammesso)",
+  },
+  {
+    id: "catch-vuoto",
+    files: /\.cs$/i,
+    re: /\bcatch\s*(?:\([^)]*\))?\s*\{\s*\}/,
+    why: "catch vuoto che ingoia l'errore (backend-app.md §4: nessun try/catch che ingoia un'eccezione senza motivo e senza log)",
+  },
 ];
 
 /** Violazioni per il file e il testo scritti (lista vuota = nulla da bloccare). */
