@@ -38,7 +38,7 @@ claude plugin install kit@claude-config
 
 ## Comandi del plugin
 
-Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono disponibili dalla versione 1.9.0 del plugin, in arrivo:
+Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono disponibili dalla versione 1.9.0 del plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
 - `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`.
