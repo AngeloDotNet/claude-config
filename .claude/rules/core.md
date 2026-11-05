@@ -40,7 +40,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti al pro
 - [ ] Test di architettura verdi (solo Clean Architecture, `backend-architecture.md` §2b).
 - [ ] Per ogni risorsa di un utente, test che un altro utente o tenant non la raggiunge (`backend-app.md` §4.6).
 - [ ] Copertura sul codice nuovo o modificato ≥ 80% (§4).
-- [ ] ▲ Nessun valore reale (chiavi JWT, password SMTP/Redis, ecc.) in `appsettings.json`: solo segnaposto; valori reali da variabili d'ambiente o `secrets`, elencati in `.env.example`.
+- [ ] ▲ Nessun valore reale (chiavi JWT, password SMTP/Redis, ecc.) in `appsettings.json`: solo segnaposto; valori reali da variabili d'ambiente valorizzate da `.env`, elencati in `.env.example`.
 - [ ] Se toccati Dockerfile o compose: `docker compose config` valido, immagine buildata, nessun segreto nei file, `.env.example` aggiornato.
 
 ---
@@ -99,7 +99,7 @@ Queste regole valgono per entrambi i lati e non vanno reinterpretate.
 - **Stack di osservabilità self-hosted (da proporre ai progetti con backend, da confermare ogni volta; presuppone OpenTelemetry):** OpenTelemetry Collector → Prometheus (metriche) e Jaeger (tracce), con Grafana come UI, tutti container nel file `docker-compose.observability.yml` (caricato in aggiunta al compose base) e configurazioni in `observability/` (`otel-collector.yaml`, `prometheus.yml`, provisioning Grafana).
   - **Log:** salvo la scelta concordata per il logging, su stdout con rotazione di Docker (`docker.md`); nessun sistema centralizzato di log di default. Loki si aggiunge solo su richiesta.
   - **Licenze:** Collector, Prometheus e Jaeger sono Apache-2.0; Grafana è AGPLv3 e rientra nell'eccezione dei servizi di infrastruttura esterni non modificati (§3). Licenze verificate il 2026-10-25 sui repository ufficiali (Prometheus, OpenTelemetry Collector, Jaeger: Apache-2.0; Grafana: AGPL-3.0-only). Per Grafana usa l'immagine OSS (`grafana/grafana-oss`), mai l'edizione Enterprise. Per ogni altra immagine non elencata, verifica la licenza al primo utilizzo. Mai SigNoz (funzioni essenziali nel tier a pagamento).
-  - **Regole:** immagini con tag fissi, volumi nominati per Prometheus e Grafana, porte non esposte all'esterno tranne la UI di Grafana dietro il reverse proxy dell'utente, password di Grafana tramite `secrets`. Nessun dato personale in tracce, metriche e log.
+  - **Regole:** immagini con tag fissi, volumi nominati per Prometheus e Grafana, porte non esposte all'esterno tranne la UI di Grafana dietro il reverse proxy dell'utente, password di Grafana tramite variabile d'ambiente valorizzata da `.env`. Nessun dato personale in tracce, metriche e log.
   - Se il progetto non ne ha bisogno (app piccola, un solo container), lo dichiara in `CLAUDE.md`; i log seguono la scelta concordata per il logging (vedi il primo punto di questa sezione).
 - **Docker:** vedi `docker.md`. Server, host e orchestrazione sono gestiti dall'utente e fuori dallo scopo di Claude.
 - **CI/CD:** build, test, lint, scansione vulnerabilità e formattazione a ogni PR. Supply chain: SAST (CodeQL), secret scanning (gitleaks), scansione delle immagini Docker (Trivy) e SBOM generato a ogni release. Claude può scrivere e committare i file di pipeline (workflow YAML, configurazione Dependabot/Renovate); l'esecuzione delle pipeline, il push (salvo approvazione per progetto, `git.md`) e la gestione dei segreti della CI restano all'utente.

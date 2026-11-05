@@ -42,7 +42,7 @@ paths:
 
 ### 4.4 Database ed EF Core
 - **Migrazioni:** sempre versionate; mai `EnsureCreated`; mai modificare migrazioni già applicate. Si applicano da codice all'avvio del container del backend (`Database.MigrateAsync()`), prima che l'app inizi a servire richieste; nessuno step dedicato di CI/CD né servizio one-shot nel compose (vedi `docker.md`).
-- **Privilegi:** l'app serve le richieste con un utente a privilegi minimi (DML sì, DDL no); mai con il proprietario dello schema. Le migrazioni usano un **utente separato con DDL**, in ogni progetto (a prescindere dal livello ASVS): una seconda stringa di connessione (`ConnectionStrings:Migrations`, valore reale solo da variabile d'ambiente o `secret`, voce in `.env.example`), usata solo da `Database.MigrateAsync()` all'avvio e mai per servire richieste.
+- **Privilegi:** l'app serve le richieste con un utente a privilegi minimi (DML sì, DDL no); mai con il proprietario dello schema. Le migrazioni usano un **utente separato con DDL**, in ogni progetto (a prescindere dal livello ASVS): una seconda stringa di connessione (`ConnectionStrings:Migrations`, valore reale solo da variabile d'ambiente valorizzata da `.env`, voce in `.env.example`), usata solo da `Database.MigrateAsync()` all'avvio e mai per servire richieste.
 - **Letture:** `AsNoTracking` e proiezioni con `Select` verso DTO. Vietato N+1; indici definiti esplicitamente.
 - **Query raw:** solo parametrizzate.
 - **Soft delete / multi-tenancy:** se previsti, via global query filter, decisi una volta sola per progetto.
