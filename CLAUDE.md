@@ -37,6 +37,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `g
 - **ORM:** [EF Core (default) | Dapper | EF Core + Dapper per: ..] (chiesto, non presunto; Dapper si valuta ogni volta)
 - **Database:** [SQL Server | PostgreSQL] — versione [..] (chiesto, non presunto)
 - **Database nei test:** [nessuno | progetto `IntegrationTests` con database reale di prova (stesso motore, istanza: ..., un database per esecuzione) | SQLite] (chiesto, non presunto)
+- **Mock EF nei test unitari:** [no (default) | sì: mock di `DbContext` e `DbSet` solo per la logica che non tocca il `DbContext`; i servizi che lo usano restano sul database reale] (chiesto, non presunto; vedi `backend-app.md` §4.5)
 - **Multi-tenancy:** [no | sì, per colonna `TenantId` con global query filter]
 - **Soft delete:** [no | sì]
 - **Sicurezza backend:** [da chiedere a Claude | nessuna (endpoint pubblici) | ASP.NET Core Identity | Keycloak o altro IdP self-hosted gratuito]
