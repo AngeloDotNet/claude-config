@@ -2,6 +2,14 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-06
+
+### Rilascio 1.9.0
+
+**Aggiunto:** sedici comandi del plugin `kit`, lanciati solo su richiesta come `/kit:...`: `buongiorno`, `buonasera`, `avvia-progetto`, `copia-regole`, `aggiorna-regole`, `consegna`, `code-review`, `aggiorna-docs`, `verifica`, `qualita-test`, `dati-efcore`, `accessi-api`, `gdpr-dati`, `accessibilita-ui`, `colori-tema`, `localizzazione`. Il guard `guard-patterns` blocca anche attese nei test, `NoWarn` nei progetti e `catch` vuoti in C#.
+
+**Modificato:** regole su value object ed EF mock opzionali, `async void`, tipografia del frontend, xUnit v3, fusi orari IANA, segreti solo da variabili d'ambiente valorizzate da `.env`, immagini Docker fissate. La guida del template rimanda ai comandi `/kit:...`.
+
 ## 2026-11-05
 
 ### Versione di xUnit fissata per i progetti nuovi
