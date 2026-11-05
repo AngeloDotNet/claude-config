@@ -58,6 +58,9 @@ paths:
 - **Design token:** colori, spaziature, raggi, ombre e tipografia sono variabili CSS definite una sola volta. Vietati colori hardcoded (`#fff`, `rgb(...)`) nei componenti: romperebbero il multi-tema. ▲ Avviso `check-quality` del plugin per i colori esadecimali.
 - **Responsive / mobile-first:** testa a 360px, 768px, 1280px. Le tabelle degradano (colonne nascoste o vista a card) su schermi piccoli.
 - **Gerarchia visiva:** gerarchia tipografica netta. L'azione primaria si stacca dalle secondarie.
+- **Scala tipografica con nomi semantici:** i token di testo hanno nomi di ruolo (per esempio `title`, `subtitle`, `body`, `caption`), non valori come `font-size-3`. Ogni ruolo ha una sola dimensione, definita nei token e usata da tutti i componenti.
+- **Altezza di riga per ruolo:** i titoli hanno un'altezza di riga più stretta del testo corrente, e il testo lungo (corpo) ha un'altezza di riga più ampia, per leggibilità. I valori sono token, come le dimensioni.
+- **Misura massima del testo:** il testo continuo ha una larghezza massima leggibile (in caratteri per riga) definita come token; i contenitori di testo lungo la rispettano anche su schermi larghi.
 - **Stati dei componenti:** `hover`, `focus`, `active`, `disabled` definiti, con transizioni fluide (`transition: all 200ms ease`, durata massima 200ms).
 - **Feedback e validazione:** campi errati con bordo colorato, icona e messaggio contestuale. Submit disabilitato se il form è invalido, oppure spinner durante l'invio (evita doppi invii).
 - **Loading:** `p-skeleton` al posto di spinner generici per tabelle e liste.
