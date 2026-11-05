@@ -37,12 +37,13 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `g
 - **ORM:** [EF Core (default) | Dapper | EF Core + Dapper per: ..] (chiesto, non presunto; Dapper si valuta ogni volta)
 - **Database:** [SQL Server | PostgreSQL] — versione [..] (chiesto, non presunto)
 - **Database nei test:** [nessuno | progetto `IntegrationTests` con database reale di prova (stesso motore, istanza: ..., un database per esecuzione) | SQLite] (chiesto, non presunto)
+- **Mock EF nei test unitari:** [no (default) | sì: mock di `DbContext` e `DbSet` solo per la logica che non tocca il `DbContext`; i servizi che lo usano restano sul database reale] (chiesto, non presunto; vedi `backend-app.md` §4.5)
 - **Multi-tenancy:** [no | sì, per colonna `TenantId` con global query filter]
 - **Soft delete:** [no | sì]
 - **Sicurezza backend:** [da chiedere a Claude | nessuna (endpoint pubblici) | ASP.NET Core Identity | Keycloak o altro IdP self-hosted gratuito]
 - **Livello ASVS:** [1 | 2 | 3] (chiesto, non presunto; vedi `security.md`)
 - **Indirizzo pubblico e host ammessi:** `App:PublicBaseUrl` [dominio pubblico], `AllowedHosts` [elenco] (chiesto, non presunto; valori reali da variabile d'ambiente; vedi `security.md`, «Host header e URL assoluti»)
-- **Utenti del database:** applicativo (senza DDL) e utente separato per le migrazioni (`ConnectionStrings:Migrations`), valori solo da secret/env e in `.env.example`; connessione cifrata [Encrypt=True | SslMode=VerifyFull], CA fidata [..] (chiesto, non presunto; vedi `backend-app.md` §4.4)
+- **Utenti del database:** applicativo (senza DDL) e utente separato per le migrazioni (`ConnectionStrings:Migrations`), valori solo da variabili d'ambiente valorizzate da `.env`, elencati in `.env.example`; connessione cifrata [Encrypt=True | SslMode=VerifyFull], CA fidata [..] (chiesto, non presunto; vedi `backend-app.md` §4.4)
 - **Upload di file:** [non previsto | previsto: tipi ammessi, limiti, antivirus/disarmo dei contenuti sì/no] (chiesto, non presunto; vedi `security.md`, «Upload e parsing di file»)
 - **Eccezioni a `npm ci --ignore-scripts`:** [nessuna | pacchetto: motivo e script lanciato a parte] (vedi `security.md`, «Supply chain»)
 - **Limiti e rate limiting:** `pageSize` predefinito e massimo [20 / 100 | ..], limiti per IP e per utente [..], timeout database e HTTP [..] (concordati, non presunti; vedi `security.md`, «Abuso di risorse»)
@@ -54,7 +55,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `g
 - **Sessione SPA (se c'è un frontend con autenticazione):** [cookie HttpOnly | BFF]
 - **Cache:** [nessuna | FusionCache solo L1 (preferita) | memory cache nativa `IMemoryCache` | con L2 Redis (istanza singola, volume e sola password) o altra configurazione avanzata: ..] (chiesto ogni volta, non presunto; L2 e configurazioni complesse valutati di volta in volta; vedi `backend-infra.md`)
 - **File storage:** [non usato | da chiedere a Claude | disco su volume Docker | MinIO | altro self-hosted]
-- **Invio email:** [non previsto | MailKit (confermato) | altra libreria: ..] — sezione `Smtp` in appsettings, valori reali solo da env/secret
+- **Invio email:** [non previsto | MailKit (confermato) | altra libreria: ..] — sezione `Smtp` in appsettings, valori reali solo da variabili d'ambiente valorizzate da `.env`
 - **Messaggistica:** [non usata | RabbitMQ]
 - **Job in background:** [non usati | BackgroundService | hosted service | Coravel] — tipo di job: [ricorrente | a richiesta | avvio/arresto | ..] (chiesto, non presunto) — retry: [no | sì: tentativi, backoff] (chiesto, non presunto)
 - **Disaccoppiamento invio email:** [n/a | RabbitMQ | job in background (vedi sopra)]

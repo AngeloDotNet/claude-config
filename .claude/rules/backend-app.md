@@ -42,7 +42,7 @@ paths:
 
 ### 4.4 Database ed EF Core
 - **Migrazioni:** sempre versionate; mai `EnsureCreated`; mai modificare migrazioni già applicate. Si applicano da codice all'avvio del container del backend (`Database.MigrateAsync()`), prima che l'app inizi a servire richieste; nessuno step dedicato di CI/CD né servizio one-shot nel compose (vedi `docker.md`).
-- **Privilegi:** l'app serve le richieste con un utente a privilegi minimi (DML sì, DDL no); mai con il proprietario dello schema. Le migrazioni usano un **utente separato con DDL**, in ogni progetto (a prescindere dal livello ASVS): una seconda stringa di connessione (`ConnectionStrings:Migrations`, valore reale solo da variabile d'ambiente o `secret`, voce in `.env.example`), usata solo da `Database.MigrateAsync()` all'avvio e mai per servire richieste.
+- **Privilegi:** l'app serve le richieste con un utente a privilegi minimi (DML sì, DDL no); mai con il proprietario dello schema. Le migrazioni usano un **utente separato con DDL**, in ogni progetto (a prescindere dal livello ASVS): una seconda stringa di connessione (`ConnectionStrings:Migrations`, valore reale solo da variabile d'ambiente valorizzata da `.env`, voce in `.env.example`), usata solo da `Database.MigrateAsync()` all'avvio e mai per servire richieste.
 - **Letture:** `AsNoTracking` e proiezioni con `Select` verso DTO. Vietato N+1; indici definiti esplicitamente.
 - **Query raw:** solo parametrizzate.
 - **Soft delete / multi-tenancy:** se previsti, via global query filter, decisi una volta sola per progetto.
@@ -54,6 +54,7 @@ paths:
 - **Database reale di prova:** stesso motore del progetto, su un'istanza locale già esistente (o server di prova indicato dall'utente). La connection string arriva da User Secrets o dalla variabile `ConnectionStrings__Test`, mai dal repository né da `appsettings.json` con valori reali. Mai il database di sviluppo né di produzione.
 - **Isolamento:** a ogni esecuzione dei test si crea un database con nome univoco (es. suffisso `Guid`), si applicano le migrazioni e a fine esecuzione lo si elimina (anche in caso di fallimento: fixture di collezione/assembly con `IAsyncLifetime`). I test dentro la stessa esecuzione non condividono dati: ognuno crea i propri (builder/fixture, id e tenant univoci) e non dipende dall'ordine.
 - **Privilegi:** l'utente usato dai test può creare ed eliminare database; è distinto dall'utente applicativo (privilegi minimi, §4.4) e non è mai usato fuori dai test.
+- **Mock di `DbContext` e `DbSet` (opzionale, solo unit test di logica):** si usa solo se il `CLAUDE.md` lo dichiara (voce «Mock EF nei test unitari», default: no). Il mock vale solo per la logica che non tocca il `DbContext` (validatori, calcoli su DTO, regole di dominio). Un servizio che legge dal `DbContext` si prova sempre sul database reale di prova, anche se la sua logica è semplice: query, vincoli del database e traduzione LINQ non sono verificabili con un mock. `InMemory` resta vietato in ogni caso.
 - **Pipeline:** la CI richiede un'istanza del motore raggiungibile e la sua connection string come segreto; se non disponibile, i test non si saltano in silenzio ma falliscono con un messaggio che nomina la variabile mancante.
 
 ### 4.6 Utente corrente e controlli di proprietà

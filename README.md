@@ -18,7 +18,7 @@ La documentazione è nel sito [docs-claude-config.aepserver.it](http://docs-clau
 | Documento | Contenuto |
 |---|---|
 | [Cosa contiene](http://docs-claude-config.aepserver.it/contenuto) | Struttura del repository, moduli delle regole, cartella `_template/` e plugin |
-| [Plugin `kit`](http://docs-claude-config.aepserver.it/plugin) | Hook personali (domanda unica, comandi vietati, piano a inizio sessione, regole aggiornate): installazione, aggiornamento, migrazione |
+| [Plugin `kit`](http://docs-claude-config.aepserver.it/plugin) | Hook personali (domanda unica, comandi vietati, piano a inizio sessione, regole aggiornate) e comandi `/kit:...`: installazione, aggiornamento, migrazione |
 | [Come si usa, nei dettagli](http://docs-claude-config.aepserver.it/uso) | Quale caso è il tuo (progetto nuovo, esistente senza regole, esistente con regole), il template come cartella a parte, `copia-regole.bat`, moduli da tenere per tipo di progetto |
 | [Come funziona](http://docs-claude-config.aepserver.it/funzionamento) | Caricamento delle regole, deroghe, cosa chiede Claude e cosa fa da solo |
 | [Manutenzione](http://docs-claude-config.aepserver.it/manutenzione) | Verifiche periodiche, risoluzione dei problemi, punti aperti, aggiornamento del template |
@@ -35,6 +35,29 @@ Il [plugin `kit`](http://docs-claude-config.aepserver.it/plugin) rende tecnici i
 claude plugin marketplace add AngeloDotNet/claude-config
 claude plugin install kit@claude-config
 ```
+
+## Comandi del plugin
+
+Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono disponibili dalla versione 1.9.0 del plugin, in arrivo:
+
+- `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
+- `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`.
+- `/kit:avvia-progetto`: avvia un progetto nuovo con le domande di avvio, e compila il `CLAUDE.md`.
+- `/kit:copia-regole`: copia le regole in un progetto che non le ha.
+- `/kit:aggiorna-regole`: aggiorna le regole di un progetto, con conferma per ogni file.
+- `/kit:consegna`: controlla il lavoro corrente contro la checklist di consegna.
+- `/kit:code-review`: revisione del codice secondo le regole del progetto.
+- `/kit:aggiorna-docs`: aggiorna README, CHANGELOG e, se esiste, il sito di documentazione; crea il README se manca e scrive la voce di rilascio su richiesta.
+- `/kit:verifica`: esegue i controlli di una soluzione .NET (ripristino, build, test, pacchetti vulnerabili, modello EF, spazi bianchi) e riporta l'esito, senza modificare file.
+- `/kit:qualita-test`: revisiona i test (falsa sicurezza, fragilità, duplicati) e propone test xUnit parametrici e leggibili.
+- `/kit:dati-efcore`: guida il lavoro con EF Core (letture senza tracking, migrazioni, `DbContext`, ottimizzazione delle query).
+- `/kit:accessi-api`: guida autenticazione e autorizzazione di un'API ASP.NET Core (schemi, policy, handler, scope, claim).
+- `/kit:gdpr-dati`: revisiona il backend rispetto ai principi GDPR (minimizzazione, conservazione, log, diritti). Non è consulenza legale.
+- `/kit:accessibilita-ui`: revisiona e corregge l'accessibilità dell'interfaccia rispetto a WCAG 2.2.
+- `/kit:colori-tema`: costruisce o verifica la palette per i temi chiaro e scuro, con il contrasto misurato.
+- `/kit:localizzazione`: verifica il layout per testi tradotti più lunghi, RTL, ordine di lettura e zoom.
+
+Dettagli nella pagina [Plugin](http://docs-claude-config.aepserver.it/plugin).
 
 ## Limiti noti
 

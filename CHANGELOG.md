@@ -4,6 +4,97 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-05
 
+### Versione di xUnit fissata per i progetti nuovi
+
+**Perché:** le regole nominavano solo «xUnit», senza indicare la versione. L'analisi della skill `migrate-xunit-to-xunit-v3` ha messo in luce la lacuna.
+**Cosa / Dove:** `core.md` §4, riga dei test backend: xUnit v3 per i progetti nuovi. I progetti esistenti su xUnit v2 restano su v2 finché non si decide la migrazione per progetto.
+**Verifica:** rilettura della riga. Nessun test eseguito: modifica solo di regole Markdown.
+**Note:** la migrazione di un progetto esistente richiede una decisione esplicita, non è automatica.
+
+### Regole di tipografia nel frontend
+
+**Perché:** l'analisi della skill `better-typography` ha mostrato che `frontend.md` copre la tipografia solo come token e gerarchia visiva. Mancavano le scelte su scala, altezza di riga e misura del testo.
+**Cosa / Dove:** `frontend.md` §3, dopo il punto «Gerarchia visiva»: tre regole su scala con nomi semantici, altezza di riga per ruolo e misura massima del testo, tutte come token.
+**Verifica:** rilettura dei punti. Nessun test eseguito: modifica solo di regole Markdown.
+**Note:** modifica piccola, senza piano separato.
+
+### Regola sui fusi orari nel backend
+
+**Perché:** l'analisi della skill `dotnet-timezone` ha mostrato che le regole coprono lo storage in UTC, ma non il nome IANA del fuso e le pianificazioni ricorrenti in ora locale, che cambiano istante con l'ora legale.
+**Cosa / Dove:** `backend.md` §9, punto «Date»: fusi identificati con il nome IANA, mai con l'offset fisso; pianificazioni ricorrenti con orario locale e fuso IANA, con l'istante successivo calcolato ogni volta con `TimeZoneInfo`. Il runtime deve includere `tzdata` (vedi `docker.md`).
+**Verifica:** rilettura della regola e coerenza con la voce UTC di `core.md` §1 (conversione solo in visualizzazione). Nessun test eseguito: modifica solo di regole Markdown.
+**Note:** la regola presuppone il runtime `10.0-noble-chiseled-extra`; con la variante senza `-extra` i fusi IANA non si risolvono nel container.
+
+### Runtime Docker con dati di fuso (`-extra`)
+
+**Perché:** la variante `10.0-noble-chiseled` fissata in `docker.md` non include `tzdata` né ICU. Senza, il backend non risolve i fusi IANA (per esempio `Europe/Rome`), e la regola sui fusi orari che stiamo introducendo non funzionerebbe nel container.
+**Cosa / Dove:** `docker.md`, voce «Tag espliciti e fissi» e voce «Multi-stage»: runtime del backend `mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled-extra`, che include `tzdata` e ICU. Restano valide le regole su shell, `HEALTHCHECK` e pacchetti.
+**Verifica:** la documentazione Microsoft conferma che le varianti chiseled senza `-extra` non includono `tzdata` né ICU, e che la variante `-extra` li include. Il tag esiste: la cartella `src/aspnet/10.0/noble-chiseled-extra` è nel repository ufficiale `dotnet/dotnet-docker`. Il suo `Dockerfile` non installa né copia `tzdata` né ICU: li eredita dall'immagine base, `runtime` della stessa variante. La presenza effettiva dei dati di fuso dipende quindi dall'immagine `runtime-deps` a monte: la verifica si ferma alla documentazione Microsoft, che indica `tzdata` e ICU per la variante `-extra`, e non è stata letta fino in fondo la catena delle immagini di base.
+**Note:** la voce precedente sul runtime (`10.0-noble-chiseled`) resta nel `CHANGELOG` come storico. Il tag corretto è questo.
+
+### Prima ondata di skill nel plugin `kit`: qualità dei test, EF Core, accessi, GDPR, accessibilità
+
+**Perché:** la prima ondata del piano di riscrittura prevedeva cinque procedure che le regole sviluppano solo per vincoli: revisione dei test, lavoro con EF Core, configurazione di autenticazione e autorizzazione, revisione GDPR e accessibilità dell'interfaccia.
+**Cosa / Dove:** `plugins/kit/skills/qualita-test/` (`/kit:qualita-test`): falsa sicurezza, fragilità, duplicati con `Theory`, nomi e asserzioni. `plugins/kit/skills/dati-efcore/` (`/kit:dati-efcore`): tracking, migrazioni, ciclo di vita del `DbContext`, ottimizzazione delle query. `plugins/kit/skills/accessi-api/` (`/kit:accessi-api`): schema, ordine della pipeline, policy, handler, scope, mappatura dei claim. `plugins/kit/skills/gdpr-dati/` (`/kit:gdpr-dati`): minimizzazione, conservazione, log, errori, diritti degli interessati; non è consulenza legale. `plugins/kit/skills/accessibilita-ui/` (`/kit:accessibilita-ui`): tastiera, focus, nomi, form, annunci, contrasto, movimento, zoom. Tutte sono revisioni che non modificano file.
+**Verifica:** controllo di non derivazione con confronto su sequenze di 8 parole: zero sequenze in comune con gli originali di dotcraft per ciascuna skill. Test del plugin: 102/102 verdi.
+**Note:** la versione del plugin resta 1.8.0 fino al rilascio. Prova dal vivo dei comandi in una sessione nuova su un progetto di prova. Il controllo `verifica` è registrato a parte.
+
+### Controllo delle scorciatoie nel guard del plugin `kit`
+
+**Perché:** l'analisi di `dotnet-slopwatch` ha mostrato che gran parte delle scorciatoie è già bloccata, ma restavano senza controllo automatico le attese arbitrarie nei test, i `NoWarn` di progetto e i `catch` vuoti. La regola in `core.md` §4 le vieta già.
+**Cosa / Dove:** `plugins/kit/scripts/guard-patterns.mjs`: tre regole nuove, con blocco e deroga `kit-allow`: `attesa-test` (`Task.Delay` e `Thread.Sleep` nei file di test), `nowarn` (`NoWarn` in `.csproj` e `.props`), `catch-vuoto` (`catch` con blocco vuoto in `.cs`). `core.md` §4: riga con l'elenco delle scorciatoie vietate e il rimando alla deroga.
+**Verifica:** test del plugin: 102/102 verdi, con 4 test nuovi in `plugins/kit/tests/patterns.test.mjs` (attesa, deroga, `NoWarn`, `catch`).
+**Note:** i pattern lavorano riga per riga, come gli altri del guard: un `NoWarn` o un `catch` vuoto scritti su più righe non vengono rilevati. La revisione del codice resta necessaria. La versione del plugin resta 1.8.0 fino al rilascio.
+
+### Nuove skill `colori-tema` e `localizzazione` nel plugin `kit`
+
+**Perché:** la seconda ondata del piano di riscrittura prevedeva due procedure che le regole di frontend non sviluppano: costruire e verificare la palette dei temi con il contrasto misurato sui valori resi, e verificare il layout con testi tradotti più lunghi, RTL, ordine di lettura e zoom. I vincoli restano in `frontend.md`.
+**Cosa / Dove:** `plugins/kit/skills/colori-tema/SKILL.md` (`/kit:colori-tema`): token per ruolo, scala per tinta, soglie di contrasto WCAG 2.2 (1.4.3, 1.4.11), colore mai come unico segnale, gradienti, tabella finale delle coppie. `plugins/kit/skills/localizzazione/SKILL.md` (`/kit:localizzazione`; la skill tratta il layout con testi tradotti, RTL, ordine di lettura e zoom, mentre le traduzioni restano in `frontend.md` §4.2): spazio prima delle linee, proprietà logiche per RTL, ordine di lettura (1.3.2), testi che si espandono, reflow a 320 px e zoom (1.4.10, 1.4.4), contenuto nascosto (4.1.2). Entrambe non modificano file.
+**Verifica:** test del plugin `plugins/kit/tests`: 98/98 verdi. Verifica di non derivazione dagli originali di dotcraft con confronto su sequenze di 8 parole: 0 sequenze in comune per entrambe; il metodo è stato controllato su un originale contro se stesso.
+**Note:** la versione del plugin resta 1.8.0 fino al rilascio. Prova dal vivo dei comandi da fare in una sessione nuova su un progetto di prova.
+
+### Fusioni di `create-readme` e `release-changelog` in `aggiorna-docs`
+
+**Perché:** le due skill di dotcraft (`create-readme` e `release-changelog`) coprivano lavori già previsti dal plugin `kit`. Le due decisioni prese: il README si crea solo se manca, senza riscriverne uno esistente; la voce di rilascio si scrive solo su richiesta esplicita, senza calcolare la versione.
+**Cosa / Dove:** `plugins/kit/skills/aggiorna-docs/SKILL.md`: descrizione aggiornata; passo 3, voce `### Rilascio X.Y.Z` su richiesta, con le categorie di `git.md` e senza bump né commit; passo 4, struttura di riferimento per un README mancante (titolo e scopo, requisiti, avvio, configurazione, comandi, struttura, licenza).
+**Verifica:** test del plugin `plugins/kit/tests`: 98/98 verdi. Prova dal vivo del comando: da fare in una sessione nuova su un progetto di prova.
+**Note:** la versione del plugin resta 1.8.0 fino al rilascio. Le skill sono riscritte in forma propria: nessun testo da dotcraft.
+
+### Segreti solo da variabili d'ambiente di `.env` nelle regole Docker
+
+**Perché:** le regole ammettevano sia i `secrets` di Compose sia le variabili d'ambiente, con due percorsi da mantenere e una scelta per progetto. Il file `secrets` richiedeva un provider aggiuntivo perché ASP.NET Core non legge `/run/secrets/` da solo.
+**Cosa / Dove:** `docker.md`: i segreti passano solo da variabili d'ambiente valorizzate da `.env`, fuori dal repository. Il compose usa segnaposto `${VAR}`. Riviste le righe su Redis, configurazione e segreti, primo amministratore, migrazioni, backup e Dockerfile. Nel Dockerfile nessun segreto né come `ENV` né come `ARG`. Variante base del runtime: `10.0-noble-chiseled`, da fissare al passo 9 del piano.
+**Verifica:** ricerca dei residui di `secret` in `docker.md` e rilettura delle righe modificate. Nessun test eseguito: modifica solo di regole Markdown.
+**Note:** la modifica è completa anche fuori da `docker.md`: le regole e il `CLAUDE.md` che citavano ancora i `secrets` sono allineati a `.env` in `backend.md`, `backend-app.md`, `backend-email.md` (modulo opzionale), `core.md`, `security.md` e `CLAUDE.md`. Il certificato di Data Protection è un file fuori dal repository, con il percorso in una variabile d'ambiente da `.env`. Immagine runtime `10.0-noble-chiseled` e SDK di build `10.0-noble` sono fissate in `docker.md`.
+
+### Divieti sull'asincronismo nelle regole backend
+
+**Perché:** l'analisi della skill `csharp-async` ha confermato che le regole coprono `async/await` e `CancellationToken`, ma non vietano gli errori tipici: `async void` e il blocco su codice asincrono con `.Result` o `.Wait()`.
+**Cosa / Dove:** `backend.md`, punto «Asincronismo»: vietati `async void` (salvo gli handler di eventi) e `.Result` o `.Wait()` su codice asincrono.
+**Verifica:** rilettura della riga. Nessun test eseguito: modifica solo di regole Markdown.
+**Note:** modifica piccola, senza piano separato.
+
+### Value object e mock EF opzionale nelle regole backend
+
+**Perché:** l'analisi delle skill EF Core ha messo in luce due lacune. Non era chiaro quale mappatura EF Core usare per i value object (`ComplexProperty` o `OwnsOne`), e le regole vietavano ogni mock di `DbContext` e `DbSet`, senza distinguere la logica pura dall'accesso ai dati.
+**Cosa / Dove:** `backend-architecture.md` §2b (riga sui value object): `ComplexProperty` come default, `OwnsOne` solo con relazioni proprie o tabella dedicata. `backend-app.md` §4.5: mock di `DbContext` e `DbSet` opzionale, solo per la logica che non tocca il `DbContext`, con la voce `CLAUDE.md` attiva. `core.md` §4 (riga dei test backend): rimando all'eccezione. `CLAUDE.md`: nuova voce «Mock EF nei test unitari» (default: no), subito dopo «Database nei test». `InMemory` resta vietato. Un servizio che legge dal `DbContext` si prova sempre sul database reale.
+**Verifica:** rilettura delle righe modificate e ricerca dei riferimenti a `InMemory`, `DbSet` e mock su regole e `CLAUDE.md`, con correzione di tre righe contraddittorie. Nessun test eseguito: sono modifiche solo di regole Markdown. Il guard del plugin su `InMemory` non cambia.
+**Note:** la versione del plugin resta invariata. Il default del progetto resta il database reale; il mock si dichiara per progetto.
+
+### Documentazione dei comandi allineata nel template
+
+**Perché:** il README e la procedura di avvio parlavano del plugin solo come hook e del `copia-regole.bat`; i comandi `/kit:...` non comparivano nei testi che Claude e l'utente leggono.
+**Cosa / Dove:** `README.md` (nota «dalla versione 1.9.0» nella sezione dei comandi, riga del plugin nella tabella); `_template/avvio-progetto.md` (rimando a `/kit:avvia-progetto`, `/kit:copia-regole` e `/kit:aggiorna-regole` nella struttura del template). `CLAUDE.md` e `.claude/rules/` non cambiano: non descrivono il plugin.
+**Verifica:** `claude plugin validate .` su `plugins/kit`: passa. Suite del plugin: 98/98 verdi.
+**Note:** la nota «dalla versione 1.9.0» si toglie al rilascio. Il sito di documentazione (`claude-config-docs`) ha una voce corrispondente, con commit da fare insieme a questa.
+
+### Comandi personalizzati del plugin `kit` (`/kit:...`)
+
+**Perché:** le operazioni ripetute (riprendere il lavoro, salvare lo stato, avviare o aggiornare un progetto, controllare la consegna, revisionare il codice, aggiornare la documentazione) si facevano a mano, con il `copia-regole.bat` per le regole.
+**Cosa / Dove:** `plugins/kit/skills/` con otto skill: `buongiorno`, `buonasera`, `avvia-progetto`, `copia-regole`, `aggiorna-regole`, `consegna`, `code-review`, `aggiorna-docs`. Ogni skill ha `disable-model-invocation: true`: parte solo se la lancia l'utente. `README.md`: nuova sezione «Comandi del plugin» e riga del plugin nella tabella della documentazione con i comandi. `.claude-plugin/marketplace.json` e `plugins/kit/.claude-plugin/plugin.json`: descrizione con i comandi, perché è quella che si vede in installazione. Il `copia-regole.bat` resta finché i comandi non sono provati dal vivo.
+**Verifica:** `claude plugin validate .` su `plugins/kit`: passa (avvisi solo sulla pubblicazione nel catalogo). `claude plugin details kit@claude-config`: otto skill elencate. Test del plugin: 98/98 verdi. Prova dal vivo: da fare in una sessione nuova.
+**Note:** la versione del plugin resta 1.8.0 fino al rilascio. Le risposte per progetto (sito, priorità) vanno in `~/.claude/kit-progetti.json`, fuori dai repository.
+
 ### Rinomina del plugin da `kit-config` a `kit`
 
 **Perché:** i comandi personalizzati devono uscire come `/kit:...`, senza il suffisso `-config`. Il nome del plugin è anche la chiave in `enabledPlugins`, quindi chi lo ha installato deve reinstallarlo.

@@ -102,6 +102,31 @@ test("tls: TrustServerCertificate=True bloccato in appsettings, Encrypt=True pas
   assert.equal(write("api/appsettings.json", '{"Db": "Server=db;Encrypt=True;TrustServerCertificate=False"}').code, 0);
 });
 
+// --- scorciatoie (controllo delle scorciatoie) ---
+
+test("attesa-test: Task.Delay e Thread.Sleep bloccati nei test, nel codice di produzione passano", () => {
+  assert.equal(write("tests/OrderTests.cs", "await Task.Delay(1000);").code, 2);
+  assert.equal(write("tests/OrderTests.cs", "Thread.Sleep(500);").code, 2);
+  assert.equal(write("src/Orders/OrderService.cs", "await Task.Delay(retryAfter, ct);").code, 0);
+});
+
+test("attesa-test: deroga kit-allow sulla riga sopra sblocca", () => {
+  const text = "// kit-allow: attesa-test — il test attende un evento del sistema esterno, verificato sotto\nawait Task.Delay(50);";
+  assert.equal(write("tests/OrderTests.cs", text).code, 0);
+});
+
+test("nowarn: NoWarn di progetto bloccato in .csproj e .props, nel codice C# passa", () => {
+  assert.equal(write("api/Api.csproj", "<NoWarn>CS1591</NoWarn>").code, 2);
+  assert.equal(write("Directory.Build.props", "<NoWarn>CS8618</NoWarn>").code, 2);
+  assert.equal(write("api/Program.cs", "// NoWarn non è un pattern di questo file").code, 0);
+});
+
+test("catch-vuoto: catch con blocco vuoto bloccato, catch con log passa", () => {
+  assert.equal(write("src/Orders/OrderService.cs", "try { Run(); } catch (Exception) { }").code, 2);
+  assert.equal(write("src/Orders/OrderService.cs", "try { Run(); } catch { }").code, 2);
+  assert.equal(write("src/Orders/OrderService.cs", "try { Run(); } catch (Exception ex) { _log.LogError(ex, \"errore\"); throw; }").code, 0);
+});
+
 // --- attivazione ---
 
 test("attivazione: nessun blocco in un progetto senza .claude/rules/core.md", () => {
