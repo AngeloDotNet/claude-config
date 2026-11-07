@@ -12,24 +12,24 @@ Le regole sono in italiano; codice, identificatori e messaggi di commit che ne d
 ## Documentazione
 
 <!--
-La documentazione è nel sito [docs-claude-config.aepserver.it](http://docs-claude-config.aepserver.it/) (sorgenti nel repository `claude-config-docs`). Il sito è servito in HTTP; HTTPS verrà aggiunto in seguito.
+La documentazione è nel sito [wiki.aepserver.it](http://wiki.aepserver.it/claude-config/intro) (sorgenti nella cartella `docs/claude-config` del repository `wiki`). Il sito è servito in HTTP; HTTPS verrà aggiunto in seguito.
 -->
 
 | Documento | Contenuto |
 |---|---|
-| [Cosa contiene](http://docs-claude-config.aepserver.it/contenuto) | Struttura del repository, moduli delle regole, cartella `_template/` e plugin |
-| [Plugin `kit`](http://docs-claude-config.aepserver.it/plugin) | Hook personali (domanda unica, comandi vietati, piano a inizio sessione, regole aggiornate) e comandi `/kit:...`: installazione, aggiornamento, migrazione |
-| [Come si usa, nei dettagli](http://docs-claude-config.aepserver.it/uso) | Quale caso è il tuo (progetto nuovo, esistente senza regole, esistente con regole), il template come cartella a parte, `copia-regole.bat`, moduli da tenere per tipo di progetto |
-| [Come funziona](http://docs-claude-config.aepserver.it/funzionamento) | Caricamento delle regole, deroghe, cosa chiede Claude e cosa fa da solo |
-| [Manutenzione](http://docs-claude-config.aepserver.it/manutenzione) | Verifiche periodiche, risoluzione dei problemi, punti aperti, aggiornamento del template |
+| [Cosa contiene](http://wiki.aepserver.it/claude-config/contenuto) | Struttura del repository, moduli delle regole, cartella `_template/` e plugin |
+| [Plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) | Hook personali (domanda unica, comandi vietati, piano a inizio sessione, regole aggiornate) e comandi `/kit:...`: installazione, aggiornamento, migrazione |
+| [Come si usa, nei dettagli](http://wiki.aepserver.it/claude-config/uso) | Quale caso è il tuo (progetto nuovo, esistente senza regole, esistente con regole), il template come cartella a parte, `/kit:copia-regole` e `/kit:aggiorna-regole`, moduli da tenere per tipo di progetto |
+| [Come funziona](http://wiki.aepserver.it/claude-config/funzionamento) | Caricamento delle regole, deroghe, cosa chiede Claude e cosa fa da solo |
+| [Manutenzione](http://wiki.aepserver.it/claude-config/manutenzione) | Verifiche periodiche, risoluzione dei problemi, punti aperti, aggiornamento del template |
 
-La documentazione completa è disponibile [qui](http://docs-claude-config.aepserver.it/)
+La documentazione completa è disponibile [qui](http://wiki.aepserver.it/claude-config/intro)
 
 ## Come si usa, in breve
 
-Le regole non si "installano": si **copiano nel progetto** e Claude Code le legge da solo. Apri Claude Code nella cartella del progetto e scrivi, per un progetto nuovo, *"Avvia un nuovo progetto"*; negli altri casi (progetto esistente, solo regole Git, aggiornamento) vedi [Come si usa, nei dettagli](http://docs-claude-config.aepserver.it/uso).
+Le regole non si "installano": si **copiano nel progetto** e Claude Code le legge da solo. Apri Claude Code nella cartella del progetto e scrivi, per un progetto nuovo, *"Avvia un nuovo progetto"*; negli altri casi (progetto esistente, solo regole Git, aggiornamento) vedi [Come si usa, nei dettagli](http://wiki.aepserver.it/claude-config/uso).
 
-Il [plugin `kit`](http://docs-claude-config.aepserver.it/plugin) rende tecnici i divieti (niente `git init`, push, PR, tag o rilasci) e la regola della domanda unica; si installa una volta per macchina:
+Il [plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) rende tecnici i divieti (niente `git init`, push, PR, tag o rilasci) e la regola della domanda unica; si installa una volta per macchina:
 
 ```
 claude plugin marketplace add AngeloDotNet/claude-config
@@ -38,7 +38,7 @@ claude plugin install kit@claude-config
 
 ## Comandi del plugin
 
-Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono disponibili dalla versione 1.9.0 del plugin:
+Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
 - `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`.
@@ -57,7 +57,7 @@ Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono dispo
 - `/kit:colori-tema`: costruisce o verifica la palette per i temi chiaro e scuro, con il contrasto misurato.
 - `/kit:localizzazione`: verifica il layout per testi tradotti più lunghi, RTL, ordine di lettura e zoom.
 
-Dettagli nella pagina [Plugin](http://docs-claude-config.aepserver.it/plugin).
+Dettagli nella pagina [Plugin](http://wiki.aepserver.it/claude-config/plugin).
 
 ## Limiti noti
 

@@ -1,5 +1,5 @@
 ---
-description: Aggiorna le regole di un progetto che le ha già, confrontandole con il template. Equivale alla voce 2 di copia-regole.bat. Sovrascrive un file solo con la conferma dell'utente e lascia il vecchio come .bak. Si lancia solo su richiesta.
+description: Aggiorna le regole di un progetto che le ha già, confrontandole con il template. Sovrascrive un file solo con la conferma dell'utente e lascia il vecchio come .bak. Si lancia solo su richiesta.
 argument-hint: [cartella-progetto]
 disable-model-invocation: true
 ---

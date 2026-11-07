@@ -2,7 +2,37 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-07
+
+### Link alla documentazione spostati su wiki.aepserver.it
+
+**Perché:** la documentazione è stata unificata nel sito Docusaurus del repository `wiki` (`docs/claude-config/`), pubblicato su `http://wiki.aepserver.it`. Il vecchio indirizzo `docs-claude-config.aepserver.it` e il repository `claude-config-docs` non sono più la fonte.
+**Cosa / Dove:** `README.md`: i link della sezione «Documentazione», della tabella, della sezione «Come si usa» e della sezione «Comandi del plugin» puntano a `http://wiki.aepserver.it/claude-config/...` (per esempio `/claude-config/uso`); la frase introduttiva, anche nel commento HTML, cita il repository `wiki` e la cartella `docs/claude-config`. Il link generale va a `/claude-config/intro`, perché la radice `/` del sito non ha ancora una pagina di ingresso.
+**Verifica:** ricerca nel repository: nessun riferimento residuo a `docs-claude-config`. Nessuna build: il file è Markdown, il sito non è in questo repository.
+**Note:** il sito è servito in HTTP, come dichiarato. Le voci storiche di questo changelog, che citano `claude-config-docs`, restano come sono. Il `url` di `docusaurus.config.ts` nel repository `wiki` è ancora un segnaposto (`https://docs.example.com`): va deciso lì.
+
 ## 2026-11-06
+
+### Revisione di core.md 3.31
+
+**Perché:** il commit `bc5d96e` ha modificato `core.md` e sette altri moduli di regole (xUnit v3, Docker, sicurezza, backend) senza aggiornare versione e data. `rules-watch` confronta la versione: con la stessa versione i progetti non ricevono l'avviso di aggiornamento.
+**Cosa / Dove:** `.claude/rules/core.md`, intestazione: versione 3.31, ultima revisione 2026-11-06. `README.md`: la frase sulla versione 1.9.0 del plugin è diventata «Sono disponibili nel plugin».
+**Verifica:** `node --test` sui file del plugin: 102 su 102 passati; `rules-watch` legge la versione 3.31 dall'intestazione.
+**Note:** le modifiche del 2026-11-05 e di `bc5d96e` sono incluse in questa revisione. Chi ha copie di regole più vecchie riceve l'avviso di `rules-watch` alla prossima sessione.
+
+### Modalità solo Git in `/kit:copia-regole`
+
+**Perché:** per i progetti senza backend, frontend, Docker o sicurezza il comando chiedeva sette-otto risposte di «no»; la modalità solo Git dell'avvio (`avvio-progetto.md` §2) esisteva solo come frase a Claude, non come comando.
+**Cosa / Dove:** `plugins/kit/skills/copia-regole/SKILL.md`: domanda «solo regole Git?» dopo il controllo del percorso. Se sì, copia solo `core.md` e `git.md`; chiede solo `CLAUDE.md`, `.gitignore` e `.gitattributes`, e non chiede `NuGet.config` né `.editorconfig`. Descrizione del comando aggiornata.
+**Verifica:** `node --test` sui file del plugin: 102 su 102 passati.
+**Note:** `/kit:aggiorna-regole` non cambia. Scelta dell'utente: nessun comando nuovo, la modalità sta dentro `/kit:copia-regole`.
+
+### Rimosso `copia-regole.bat`
+
+**Perché:** le voci 1 e 2 dello script (copia e aggiornamento delle regole) sono coperte dalle skill `/kit:copia-regole` e `/kit:aggiorna-regole`, che fanno le stesse domande e lasciano il `.bak` allo stesso modo.
+**Cosa / Dove:** cancellato `copia-regole.bat` dalla root. Riferimenti aggiornati: `_template/avvio-progetto.md` (struttura del template, progetto nuovo, copia delle regole; il file non compare più tra il materiale da eliminare), `README.md` (rimando alla documentazione), `plugins/kit/skills/copia-regole/SKILL.md` e `aggiorna-regole/SKILL.md` (via la frase «Equivale alla voce N di copia-regole.bat»), `.gitignore` (commento sui `*.bak`, la regola resta).
+**Verifica:** ricerca dei riferimenti nel repository: restano solo le voci storiche di questo changelog. Test del plugin in `plugins/kit/tests`: 102 su 102 passati (`node --test` sui file `*.test.mjs`).
+**Note:** le skill dipendono dal plugin `kit` installato e dalla variabile `KIT_CONFIG_TEMPLATE_DIR`; lo script non le richiedeva. Il sito di documentazione (repository `claude-config-docs`, fuori da questo repository) cita ancora il `.bat` nella pagina «Come si usa»: da aggiornare lì.
 
 ### Rilascio 1.9.0
 

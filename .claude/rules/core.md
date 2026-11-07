@@ -1,6 +1,6 @@
 # Regole Core (sempre caricate)
 
-> Versione 3.30 — ultima revisione: 2026-11-04. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
+> Versione 3.31 — ultima revisione: 2026-11-06. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
 > Moduli correlati: `frontend.md` (Angular/UI), `backend.md`, `backend-architecture.md` e `backend-app.md` (.NET/dati: stack e regole comuni; architettura e accesso ai dati; logica applicativa, errori e test; si caricano insieme; opzionali `backend-email.md` per l'invio email e `backend-infra.md` per messaggistica, cache ed eventi, aggiunti quando servono), `feature-workflow.md` (opzionale, solo fullstack e su conferma: flusso per entità, backend → frontend), `security.md` (sicurezza), `docker.md` (deploy), `git.md` (commit). Un progetto importa solo quelli che gli servono.
 
 ## Regola inviolabile: nel dubbio, una domanda alla volta
