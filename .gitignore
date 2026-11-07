@@ -438,5 +438,5 @@ npm-debug.log*
 .claude/settings.local.json
 CLAUDE.local.md
 
-# Backup creati da copia-regole.bat quando aggiorna le regole
+# Backup creati da /kit:aggiorna-regole quando sovrascrive una regola
 *.bak
