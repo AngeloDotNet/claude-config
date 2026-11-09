@@ -118,6 +118,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `g
 - **Hook pre-commit:** [nessuno | husky + lint-staged | `.githooks/`] — attivazione a cura dell'utente
 - **Push, PR, tag, release ed esecuzione delle pipeline:** push, tag, PR e rilasci sono consentiti sempre (PR e rilasci con `gh` solo se installata, riga in «Eccezioni alle regole globali»); Claude li esegue su richiesta o con conferma. L'avvio di una pipeline richiede una domanda esplicita di conferma per ogni esecuzione.
 - **Attribuzione Claude nei commit:** [no | trailer Co-Authored-By]
+- **Commit di fila, massimo per lotto:** [non abilitato | N] (chiesto da Claude solo quando si passa un numero a `/kit:commit-passo`, non presunto; vedi `git.md`, «Commit multipli»)
 
 ## Eccezioni alle regole globali
 <!-- Ogni deroga va motivata. Se vuota, vale tutto il resto. -->
