@@ -1,23 +1,22 @@
 #!/usr/bin/env node
-// Hook UserPromptSubmit: a ogni messaggio dell'utente confronta le impronte di CLAUDE.md e
-// .claude/rules/*.md con quelle salvate in ~/.claude/session-rules-state.json (le stesse
-// usate da session-plan.mjs). Se qualcosa è cambiato durante la sessione (per esempio dopo
-// un `git pull`), inserisce nel contesto l'ordine di rileggere i file cambiati e aggiorna
-// lo stato, così il promemoria compare una volta sola. In un repository git allega il
-// `git diff` dei soli file cambiati, calcolato dall'hash di HEAD salvato (commit successivi
-// e modifiche non committate); senza git o con hash non valido, solo l'elenco dei file. Se nulla è cambiato, nessun output.
-// Alla prima volta in un progetto si registra e basta.
-// Una volta per sessione confronta anche le regole del progetto con quelle del template
-// (cartella nella variabile KIT_CONFIG_TEMPLATE_DIR, nessun default: se manca, avvisa): se il template
-// ha un core.md più recente lo segnala, se la cartella manca avvisa; non copia nulla
-// (vedi lib/template.mjs). L'hook può ordinare la rilettura
-// ma non obbligare Claude a farla.
-// Fail-open: qualunque errore -> nessun output, nessun blocco.
+// Hook UserPromptSubmit: unisce due controlli che aggiungono testo al contesto di Claude a ogni messaggio.
+// Lo stdout di un hook UserPromptSubmit viene aggiunto al contesto di Claude.
+// - ask-one-question: ricorda la regola inviolabile di core.md ("nel dubbio, una domanda alla volta").
+//   Il testo qui sotto va tenuto allineato a core.md.
+// - rules-watch: confronta le impronte di CLAUDE.md e .claude/rules/*.md con quelle salvate in
+//   ~/.claude/session-rules-state.json (le stesse usate da session-plan.mjs). Se qualcosa è cambiato
+//   durante la sessione (per esempio dopo un `git pull`), ordina di rileggere i file cambiati e allega
+//   il `git diff` dei soli file cambiati, calcolato dall'hash di HEAD salvato. Una volta per sessione
+//   confronta anche le regole del progetto con quelle del template (KIT_CONFIG_TEMPLATE_DIR, vedi
+//   lib/template.mjs). Non copia nulla e non obbliga Claude a rileggere.
+// Ogni controllo è isolato: una sezione che fallisce non nasconde l'altra. Fail-open: nessun blocco.
 //
 // Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import { headKey, loadState, projectKey, recordSnapshot, ruleFingerprints, rulesDiff, saveState } from "./lib/rules.mjs";
 import { templateSection } from "./lib/template.mjs";
+
+const REMINDER = `[Regola inviolabile, sempre attiva] Se hai un dubbio, un'ambiguità o più strade ragionevoli, NON decidere in autonomia e NON procedere per assunzione: fermati, poni UNA SOLA domanda (anche con AskUserQuestion: una domanda per chiamata, mai più insieme) e attendi la risposta prima di fare altro che ne dipenda. Dettagli: core.md, sezione in testa e §6 punto 5. Prima di modificare codice tieni il piano in PIANO.md (con le conclusioni dell'analisi); i problemi trovati lavorando vanno in CHECKLIST.md senza interrompere il lavoro (core.md §6 punti 20-22).`;
 
 // `state` è lo stato letto una sola volta da main: le sezioni lo modificano, main lo salva.
 function rulesChangedSection(cwd, state) {
@@ -51,6 +50,7 @@ let raw = "";
 process.stdin.setEncoding("utf8");
 process.stdin.on("data", (chunk) => (raw += chunk));
 process.stdin.on("end", () => {
+  const parts = [REMINDER];
   try {
     let cwd = process.cwd();
     let sessionId = "";
@@ -63,7 +63,6 @@ process.stdin.on("end", () => {
     }
     const state = loadState();
     const before = JSON.stringify(state);
-    const parts = [];
     for (const section of [() => rulesChangedSection(cwd, state), () => templateSection(cwd, sessionId, state)]) {
       try {
         const text = section();
@@ -73,8 +72,8 @@ process.stdin.on("end", () => {
       }
     }
     if (JSON.stringify(state) !== before) saveState(state);
-    if (parts.length) process.stdout.write(parts.join("\n\n") + "\n");
   } catch {
-    // fail-open
+    // fail-open: resta il promemoria
   }
+  process.stdout.write(parts.join("\n\n") + "\n");
 });

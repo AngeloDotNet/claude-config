@@ -2,6 +2,53 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-09
+
+### `rules-watch` confronta le versioni di tutti i moduli con versione
+
+**Perché:** il confronto con il template leggeva solo la versione di `core.md`: un modulo più recente, come `frontend.md` 1.1, non faceva scattare l'avviso nei progetti. Il controllo non deve dipendere da quale file ha la versione.
+**Cosa / Dove:** `plugins/kit/scripts/lib/template.mjs`: `coreVersion` sostituita da `ruleVersion(file)` e `ruleVersions(dir)`, che leggono l'intestazione «> Versione X.Y» di ogni `.claude/rules/*.md`. `templateSection` confronta solo i moduli che il progetto ha: un modulo assente (es. `frontend.md` in un progetto solo backend) non genera avvisi; un modulo del progetto senza versione conta come più vecchio. Il messaggio elenca i moduli più recenti con le loro versioni. `plugins/kit/tests/rules-watch.test.mjs`: quattro casi nuovi nel blocco «confronto con il template».
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 108 su 108 verdi. `rules-watch.test.mjs`: 20 su 20.
+**Note:** la versione del plugin (1.10.0) non è cambiata: sale al rilascio. Le modifiche non sono committate.
+
+### Cartella per elemento e versione di `frontend.md` (1.1)
+
+**Perché:** i file di componenti e servizi finivano sciolti nelle cartelle di feature o di `core/`, insieme a quelli di altri elementi, e la regola sulle pagine era incompleta: non diceva cosa fare con una feature a pagina unica. `frontend.md` non aveva una versione, quindi `rules-watch` non poteva segnalare le modifiche ai progetti che la usano.
+**Cosa / Dove:** `.claude/rules/frontend.md` §2: nuova voce «Cartella per elemento» (componenti, pagine incluse, servizi e altri file non di componente in una cartella con il nome dell'elemento, con tutti i suoi file; vale anche con una sola pagina nella feature) e sotto di essa il punto sui progetti esistenti (spostamento come refactoring nel `PIANO.md`, con conferma e commit `refactor`). Nella voce «Struttura cartelle» è rimasta la parte sui livelli e sui confini; la regola sulle pagine dentro una feature è stata assorbita dalla nuova voce. Intestazione: «Versione 1.1 — ultima revisione: 2026-11-09» (prima versione 1.0 nella stessa data).
+**Verifica:** modifica di sola regola; nessun codice toccato. Testo riletto dopo la fusione delle due voci.
+**Note:** la voce «Propagazione del `traceId`» in §2 è stata aggiunta nel file durante la sessione, fuori da questo intervento, e non è descritta qui. Il numero di versione si riferisce al file intero.
+
+## 2026-11-08
+
+### Unione degli hook del plugin kit (plugin 1.10.0)
+
+**Perché:** dodici hook in dodici script, con quattro coppie che condividevano evento e matcher e avviavano due processi Node per ogni evento. Unirle riduce i processi e tiene insieme i controlli dello stesso gruppo, senza cambiare le regole.
+**Cosa / Dove:** `plugins/kit/scripts/`: nuovi `guard-write.mjs` (`guard-secrets` + `guard-patterns`, PreToolUse su Write/Edit/MultiEdit), `check-write.mjs` (`check-plan` + `check-quality` + `check-practice`, PostToolUse), `session-close.mjs` (`plan-reminder` + `check-close`, Stop), `prompt-start.mjs` (`ask-one-question` + `rules-watch`, UserPromptSubmit). Rimossi i nove script sostituiti. `plugins/kit/hooks/hooks.json`: sette voci invece di dodici, stessi eventi e matcher. `plugins/kit/scripts/lib/`: solo commenti aggiornati. `plugin.json`: versione 1.10.0.
+**Comportamento:** messaggi di blocco e avvisi invariati, con i nomi logici dei controlli (`guard-secrets`, `check-plan`…), così le deroghe `kit-allow` e le regole in `.claude/rules/` restano valide. Ogni controllo gira isolato: un errore in uno non disattiva gli altri del gruppo. Cambia solo la forma dell'output: gli avvisi di `check-write` e di `session-close` escono in un unico JSON, con i messaggi uniti; `check-plan` mantiene exit 2 con l'avviso su stderr.
+**Verifica:** `node --test` su ogni file in `plugins/kit/tests/`: tutti verdi (github 15, guards 22, patterns 16, practice 9, quality 12, close 6, prompt-start 5, merged 3 nuovi, rules-watch 16). `hooks.json`: sette voci, tutte con script esistente.
+**Note:** i test di `rules-watch` ora tolgono il promemoria della regola inviolabile dall'output, che esce sempre. Chi ha copiato a mano i vecchi script in `~/.claude/` (migrazione descritta nel wiki) deve rimuovere anche le loro voci in `settings.json`. Gli script unificati non isolano un crash del processo intero: solo gli errori dei singoli controlli.
+
+### Pipeline avviabili da Claude solo con conferma esplicita per esecuzione
+
+**Perché:** la regola «le pipeline restano all'utente» era troppo rigida. L'utente vuole che Claude possa avviarle, per esempio con `gh workflow run`, ma sempre dopo una domanda esplicita.
+**Cosa / Dove:** `.claude/rules/git.md`, §Integrazione GitHub: nuovo punto sulle pipeline. Claude le avvia solo dopo una domanda di conferma per ogni esecuzione, che nomina pipeline, branch o ref e input; la conferma non vale per le esecuzioni successive. `.claude/rules/git.md`, §Rilascio, `.claude/rules/core.md` (intestazione §5 CI/CD, §5c, regola 11 del §6) e `CLAUDE.md` (riga «Push, PR, tag, release…»): la frase «l'esecuzione delle pipeline resta all'utente» è sostituita con la regola della conferma.
+**Verifica:** modifica di sola regola; nessun codice toccato. Il hook `guard-commands` non blocca `gh workflow run`, come richiesto.
+**Note:** la regola non è applicata da un controllo automatico: il rispetto della conferma dipende da Claude e dalla revisione.
+
+### Tag e pubblicazione del rilascio senza approvazione per progetto
+
+**Perché:** dopo la modifica precedente il tag e la pubblicazione del rilascio risultavano ancora legati a un'approvazione per progetto, in contrasto con la regola «consentiti sempre» per push, tag, PR e rilasci.
+**Cosa / Dove:** `.claude/rules/git.md`, §Branch: il tag è tolto dalle chiusure di git flow a cura dell'utente e rimanda a «Integrazione GitHub». La pubblicazione del rilascio con `gh` resta soggetta solo alla riga «GitHub CLI (gh) installata», come le PR. La pipeline di release resta all'utente: scelta confermata dall'utente.
+**Verifica:** modifica di sola regola; nessun codice toccato. Il hook già non blocca i tag e `gh release` usa la riga della GitHub CLI.
+**Note:** Claude non avvia pipeline (`gh workflow run` o simili). Il hook non lo impedisce ancora: la regola c'è ma non è applicata da un controllo automatico.
+
+### Push, tag, PR e rilasci consentiti sempre; GitHub CLI con una domanda per progetto
+
+**Perché:** l'approvazione per progetto di push, tag, PR e rilasci era una domanda ripetuta in ogni progetto, anche quando l'operazione è normale. Le uniche condizioni reali sono due: `push` e `tag` usano git e non dipendono da altro; PR e rilasci dipendono dalla GitHub CLI installata sul PC.
+**Cosa / Dove:** `.claude/rules/git.md`: sezione «Integrazione GitHub» riscritta. Push e tag sono consentiti sempre; Claude li esegue su richiesta o con conferma. PR e rilasci passano da `gh` solo con la riga `- **GitHub CLI (gh) installata:** sì/no (AAAA-MM-GG)` nel `CLAUDE.md` di progetto, scritta dopo una sola domanda per progetto. Aggiornati i riferimenti in §Commit, §PR e §Rilascio. `.claude/rules/core.md`: versione 3.32 (2026-11-08), §5c, regola 11 del §6 e riga 105 allineate. `plugins/kit/scripts/guard-commands.mjs`: il hook non cerca più la riga «Integrazione GitHub approvata»; push e tag passano sempre (bloccati solo i comandi distruttivi di sempre), `gh pr` e `gh release` passano solo con la riga «GitHub CLI (gh) installata: sì», letta dalla radice del repository, fail closed. Il messaggio di blocco chiede una sola domanda all'utente. `plugins/kit/tests/github.test.mjs`: riscritto sul nuovo comportamento (15 test). `CLAUDE.md` di claude-config: riga di approvazione sostituita con `GitHub CLI (gh) installata: sì (2026-11-08)`.
+**Verifica:** `node --test plugins/kit/tests/github.test.mjs`: 15 su 15 passati. Gli altri file di test del plugin: close 6, guards 22, patterns 16, practice 9, prompt-start 5, quality 12 su 12, tutti passati; `rules-watch` completato con esito 0.
+**Note:** `merge` di PR e chiusure di git flow restano a cura dell'utente, come prima. Il numero di versione del plugin `kit` (1.9.0) non è cambiato: la descrizione in `plugin.json` è allineata, e il bump si fa con il rilascio. I progetti che hanno la vecchia riga «Integrazione GitHub approvata» nel `CLAUDE.md` devono sostituirla con la riga della GitHub CLI.
+
 ## 2026-11-07
 
 ### Link alla documentazione spostati su wiki.aepserver.it

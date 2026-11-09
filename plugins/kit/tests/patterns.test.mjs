@@ -9,7 +9,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "guard-patterns.mjs");
+const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "guard-write.mjs");
 
 /** Cartella di progetto temporanea; `kit` = true aggiunge il marcatore .claude/rules/core.md. */
 function project(kit = true) {

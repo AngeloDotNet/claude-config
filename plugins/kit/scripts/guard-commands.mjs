@@ -10,10 +10,11 @@
 // equivalenti PowerShell, es. Remove-Item -Recurse -Force), git add -A / --all / . (e i file sensibili: .env,
 // secrets.json, chiavi e certificati), git commit con messaggio non Conventional Commits
 // (git.md: tipo(scope): descrizione, oggetto ≤ 72 caratteri; letto da -m o da heredoc).
-// Con approvazione del progetto passano: git push (normale), git tag (creazione), gh pr create/merge,
-// gh release create/delete/upload/edit. L'approvazione è la riga «Integrazione GitHub approvata» nel
-// CLAUDE.md della radice del repository (git.md); fuori da un repository, della cartella del comando.
-// Senza riga, o con riga non valida, questi comandi sono bloccati.
+// Sempre consentiti: git push (normale), git tag (creazione). gh pr create/merge e gh release
+// create/delete/upload/edit passano solo se la GitHub CLI è installata sul PC: lo dice la riga
+// «GitHub CLI (gh) installata» nel CLAUDE.md della radice del repository (git.md), scritta una volta
+// per progetto dopo la domanda dell'utente. Fuori da un repository, vale il CLAUDE.md della cartella del comando.
+// Senza riga, o con riga non valida, PR e rilasci sono bloccati (fail closed).
 // Consentiti i comandi di sola lettura (git status/log/diff, git tag -l, gh pr view...).
 // Il comando è cercato solo in posizione di comando: testo dentro virgolette, heredoc
 // o commenti non conta (es. git commit -m "docs: git push" passa). Fail-open: input
@@ -39,10 +40,9 @@ const isFlag = (t) => !t.quoted && t.text.startsWith("-");
 // Flag corta che contiene la lettera `ch` (es. -f, -fu): `--long` non conta.
 const shortHas = (t, ch) => !t.quoted && /^-[A-Za-z]+$/.test(t.text) && t.text.includes(ch);
 
-// Riga di approvazione (git.md, «Integrazione GitHub: verifica e approvazione per progetto»).
-// Formato fisso; la data è facoltativa. Una riga con altro formato non approva nulla.
-const APPROVAL_LINE =
-  /^- \*\*Integrazione GitHub approvata:\*\* PR (s[ìi]|no), push (s[ìi]|no), tag (s[ìi]|no), rilasci (s[ìi]|no)(?: \(\d{4}-\d{2}-\d{2}\))?\s*$/im;
+// Riga della GitHub CLI (git.md, «Integrazione GitHub»). Formato fisso; la data è facoltativa.
+// Una riga con altro formato non vale come «sì».
+const GH_LINE = /^- \*\*GitHub CLI \(gh\) installata:\*\* (s[ìi]|no)(?: \(\d{4}-\d{2}-\d{2}\))?\s*$/im;
 
 /** Radice del repository che contiene `dir`; se `dir` non è in un repository, `dir` stessa. */
 function repoRoot(dir) {
@@ -59,19 +59,16 @@ function repoRoot(dir) {
   }
 }
 
-/** Operazioni approvate per il progetto in `dir`, letto dal CLAUDE.md della radice del repository. File assente o riga assente/malformata: nessuna (fail closed). */
-function approvals(dir) {
-  const none = { pr: false, push: false, tag: false, rilasci: false };
+/** La GitHub CLI è dichiarata installata nel CLAUDE.md della radice del repository in `dir`. File assente o riga assente/malformata: no (fail closed). */
+function ghInstalled(dir) {
   let text;
   try {
     text = readFileSync(path.join(repoRoot(dir), "CLAUDE.md"), "utf8");
   } catch {
-    return none;
+    return false;
   }
-  const m = APPROVAL_LINE.exec(text);
-  if (!m) return none;
-  const yes = (word) => /^s/i.test(word);
-  return { pr: yes(m[1]), push: yes(m[2]), tag: yes(m[3]), rilasci: yes(m[4]) };
+  const m = GH_LINE.exec(text);
+  return m ? /^s/i.test(m[1]) : false;
 }
 
 // Command text being analysed (set by check(); needed to read heredoc commit messages).
@@ -169,23 +166,6 @@ function developExists(dir) {
 // Instruction for Claude when a commit is blocked on a protected branch (git.md: git flow with develop).
 let blockHint = null;
 
-function isTagCreation(rest) {
-  const flags = rest.filter(isFlag).map((t) => t.text);
-  const positional = rest.filter((t) => !isFlag(t));
-  const listing = flags.some(
-    (f) =>
-      ["-l", "--list", "--contains", "--no-contains", "--merged", "--no-merged", "--points-at", "-v", "--verify"].includes(f) ||
-      f.startsWith("-n") ||
-      f.startsWith("--sort") ||
-      f.startsWith("--format")
-  );
-  if (listing) return false;
-  const mutating = flags.some(
-    (f) => ["-a", "-s", "-d", "-f", "-u", "--delete", "--force", "--annotate", "--sign"].includes(f) || f.startsWith("-m")
-  );
-  return positional.length > 0 || mutating;
-}
-
 function isForcedRecursiveRemove(args) {
   let recurse = false;
   let force = false;
@@ -271,12 +251,10 @@ function analyzeGit(args, cwd) {
       const deletes =
         rest.some((t) => !t.quoted && (t.text === "--delete" || shortHas(t, "d"))) || positional.some((t) => t.text.startsWith(":"));
       if (deletes) return "cancellazione di un branch remoto (git push --delete o :branch)";
-      return { text: "git push", gate: "push", dir };
+      return null;
     }
     case "init":
       return "git init";
-    case "tag":
-      return isTagCreation(rest) ? { text: "git tag (creazione o modifica di tag)", gate: "tag", dir } : null;
     case "reset":
       return rest.some((t) => !t.quoted && t.text === "--hard") ? "git reset --hard" : null;
     case "clean":
@@ -310,9 +288,9 @@ function analyzeGh(args, cwd) {
     else if (!isFlag(args[k])) positional.push(args[k].text);
   }
   const [area, action] = positional;
-  if (area === "pr" && (action === "create" || action === "merge")) return { text: `gh pr ${action}`, gate: "pr", dir: cwd };
+  if (area === "pr" && (action === "create" || action === "merge")) return { text: `gh pr ${action}`, gate: "gh", dir: cwd };
   if (area === "release" && ["create", "delete", "upload", "edit", "delete-asset"].includes(action))
-    return { text: `gh release ${action}`, gate: "rilasci", dir: cwd };
+    return { text: `gh release ${action}`, gate: "gh", dir: cwd };
   return null;
 }
 
@@ -350,10 +328,12 @@ function check(command, cwd, depth = 0) {
       const found = analyzeSegment(tokens, cwd, depth);
       if (!found) continue;
       if (typeof found === "string") return found;
-      if (approvals(found.dir)[found.gate]) continue;
+      if (ghInstalled(found.dir)) continue;
       blockHint =
-        "Il permesso si registra nel CLAUDE.md (riga «Integrazione GitHub approvata», git.md). Senza approvazione la esegue l'utente.";
-      return `${found.text} non approvato per questo progetto (git.md, «Integrazione GitHub: verifica e approvazione per progetto»)`;
+        "Chiedi all'utente, con UNA SOLA domanda, se su questo PC è installata la GitHub CLI (gh). Con la risposta scrivi nel " +
+        "CLAUDE.md (sezione «Eccezioni alle regole globali») la riga «GitHub CLI (gh) installata: sì/no (AAAA-MM-GG)» (git.md). " +
+        "Senza gh installata, PR e rilasci li esegue l'utente.";
+      return `${found.text} richiede la GitHub CLI, non ancora registrata per questo progetto (git.md, «Integrazione GitHub»)`;
     }
     return null;
   } finally {

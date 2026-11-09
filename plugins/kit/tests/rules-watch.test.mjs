@@ -1,4 +1,4 @@
-// Test degli hook che sorvegliano le regole (rules-watch.mjs, session-plan.mjs e lib/).
+// Test degli hook che sorvegliano le regole (prompt-start.mjs, session-plan.mjs e lib/).
 // Esecuzione, dalla root del repository:  node --test "plugins/kit/tests/*.test.mjs"
 // Richiede Node.js e git. Nessuna dipendenza esterna (node:test).
 //
@@ -49,7 +49,15 @@ function run(script, { cwd, home, template, session = "s1" }) {
     env,
   });
   assert.equal(result.status, 0, `exit ${result.status}: ${result.stderr}`);
-  return result.stdout;
+  return withoutReminder(result.stdout);
+}
+
+/** prompt-start aggiunge sempre il promemoria della regola inviolabile: qui si confronta solo il resto. */
+function withoutReminder(out) {
+  return out
+    .split("\n")
+    .filter((line) => !line.startsWith("[Regola inviolabile"))
+    .join("\n");
 }
 
 function setup() {
@@ -87,37 +95,37 @@ after(() => {
 describe("rules-watch: regole cambiate durante la sessione", () => {
   test("prima volta e nessun cambio: silenzio", () => {
     const { home, template, project } = setup();
-    assert.equal(run("rules-watch.mjs", { cwd: project, home, template }), "");
-    assert.equal(run("rules-watch.mjs", { cwd: project, home, template }), "");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template }), "");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template }), "");
   });
 
   test("file modificato: lo nomina una volta sola", () => {
     const { home, template, project } = setup();
-    run("rules-watch.mjs", { cwd: project, home, template });
+    run("prompt-start.mjs", { cwd: project, home, template });
     writeFileSync(path.join(project, ".claude", "rules", "git.md"), "# git modificato\n");
-    const out = run("rules-watch.mjs", { cwd: project, home, template });
+    const out = run("prompt-start.mjs", { cwd: project, home, template });
     assert.match(out, /\[Regole cambiate durante la sessione\]/);
     assert.match(out, /\.claude\/rules\/git\.md/);
-    assert.equal(run("rules-watch.mjs", { cwd: project, home, template }), "");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template }), "");
   });
 
   test("file aggiunto e file rimosso", () => {
     const { home, template, project } = setup();
-    run("rules-watch.mjs", { cwd: project, home, template });
+    run("prompt-start.mjs", { cwd: project, home, template });
     write(path.join(project, ".claude", "rules", "docker.md"), "# docker\n");
-    assert.match(run("rules-watch.mjs", { cwd: project, home, template }), /docker\.md/);
+    assert.match(run("prompt-start.mjs", { cwd: project, home, template }), /docker\.md/);
     rmSync(path.join(project, ".claude", "rules", "docker.md"));
-    assert.match(run("rules-watch.mjs", { cwd: project, home, template }), /rimossi: \.claude\/rules\/docker\.md/);
+    assert.match(run("prompt-start.mjs", { cwd: project, home, template }), /rimossi: \.claude\/rules\/docker\.md/);
   });
 
   test("progetto senza regole e input non JSON: silenzio, exit 0", () => {
     const { base, home, template } = setup();
     const empty = path.join(base, "empty");
     mkdirSync(empty);
-    assert.equal(run("rules-watch.mjs", { cwd: empty, home, template: path.join(base, "non-esiste") }), "");
-    const result = spawnSync(process.execPath, [path.join(scripts, "rules-watch.mjs")], { input: "non json", encoding: "utf8", cwd: empty, env: { ...process.env, USERPROFILE: home, HOME: home } });
+    assert.equal(run("prompt-start.mjs", { cwd: empty, home, template: path.join(base, "non-esiste") }), "");
+    const result = spawnSync(process.execPath, [path.join(scripts, "prompt-start.mjs")], { input: "non json", encoding: "utf8", cwd: empty, env: { ...process.env, USERPROFILE: home, HOME: home } });
     assert.equal(result.status, 0);
-    assert.equal(result.stdout, "");
+    assert.equal(withoutReminder(result.stdout), "");
   });
 });
 
@@ -137,7 +145,7 @@ describe("diff con git (clone locale del repository)", () => {
     write(path.join(template, ".claude", "rules", "core.md"), `> Versione ${version} — rev\n`);
   });
 
-  const watch = (session = "s1") => run("rules-watch.mjs", { cwd: clone, home, template, session });
+  const watch = (session = "s1") => run("prompt-start.mjs", { cwd: clone, home, template, session });
 
   test("modifica non committata: il diff compare", () => {
     assert.equal(watch(), "");
@@ -173,9 +181,9 @@ describe("diff con git (clone locale del repository)", () => {
 
   test("cartella senza git: solo l'elenco dei file", () => {
     const ctx = setup();
-    run("rules-watch.mjs", { cwd: ctx.project, home: ctx.home, template: ctx.template });
+    run("prompt-start.mjs", { cwd: ctx.project, home: ctx.home, template: ctx.template });
     writeFileSync(path.join(ctx.project, ".claude", "rules", "git.md"), "# cambiato\n");
-    const out = run("rules-watch.mjs", { cwd: ctx.project, home: ctx.home, template: ctx.template });
+    const out = run("prompt-start.mjs", { cwd: ctx.project, home: ctx.home, template: ctx.template });
     assert.match(out, /git\.md/);
     assert.doesNotMatch(out, /git diff/);
   });
@@ -185,41 +193,72 @@ describe("confronto con il template", () => {
   test("template più recente: segnala versioni e file diversi, una volta per sessione", () => {
     const { home, template, project } = setup();
     write(path.join(template, ".claude", "rules", "core.md"), "> Versione 3.21 — rev\n# core nuovo\n");
-    const first = run("rules-watch.mjs", { cwd: project, home, template, session: "a" });
+    const first = run("prompt-start.mjs", { cwd: project, home, template, session: "a" });
     assert.match(first, /\[Regole del template più recenti\]/);
     assert.match(first, /v3\.21 nel template, v3\.20 nel progetto/);
     assert.match(first, /\.claude\/rules\/core\.md/);
     assert.doesNotMatch(first, /CLAUDE\.md\b.*File diversi/);
-    assert.equal(run("rules-watch.mjs", { cwd: project, home, template, session: "a" }), "");
-    assert.match(run("rules-watch.mjs", { cwd: project, home, template, session: "b" }), /Regole del template più recenti/);
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template, session: "a" }), "");
+    assert.match(run("prompt-start.mjs", { cwd: project, home, template, session: "b" }), /Regole del template più recenti/);
+  });
+
+  test("modulo diverso da core.md più recente (frontend 1.1 contro 1.0, core uguale): avviso che lo nomina", () => {
+    const { home, template, project } = setup();
+    write(path.join(template, ".claude", "rules", "frontend.md"), "> Versione 1.1 — rev\n# frontend nuovo\n");
+    write(path.join(project, ".claude", "rules", "frontend.md"), "> Versione 1.0 — rev\n# frontend\n");
+    const out = run("prompt-start.mjs", { cwd: project, home, template, session: "a" });
+    assert.match(out, /\[Regole del template più recenti\]/);
+    assert.match(out, /frontend\.md v1\.1 nel template, v1\.0 nel progetto/);
+    assert.doesNotMatch(out, /core\.md v/);
+  });
+
+  test("modulo del progetto senza versione in intestazione: conta come più vecchio", () => {
+    const { home, template, project } = setup();
+    write(path.join(template, ".claude", "rules", "frontend.md"), "> Versione 1.0 — rev\n# frontend\n");
+    write(path.join(project, ".claude", "rules", "frontend.md"), "# frontend senza intestazione\n");
+    const out = run("prompt-start.mjs", { cwd: project, home, template, session: "a" });
+    assert.match(out, /frontend\.md v1\.0 nel template, versione non rilevata nel progetto/);
+  });
+
+  test("modulo assente nel progetto (es. frontend.md in un progetto solo backend): nessun avviso", () => {
+    const { home, template, project } = setup();
+    write(path.join(template, ".claude", "rules", "frontend.md"), "> Versione 1.1 — rev\n# frontend\n");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template, session: "a" }), "");
+  });
+
+  test("moduli del template uguali o più vecchi del progetto: silenzio", () => {
+    const { home, template, project } = setup();
+    write(path.join(template, ".claude", "rules", "frontend.md"), "> Versione 1.0 — rev\n# frontend\n");
+    write(path.join(project, ".claude", "rules", "frontend.md"), "> Versione 1.1 — rev\n# frontend\n");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template, session: "a" }), "");
   });
 
   test("stessa versione o versione minore (3.9 contro 3.20): silenzio", () => {
     const { home, template, project } = setup();
     write(path.join(template, ".claude", "rules", "git.md"), "# git diverso\n");
-    assert.equal(run("rules-watch.mjs", { cwd: project, home, template, session: "a" }), "");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template, session: "a" }), "");
     write(path.join(template, ".claude", "rules", "core.md"), "> Versione 3.9 — rev\n");
-    assert.equal(run("rules-watch.mjs", { cwd: project, home, template, session: "b" }), "");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template, session: "b" }), "");
   });
 
   test("cartella del template mancante: avviso una volta per sessione", () => {
     const { base, home, project } = setup();
     const missing = path.join(base, "non-esiste");
-    const out = run("rules-watch.mjs", { cwd: project, home, template: missing, session: "a" });
+    const out = run("prompt-start.mjs", { cwd: project, home, template: missing, session: "a" });
     assert.match(out, /\[Template delle regole non trovato\]/);
     assert.ok(out.includes(missing));
     assert.match(out, /KIT_CONFIG_TEMPLATE_DIR/);
-    assert.equal(run("rules-watch.mjs", { cwd: project, home, template: missing, session: "a" }), "");
+    assert.equal(run("prompt-start.mjs", { cwd: project, home, template: missing, session: "a" }), "");
   });
 
   test("il progetto è il template: silenzio", () => {
     const { home, template } = setup();
-    assert.equal(run("rules-watch.mjs", { cwd: template, home, template: path.join(template, "..", "template"), session: "a" }), "");
+    assert.equal(run("prompt-start.mjs", { cwd: template, home, template: path.join(template, "..", "template"), session: "a" }), "");
   });
 
   test("senza variabile d'ambiente nessun percorso personale: avviso che chiede di impostarla", () => {
     const { home, project } = setup();
-    const out = run("rules-watch.mjs", { cwd: project, home, template: undefined, session: "a" });
+    const out = run("prompt-start.mjs", { cwd: project, home, template: undefined, session: "a" });
     assert.match(out, /Template delle regole non configurato/);
     assert.match(out, /KIT_CONFIG_TEMPLATE_DIR/);
     assert.doesNotMatch(out, /E:\\\\Disco_E|E:\\Disco_E/);
