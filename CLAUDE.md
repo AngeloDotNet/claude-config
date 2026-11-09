@@ -116,14 +116,14 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `g
 - **Lingua della documentazione (README.md, CHANGELOG.md):** [italiano | inglese | altro: ..] (chiesta, non presunta)
 - **Fine riga:** [`.gitattributes` con `* text=auto` | altro: .. | nessuno: motivo] (valutato caso per caso, non presunto)
 - **Hook pre-commit:** [nessuno | husky + lint-staged | `.githooks/`] — attivazione a cura dell'utente
-- **Push, PR, tag, release ed esecuzione delle pipeline:** a cura dell'utente (Claude fa solo commit locali; può scrivere i file di pipeline). Approvazioni per progetto: sezione «Eccezioni alle regole globali»
+- **Push, PR, tag, release ed esecuzione delle pipeline:** push, tag, PR e rilasci sono consentiti sempre (PR e rilasci con `gh` solo se installata, riga in «Eccezioni alle regole globali»); Claude li esegue su richiesta o con conferma. L'avvio di una pipeline richiede una domanda esplicita di conferma per ogni esecuzione.
 - **Attribuzione Claude nei commit:** [no | trailer Co-Authored-By]
 
 ## Eccezioni alle regole globali
 <!-- Ogni deroga va motivata. Se vuota, vale tutto il resto. -->
 - [nessuna]
-<!-- Integrazione GitHub: riga fissa letta dal hook guard-commands (git.md, «Integrazione GitHub: verifica e approvazione per progetto»). Si scrive sì solo con la risposta dell'utente, aggiungendo la data tra parentesi. -->
-- **Integrazione GitHub approvata:** PR sì, push sì, tag sì, rilasci sì (2026-11-05)
+<!-- GitHub CLI: riga fissa letta dal hook guard-commands (git.md, «Integrazione GitHub»). Si scrive con la risposta dell'utente alla domanda unica per progetto, aggiungendo la data tra parentesi. Push e tag non la richiedono. -->
+- **GitHub CLI (gh) installata:** sì (2026-11-08)
 
 ## Note per Claude
 - [Particolarità del dominio, termini di business, vincoli del cliente, aree del codice delicate]

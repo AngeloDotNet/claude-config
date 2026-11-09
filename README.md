@@ -29,12 +29,14 @@ La documentazione completa è disponibile [qui](http://wiki.aepserver.it/claude-
 
 Le regole non si "installano": si **copiano nel progetto** e Claude Code le legge da solo. Apri Claude Code nella cartella del progetto e scrivi, per un progetto nuovo, *"Avvia un nuovo progetto"*; negli altri casi (progetto esistente, solo regole Git, aggiornamento) vedi [Come si usa, nei dettagli](http://wiki.aepserver.it/claude-config/uso).
 
-Il [plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) rende tecnici i divieti (niente `git init`, push, PR, tag o rilasci) e la regola della domanda unica; si installa una volta per macchina:
+Il [plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) rende tecnici i divieti (per esempio `git init`, `push --force`, `--no-verify`) e la regola della domanda unica; si installa una volta per macchina:
 
 ```
 claude plugin marketplace add AngeloDotNet/claude-config
 claude plugin install kit@claude-config
 ```
+
+I controlli del plugin sono dodici e stanno in sette script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica e regole cambiate), `session-plan` (piano e regole a inizio sessione) e `session-close` (promemoria di fine sessione).
 
 ## Comandi del plugin
 
@@ -61,7 +63,7 @@ Dettagli nella pagina [Plugin](http://wiki.aepserver.it/claude-config/plugin).
 
 ## Limiti noti
 
-- I controlli sul codice C# (`check-practice` e `guard-patterns` del plugin `kit`) lavorano riga per riga. Un membro pubblico scritto su più righe, o con attributi complessi, può sfuggire: la revisione del codice resta necessaria.
+- I controlli sul codice C# (`check-practice` e `guard-patterns` del plugin `kit`, eseguiti dagli script `check-write` e `guard-write`) lavorano riga per riga. Un membro pubblico scritto su più righe, o con attributi complessi, può sfuggire: la revisione del codice resta necessaria.
 
 ## Licenza
 
