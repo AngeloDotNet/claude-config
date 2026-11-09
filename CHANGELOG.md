@@ -2,6 +2,23 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-10
+
+### Rilascio del plugin kit 1.11.0
+
+**Perché:** le novità del plugin dopo la 1.10.0 (skill per commit e PR, promemoria del sito, riordino delle regole di sicurezza) erano ferme in `develop` con la versione 1.10.0.
+**Cosa / Dove:** `plugins/kit/.claude-plugin/plugin.json`: versione 1.11.0. Sezione `### Rilascio 1.11.0` qui sotto. Wiki, `docs/claude-config/plugin.md`: nota di aggiornamento per la 1.11.0 (rinomina di `/kit:code-review` in `/kit:review-regole`, diciannove comandi, tredici controlli).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito; JSON validi.
+**Note:** tag, PR e merge (merge commit, perché coinvolgono `main`) restano da fare su richiesta.
+
+### Rilascio 1.11.0
+
+**Aggiunto:** le skill `/kit:commit-passo` (commit uno alla volta, con lotto `/kit:commit-passo N` entro il tetto del `CLAUDE.md`), `/kit:pr-develop` e `/kit:pr-main` (PR con `gh`, merge a cura dell'utente); la tabella dei comandi in `docs/skill.md`; la domanda sulla wiki del progetto e il promemoria di aggiornamento del sito (controlli `site-question` e `site-reminder`, tredici in tutto); il modello `_template/CHECKLIST.md`.
+
+**Modificato:** `/kit:code-review` si chiama ora `/kit:review-regole` (chi lo usa deve adeguarsi); `security.md` è diviso in `security.md`, `security-backend.md` e `security-frontend.md`; il hook `session-plan` è eliminato (la rilettura di piano e regole è `core.md` §6.16, o `/kit:buongiorno`); `git.md` 1.2 e `core.md` 3.36; diciannove comandi.
+
+**Corretto:** il commento di `session-close` e le pagine della wiki dicevano «fine sessione» per i hook `Stop`, che scattano a ogni risposta.
+
 ## 2026-11-09
 
 ### Tabella riepilogativa dei comandi del plugin
