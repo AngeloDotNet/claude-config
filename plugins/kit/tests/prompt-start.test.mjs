@@ -46,21 +46,3 @@ test("limit-one-question: input malformato o senza domande non blocca (fail-open
   assert.equal(run("limit-one-question.mjs", "non json").code, 0);
   assert.equal(run("limit-one-question.mjs", { tool_input: {} }).code, 0);
 });
-
-test("session-plan: PIANO.md con passi aperti entra nel contesto di inizio sessione", () => {
-  const cwd = mkdtempSync(path.join(os.tmpdir(), "kit-plan-"));
-  writeFileSync(path.join(cwd, "PIANO.md"), "# Piano\n\n- [x] 1. Fatto\n  Verifica: build ok, test ok\n- [ ] 2. Da fare\n", "utf8");
-  const r = run("session-plan.mjs", { cwd, session_id: "s1" });
-  assert.equal(r.code, 0);
-  assert.match(r.out, /PIANO\.md/);
-  assert.match(r.out, /\[ \] 2\. Da fare/);
-  rmSync(cwd, { recursive: true, force: true });
-});
-
-test("session-plan: senza PIANO.md e senza regole non aggiunge nulla al contesto", () => {
-  const cwd = mkdtempSync(path.join(os.tmpdir(), "kit-noplan-"));
-  const r = run("session-plan.mjs", { cwd, session_id: "s2" });
-  assert.equal(r.code, 0);
-  assert.equal(r.out.trim(), "");
-  rmSync(cwd, { recursive: true, force: true });
-});

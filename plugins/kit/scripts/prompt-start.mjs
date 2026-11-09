@@ -4,7 +4,7 @@
 // - ask-one-question: ricorda la regola inviolabile di core.md ("nel dubbio, una domanda alla volta").
 //   Il testo qui sotto va tenuto allineato a core.md.
 // - rules-watch: confronta le impronte di CLAUDE.md e .claude/rules/*.md con quelle salvate in
-//   ~/.claude/session-rules-state.json (le stesse usate da session-plan.mjs). Se qualcosa è cambiato
+//   ~/.claude/session-rules-state.json. Se qualcosa è cambiato
 //   durante la sessione (per esempio dopo un `git pull`), ordina di rileggere i file cambiati e allega
 //   il `git diff` dei soli file cambiati, calcolato dall'hash di HEAD salvato. Una volta per sessione
 //   confronta anche le regole del progetto con quelle del template (KIT_CONFIG_TEMPLATE_DIR, vedi
