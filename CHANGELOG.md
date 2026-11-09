@@ -4,6 +4,174 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-09
 
+### Tabella riepilogativa dei comandi del plugin
+
+**Perché:** con diciannove skill non c'era un colpo d'occhio su cosa fa ciascuna e su quale argomento accetta.
+**Cosa / Dove:** nuovo `docs/skill.md` (comando, cosa fa, argomento facoltativo; nessun comando ha opzioni con nome). Nella wiki, `docs/claude-config/plugin.md`: colonna «Argomento» aggiunta alla tabella dei comandi già presente, senza una seconda tabella duplicata. `README.md` rimanda al file.
+**Verifica:** esito in `PIANO.md`; le 19 righe corrispondono alle cartelle in `plugins/kit/skills/`.
+**Note:** la tabella si aggiorna a mano quando cambia una skill (promemoria in `CHECKLIST.md`); nessun controllo automatico.
+
+### Commit di fila con argomento numerico in commit-passo
+
+**Perché:** i commit uno alla volta sono lenti quando il piano ha molti commit banali e l'utente vuole già un lotto; `git.md` ammetteva solo la dichiarazione a parole «fai tutti i commit di fila».
+**Cosa / Dove:** `/kit:commit-passo N` esegue fino a N commit senza ok a ciascuno, entro un tetto per progetto (`plugins/kit/skills/commit-passo/SKILL.md`: `argument-hint`, nuovo passo 5b, eccezione nel passo 8, pausa nel passo 9). Il tetto sta nel `CLAUDE.md`, sezione «Git», voce `Commit di fila, massimo per lotto`; Claude lo chiede una sola volta, solo quando si passa un numero e la voce manca. `git.md` alla 1.2 («Commit multipli», punto 4, e sezione sulle skill). `README.md` e wiki `plugin.md` allineati.
+**Verifica:** esito dei test in `PIANO.md`. La skill è testo senza test automatici.
+**Note:** il lotto si interrompe con una domanda se un controllo fallisce, compare un possibile segreto, il tipo è ambiguo, un file ha modifiche per commit diversi o un hook fallisce. Il tetto è una regola scritta, non un blocco tecnico. Nessun push, `--amend` o commit su `main`/`develop`. La versione del plugin non è cambiata.
+
+### Skill per commit uno alla volta e PR verso develop e main
+
+**Perché:** `git.md` descrive il commit passo-passo e le PR di git flow, ma ogni volta andavano ripetute a mano; inoltre il hook `guard-commands` blocca i commit su `main` e `develop` senza guidare verso il branch giusto.
+**Cosa / Dove:** `plugins/kit/skills/commit-passo` (branch di lavoro mai su `main`/`develop`, piano in `piano-commit.md`, tipo di commit chiesto solo se ambiguo, ok prima di ogni commit), `pr-develop` (PR da `feature/*` o `bugfix/*` verso `develop`, titolo Conventional Commits per lo squash) e `pr-main` (PR da `develop`, `release/*` o `hotfix/*` verso il branch principale; controllo di `main` avanti rispetto a `develop` con branch `bugfix/sync-main-into-develop`; merge commit). `git.md` alla 1.1: titolo della sezione PR («apertura su conferma, merge a cura dell'utente»), il push del branch di lavoro è consentito (prima il testo diceva che Claude non crea branch remoti e che il push era dell'utente, in contrasto con «Integrazione GitHub»), nuova sezione di rimando alle skill. `README.md`, `marketplace.json` e `plugin.json`: diciannove comandi.
+**Prerequisito:** `pr-develop` e `pr-main` iniziano con un controllo (passo 0): `gh --version` e `gh auth status`; se la GitHub CLI manca o non è autenticata, terminano subito dicendo cosa fare (`! gh auth login`). Verificano anche la riga del `CLAUDE.md` richiesta dal hook. `commit-passo` non richiede `gh`: i commit locali non ne hanno bisogno (`git.md`).
+**Verifica:** esito dei test in `PIANO.md`. Le skill non hanno test automatici: sono testo che guida Claude; il comportamento di blocco è quello già coperto dai test di `guard-commands`.
+**Note:** `bugfix/` parte da `develop`; da `main` parte solo `hotfix/`. Le skill chiedono sempre l'ok prima di commit, push e creazione della PR. La versione del plugin non è cambiata (rilascio rimandato).
+
+### Markdown del repository e della wiki allineati ai controlli del sito
+
+**Perché:** dopo il promemoria del sito, README e pagine della wiki (`docs/claude-config/`) contavano ancora undici controlli, non descrivevano la domanda sulla wiki né il promemoria a fine risposta, e dicevano «a fine sessione» per gli hook `Stop`, che in realtà scattano a ogni risposta.
+**Cosa / Dove:** `README.md`: descrizione di `prompt-start` e `session-close` con la domanda sulla wiki e il promemoria, tredici controlli. Wiki, `docs/claude-config/`: `plugin.md` (tredici controlli; due nuove righe nella tabella dei promemoria `site-question` e `site-reminder`; elenco per script; schema di `kit-progetti.json` con `chiesto`; attivazione; test; «a fine di ogni risposta»; «sette script» corretto in «sei»), `contenuto.md` e `intro.md` (conteggio tredici), `funzionamento.md` (la domanda sulla wiki tra le cose che Claude chiede; l'aggiornamento della wiki tra quelle che Claude fa da solo). `PIANO.md`: test a 120 e sezione «Ripartenza» riallineata; `CHECKLIST.md`: voce sullo schema del wiki chiusa.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi (nessun codice cambiato in questo passo). `git diff --check` pulito sui file del repository e della wiki; `grep` su «undici» e «sette script» nelle pagine `docs/claude-config/`: nessun riferimento residuo al conteggio errato.
+**Note:** il `CHANGELOG.md` della wiki e le pagine `docs/sagreeventi/` hanno modifiche di un'altra sessione: non toccate. Il commit `ae66ee1` citato nella wiki per la rinomina è corretto; nel log compare anche `ed87aed` con lo stesso messaggio, da non confondere.
+
+### Promemoria e domanda sul sito di documentazione (plugin kit)
+
+**Perché:** la regola `core.md` §5b non aveva un controllo deterministico: la skill `aggiorna-docs` è a lancio manuale e non chiedeva nulla quando la voce `sito` diceva `esiste: false`.
+**Cosa / Dove:** `plugins/kit/scripts/lib/sito.mjs` (nuovo): lettura di `~/.claude/kit-progetti.json`, `siteQuestion` e `siteReminder`. `prompt-start.mjs` (UserPromptSubmit): finché la voce manca o dice `esiste: false` senza `chiesto`, chiede a Claude di fare una sola domanda (wiki sì/no, poi il percorso assoluto) e di salvare la risposta; un «no» salva `{ "esiste": false, "chiesto": true }` e la domanda non torna. `session-close.mjs` (Stop): con `esiste: true`, se `CHANGELOG.md` o `README.md` del progetto sono modificati e la cartella del sito non ha modifiche non committate, ricorda di aggiornare il sito. Commento di `session-close.mjs` corretto: il promemoria scatta a ogni Stop, non una volta per sessione. `aggiorna-docs` (passo 2): la risposta «no» salva `chiesto: true`. `core.md` alla 3.36, §5b.
+**Verifica:** `plugins/kit/tests/sito.test.mjs` (16 test: domanda, promemoria, hook, configurazione malformata). `rules-watch.test.mjs`: il helper registra la risposta sulla wiki, così i test delle regole non vedono la domanda. `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito; `hooks.json` valido.
+**Note:** la voce della wiki nello schema di `plugin.md` (repository `wiki`) non documenta ancora `chiesto` (vedi `CHECKLIST.md`). Il promemoria non distingue un sito già aggiornato e committato da uno non toccato. Il percorso è assoluto, come in `aggiorna-docs`.
+
+### Sito di documentazione aggiornato da core.md, non solo dalla skill
+
+**Perché:** `aggiorna-docs` è una skill a lancio manuale (`disable-model-invocation: true`): se non la si lancia, il sito di documentazione resta indietro. La regola sul sito non stava in nessuna regola sempre attiva.
+**Cosa / Dove:** `.claude/rules/core.md` §5b: nuova voce «Sito di documentazione esterno (wiki)» dopo «Lingua dei documenti» (aggiornamento a ogni step del piano, percorso chiesto una sola volta e salvato in `~/.claude/kit-progetti.json`, chiave `sito`, domanda se la voce manca, nessun commit né pubblicazione senza conferma). `core.md` alla 3.35. La skill `aggiorna-docs` resta come procedura dettagliata.
+**Verifica:** test `node --test plugins/kit/tests/*.test.mjs` e `git diff --check`: esito riportato nel passo di `PIANO.md`.
+**Note:** la regola è di comportamento: Claude la segue, ma nessun hook la impone. Un promemoria in `session-close.mjs` resta da decidere (vedi `CHECKLIST.md`).
+
+### Caricamento condizionato delle regole: verifica da rifare
+
+**Perché:** il template dichiara che i moduli con `paths:` (frontend, backend, docker, security-backend, security-frontend) si caricano solo quando si legge un file corrispondente. Il tentativo di verifica con `/context` in `sagreeventi` non è stato valido: la documentazione di Claude Code dice che le regole con `paths:` si caricano su richiesta e che `/context all` elenca solo i file caricati all'avvio, quindi i moduli condizionati non compaiono lì anche quando sono caricati.
+**Cosa / Dove:** nessuna modifica alle regole del template. In `sagreeventi` il frontmatter di prova è stato riportato a `"**/*.{cs,csproj,props}"`, come nel template.
+**Verifica:** `/context all` con `security.md` a 9,4k token: il caricamento all'avvio funziona. Nel terminale di `sagreeventi`, dopo la lettura di `Program.cs`, compaiono le righe `Loaded` per `backend-app.md` e `backend-architecture.md`; non compaiono per `backend.md` e `security-backend.md`. La prova non è pulita: la sessione ha riletto alcune regole in modo esplicito, quindi le righe `Loaded` possono derivare da quelle letture.
+**Note:** la voce precedente, che parlava di caricamento condizionato non attivato, è da considerare superata. Da rifare con una lettura di `Program.cs` senza istruzioni sulle regole, per distinguere il caricamento su percorso dalle letture esplicite.
+
+### Schema di `~/.claude/kit-progetti.json` documentato nel sito
+
+**Perché:** il file è letto e scritto da `aggiorna-docs` e da `buonasera`, ma il suo formato non era scritto in nessun punto.
+**Cosa / Dove:** `wiki/docs/claude-config/plugin.md`: nuova sezione «Il file `~/.claude/kit-progetti.json`» prima di «Attivazione», con le chiavi `sito` e `priorita`, chi le scrive e chi le legge, un esempio e le regole di modifica a mano. Il formato è stato ricavato dalle skill (`aggiorna-docs`, `buonasera`, `buongiorno`).
+**Verifica:** l'esempio JSON è stato controllato con `JSON.parse`; `git diff --check` pulito sul sito.
+**Note:** la documentazione descrive il comportamento attuale delle skill, invariato in questa modifica.
+
+### `aggiorna-docs` verifica il formato di CHANGELOG e README
+
+**Perché:** la skill scriveva la voce di CHANGELOG e le sezioni di README senza controllare che rispettassero il formato di `core.md` §5b, e non c'era alcun controllo dopo la scrittura.
+**Cosa / Dove:** `plugins/kit/skills/aggiorna-docs/SKILL.md`: nuovo passo 6 (rilettura della voce e delle sezioni toccate, confronto con il formato, correzione o domanda se la correzione non è ovvia); il passo di chiusura diventa il 7.
+**Verifica:** modifica di testo; `git diff --check` sul file.
+**Note:** la verifica è un'istruzione a Claude, non uno script: un controllo deterministico richiederebbe codice e test a parte, non ancora deciso.
+
+### Sito di documentazione allineato alle modifiche della giornata
+
+**Perché:** il sito (`wiki/docs/claude-config`) descriveva ancora l'hook `session-plan`, la skill `code-review`, sette script con dodici controlli e `security.md` come file unico.
+**Cosa / Dove:** `wiki/docs/claude-config/plugin.md`: undici controlli in sei script, tolta la riga di `session-plan` e il suo riferimento in `rules-watch`, `/kit:code-review` rinominato in `/kit:review-regole`, migrazione aggiornata. `wiki/docs/claude-config/contenuto.md`: tabella dei moduli con `security-backend.md` e `security-frontend.md`, conteggi aggiornati. `README.md`: la descrizione della pagina Plugin nella tabella della documentazione non cita più il piano a inizio sessione.
+**Verifica:** riferimenti ai nomi dei file e dei comandi controllati con `grep` sul sito: nessun `session-plan` né `code-review` residuo nelle pagine del claude-config.
+**Note:** il sito descrive lo stato del repository, non ancora rilasciato: la versione del plugin resta 1.10.0 finché non si decide il rilascio. Il percorso del sito è stato salvato in `~/.claude/kit-progetti.json`.
+
+### Test duplicati in `core.md` e `frontend.md` ridotti a un solo proprietario
+
+**Perché:** `core.md` §4 ripeteva i dettagli dell'integrazione backend (già in `backend-app.md` §4.5) e del frontend (già in `frontend.md` §10). `frontend.md` §10 ripeteva l'accessibilità automatica di `core.md` §4.
+**Cosa / Dove:** `.claude/rules/core.md` §4: voce «Backend» con il rimando a `backend-app.md` §4.5, mantenute le due regole che restano nel file generale (chiedere prima di usare SQLite, nessun EF Core InMemory); voce «Frontend» con il rimando a `frontend.md` §10. `.claude/rules/frontend.md` §10: voce «Accessibilità automatica» ridotta alla parte propria (flussi E2E con tema light e dark). `core.md` alla 3.34, `frontend.md` alla 1.3.
+**Verifica:** inventario con `grep` su dipendenze e test: le dipendenze (`core.md` §3) hanno già un proprietario; `git diff --check` pulito; riferimenti `§4.5` e `§10` verificati; `node --test plugins/kit/tests/*.test.mjs`: 104 su 104 verdi.
+**Note:** la premessa del problema 7 è stata corretta in una voce precedente: la copia completa della regola inviolabile era solo in `CLAUDE.md` e `core.md`.
+
+### README: riepilogo di inizio sessione
+
+**Perché:** la frase diceva che `/kit:buongiorno` fa il riepilogo a inizio sessione, come faceva l'hook. Il comando invece si lancia a mano, e il piano a inizio sessione dipende dalla regola di `core.md` §6.16.
+**Cosa / Dove:** `README.md`, sezione dei controlli del plugin: frase riscritta.
+**Verifica:** modifica di testo.
+
+### Hook `session-plan` eliminato: il riepilogo a inizio sessione è in `buongiorno`
+
+**Perché:** il riepilogo a inizio sessione era fatto dall'hook, e la skill `buongiorno` lo fa già su richiesta. La parte sulle regole cambiate era duplicata di `prompt-start`, che gira a ogni messaggio e confronta le stesse impronte.
+**Cosa / Dove:** eliminati `plugins/kit/scripts/session-plan.mjs` e la voce `SessionStart` in `plugins/kit/hooks/hooks.json`; tolti i quattro test di `session-plan` (due in `prompt-start.test.mjs`, due in `rules-watch.test.mjs`); commenti aggiornati in `lib/rules.mjs`, `prompt-start.mjs` e `rules-watch.test.mjs`; `README.md`, `plugin.json` e `marketplace.json` allineati (sei script).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 104 su 104 verdi; JSON dei tre file valido; nessun riferimento residuo a `session-plan` (escluso lo storico).
+**Note:** senza l'hook, `PIANO.md` non entra più in automatico a inizio sessione: lo legge `buongiorno` o Claude per la regola di `core.md` §6.16. Il piano è stato trattato come da eliminare su richiesta dell'utente, dopo una valutazione che ne sconsigliava l'eliminazione per la sola parte sul piano.
+
+### `buongiorno` rilegge `CLAUDE.md` e le regole
+
+**Perché:** la regola di inizio sessione (`core.md` §6.16) chiede di rileggere `CLAUDE.md` e `.claude/rules/`; la skill non lo diceva.
+**Cosa / Dove:** `plugins/kit/skills/buongiorno/SKILL.md` passo 1.
+**Verifica:** modifica di testo; rilettura del passo.
+
+### `security.md` diviso in tre file
+
+**Perché:** `security.md` era di 212 righe e si caricava in ogni sessione, anche per progetti senza backend o senza frontend. Le sezioni su API, autenticazione, abuso e upload riguardano solo il backend; la sezione Frontend riguarda solo Angular.
+**Cosa / Dove:** `.claude/rules/security.md` (versione 2.0): principi sempre attivi (mappa ASVS, crittografia, dati e segreti, mobile, supply chain, scansione, test, regola operativa, progettazione fail closed). Nuovo `.claude/rules/security-backend.md` (paths `**/*.{cs,csproj,props}`): autenticazione, protezione dell'API, abuso di risorse, vulnerabilità applicative, upload. Nuovo `.claude/rules/security-frontend.md` (paths `**/*.{ts,html,css,scss}`): sezione Frontend. Riferimenti aggiornati in `core.md`, `backend.md`, `backend-app.md`, `docker.md`, `frontend.md`, `CLAUDE.md`, nelle skill `accessi-api` e `copia-regole`, nel modello `_template/avvio-progetto.md` (nuove righe nella tabella dei moduli) e nei messaggi di `check-write.mjs` e `guard-write.mjs`.
+**Verifica:** riferimenti ai file di regole controllati con `grep`: tutti i file citati esistono; test del plugin 104 su 104.
+**Note:** per verificare il caricamento reale, `/context` nel terminale (non eseguibile da qui).
+
+### Prescrizioni di `backend.md` da MUST a PREFER
+
+**Perché:** le cartelle `Interfaces/`, `Validators/`, `Options/`, `Requests/`, `Responses/` e il file `GlobalUsings.cs` erano obbligatori in ogni progetto anche con un solo tipo, in contrasto con la semplicità di `core.md` §6.17.
+**Cosa / Dove:** `.claude/rules/backend.md`: le cinque cartelle sono PREFER, da creare quando il progetto ha almeno un tipo di quella categoria; `GlobalUsings.cs` è PREFER per i `using` che ricorrono in più file. Il MUST sugli `using` inutilizzati resta.
+**Verifica:** modifica di testo; rilettura delle voci.
+**Note:** `backend.md` passa alla versione 1.1.
+
+### Modello di `CHECKLIST.md` per i progetti
+
+**Perché:** `core.md` §6.22 chiede la checklist dei problemi trovati lavorando, ma non esisteva un modello.
+**Cosa / Dove:** nuovo `_template/CHECKLIST.md` con intestazione, formato a voci `[ ]` e una voce di esempio nelle sezioni «Aperte» e «Chiuse».
+**Verifica:** file di sola documentazione; nessun test.
+
+### Regola inviolabile in `CLAUDE.md` ridotta a riepilogo con rimando
+
+**Perché:** la copia completa in `CLAUDE.md` duplicava il testo di `core.md`. Il riepilogo resta, con il rimando per i dettagli.
+**Cosa / Dove:** `CLAUDE.md`, sezione «Regola inviolabile»; commento di intestazione aggiornato con i nuovi moduli.
+**Verifica:** modifica di testo.
+**Note:** nella premessa del problema 7 avevo scritto che la regola era copiata in backend, frontend e security: non era vero. Il contenuto duplicato era solo in `CLAUDE.md` e `core.md`.
+
+### Elenco dei moduli in `copia-regole` e in `avvio-progetto`
+
+**Perché:** le liste dei moduli non contenevano i nuovi file di sicurezza.
+**Cosa / Dove:** `plugins/kit/skills/copia-regole/SKILL.md` passo 5; `_template/avvio-progetto.md`: righe di `security-backend.md` e `security-frontend.md` nella tabella dei moduli e nella modalità solo Git.
+**Verifica:** modifica di testo; rilettura della tabella.
+
+### Versione dei moduli cambiati
+
+**Perché:** i moduli modificati dalle voci precedenti vanno versionati, perché `rules-watch` segnala le differenze di versione nei progetti.
+**Cosa / Dove:** `core.md` 3.33, `frontend.md` 1.2, `backend.md` 1.1, `backend-app.md` 1.1, `docker.md` 1.1, `security.md` 2.0; i nuovi `security-backend.md` e `security-frontend.md` partono da 1.0. `backend-architecture.md` invariato (1.0).
+**Verifica:** `grep` sulle intestazioni `> Versione` dei moduli.
+
+### `consegna` mostra le voci «non pertinente» invece di ignorarle
+
+**Perché:** il passo 3 diceva di ignorare le voci non applicabili, il passo 4 chiedeva un gruppo «non pertinente»: due istruzioni in contrasto.
+**Cosa / Dove:** `plugins/kit/skills/consegna/SKILL.md` passo 3: le voci «non pertinente» non si commentano una per una, si elencano solo nel gruppo del passo 4.
+**Verifica:** modifica di testo; rilettura del passo 3 e del passo 4.
+
+### Priorità in `PIANO.md` con etichette `[P1]`, `[P2]`, `[P3]`
+
+**Perché:** `buongiorno` ordina per priorità, ma il formato con cui indicarla non era definito, e `buonasera` non diceva come scriverla.
+**Cosa / Dove:** `plugins/kit/skills/buongiorno/SKILL.md` passo 3 (ordine per etichetta, a parità l'ordine dei passi; un passo aperto senza etichetta viene segnalato); `plugins/kit/skills/buonasera/SKILL.md` passo 4 (etichetta all'inizio di ogni passo aperto, dopo la casella).
+**Verifica:** modifica di testo; rilettura dei due passi.
+
+### Skill `code-review` rinominata `review-regole`
+
+**Perché:** il nome coincideva con la skill integrata di Claude Code. Il nome scelto usa «review», che ricorda la code review, e dice che il controllo è contro le regole del progetto.
+**Cosa / Dove:** cartella `plugins/kit/skills/code-review/` rinominata in `plugins/kit/skills/review-regole/`; aggiornati `plugins/kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json` e `README.md`. Il comando diventa `/kit:review-regole`.
+**Verifica:** ricerca di riferimenti al vecchio nome (nessuno residuo, esclusa la storia di questo file); `node --test plugins/kit/tests/*.test.mjs`: 108 su 108.
+**Note:** è un cambio di nome del comando, quindi chi usa `/kit:code-review` deve adeguarsi. La versione del plugin (1.10.0) non è cambiata: sale al rilascio.
+
+### Minimo PBKDF2 non più riportato come cifra in `security.md`
+
+**Perché:** il valore 220.000 attribuito a OWASP non era verificabile sulla fonte. Le ricerche danno 210.000 per PBKDF2-HMAC-SHA512, con fonti discordi sulla revisione. Una cifra scritta nelle regole invecchia.
+**Cosa / Dove:** `.claude/rules/security.md`, voce sulle password: il minimo è quello della Password Storage Cheat Sheet OWASP al momento dell'uso, da leggere sulla fonte.
+**Verifica:** modifica di testo; ricerca della vecchia cifra nel repository (nessuna occorrenza).
+
+### Versione di ogni modulo di regole
+
+**Perché:** `core.md` aveva la versione 3.32, `frontend.md` 1.1, gli altri moduli nessuna. `rules-watch` confronta le versioni e i moduli senza versione non le confrontano.
+**Cosa / Dove:** riga «> Versione 1.0 — ultima revisione: 2026-11-09.» aggiunta in `security.md`, `git.md`, `docker.md`, `backend.md`, `backend-architecture.md`, `backend-app.md`. `core.md` (3.32) e `frontend.md` (1.1) invariati.
+**Verifica:** `grep` sulle intestazioni `> Versione` di tutti i moduli di `.claude/rules/`; `git diff --check` pulito.
+**Note:** nei progetti che hanno copie di questi moduli senza versione, `rules-watch` ora segnala l'aggiornamento da fare (un modulo senza versione conta come più vecchio).
+
 ### `rules-watch` confronta le versioni di tutti i moduli con versione
 
 **Perché:** il confronto con il template leggeva solo la versione di `core.md`: un modulo più recente, come `frontend.md` 1.1, non faceva scattare l'avviso nei progetti. Il controllo non deve dipendere da quale file ha la versione.

@@ -1,8 +1,11 @@
 #!/usr/bin/env node
-// Hook Stop: unisce due promemoria di fine sessione. Non bloccano la chiusura: mostrano solo un
-// systemMessage all'utente, uno solo per sessione (il protocollo prevede un JSON per hook).
+// Hook Stop: unisce tre promemoria. Non bloccano la chiusura: mostrano solo un systemMessage
+// all'utente. Stop scatta a ogni risposta di Claude (non solo a fine sessione), quindi i promemoria
+// tornano finché la situazione resta: non c'è uno stato per sessione.
 // - plan-reminder (core.md §6.15-16): se PIANO.md (root del progetto) ha passi con casella `[ ]` o
 //   `[~]`, lo segnala prima di chiudere.
+// - site-reminder (core.md §5b, lib/sito.mjs): se CHANGELOG.md o README.md sono modificati e il sito
+//   di documentazione della voce `sito` non ha modifiche, ricorda di aggiornarlo.
 // - check-close (core.md §5b, §0b, frontend.md §10): sulle modifiche non ancora committate ricorda
 //   codice modificato senza CHANGELOG.md, modello EF cambiato senza migrazione, chiavi it.json /
 //   en.json diverse. Usa `git status`; attivo solo nei progetti con il kit.
@@ -14,6 +17,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { projectUsesKit } from "./lib/text.mjs";
+import { readConfig, siteReminder } from "./lib/sito.mjs";
 
 // --- plan-reminder ---
 
@@ -115,6 +119,8 @@ process.stdin.on("end", () => {
     if (plan) messages.push(plan);
     const close = attempt(() => closeNotes(cwd), []);
     if (close.length) messages.push(`Promemoria prima di chiudere: ${close.join("; ")}.`);
+    const site = attempt(() => siteReminder(cwd, readConfig()), null);
+    if (site) messages.push(site);
     if (messages.length) process.stdout.write(JSON.stringify({ systemMessage: messages.join("\n") }) + "\n");
   } catch {
     process.exit(0);
