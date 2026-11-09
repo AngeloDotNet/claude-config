@@ -1,6 +1,6 @@
 # Regole Core (sempre caricate)
 
-> Versione 3.31 — ultima revisione: 2026-11-06. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
+> Versione 3.32 — ultima revisione: 2026-11-08. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
 > Moduli correlati: `frontend.md` (Angular/UI), `backend.md`, `backend-architecture.md` e `backend-app.md` (.NET/dati: stack e regole comuni; architettura e accesso ai dati; logica applicativa, errori e test; si caricano insieme; opzionali `backend-email.md` per l'invio email e `backend-infra.md` per messaggistica, cache ed eventi, aggiunti quando servono), `feature-workflow.md` (opzionale, solo fullstack e su conferma: flusso per entità, backend → frontend), `security.md` (sicurezza), `docker.md` (deploy), `git.md` (commit). Un progetto importa solo quelli che gli servono.
 
 ## Regola inviolabile: nel dubbio, una domanda alla volta
@@ -102,7 +102,7 @@ Queste regole valgono per entrambi i lati e non vanno reinterpretate.
   - **Regole:** immagini con tag fissi, volumi nominati per Prometheus e Grafana, porte non esposte all'esterno tranne la UI di Grafana dietro il reverse proxy dell'utente, password di Grafana tramite variabile d'ambiente valorizzata da `.env`. Nessun dato personale in tracce, metriche e log.
   - Se il progetto non ne ha bisogno (app piccola, un solo container), lo dichiara in `CLAUDE.md`; i log seguono la scelta concordata per il logging (vedi il primo punto di questa sezione).
 - **Docker:** vedi `docker.md`. Server, host e orchestrazione sono gestiti dall'utente e fuori dallo scopo di Claude.
-- **CI/CD:** build, test, lint, scansione vulnerabilità e formattazione a ogni PR. Supply chain: SAST (CodeQL), secret scanning (gitleaks), scansione delle immagini Docker (Trivy) e SBOM generato a ogni release. Claude può scrivere e committare i file di pipeline (workflow YAML, configurazione Dependabot/Renovate); l'esecuzione delle pipeline, il push (salvo approvazione per progetto, `git.md`) e la gestione dei segreti della CI restano all'utente.
+- **CI/CD:** build, test, lint, scansione vulnerabilità e formattazione a ogni PR. Supply chain: SAST (CodeQL), secret scanning (gitleaks), scansione delle immagini Docker (Trivy) e SBOM generato a ogni release. Claude può scrivere e committare i file di pipeline (workflow YAML, configurazione Dependabot/Renovate); l'avvio di una pipeline richiede una domanda esplicita di conferma per ogni esecuzione, e la gestione dei segreti della CI resta all'utente; il push è consentito (`git.md`).
 - **Git:** vedi `git.md`.
 
 ---
@@ -122,7 +122,7 @@ Il deploy avviene sempre con `Dockerfile` e `docker-compose`; le regole complete
 ---
 
 ## 5c. Git e Commit
-Claude fa solo commit locali; `push`, PR, tag e rilasci sono a carico dell'utente, salvo approvazione per progetto registrata nel `CLAUDE.md` (regola 11 del §6); l'esecuzione delle pipeline resta sempre all'utente. Le regole complete (ambito, branch, messaggi Conventional Commits, granularità, repository e hook, PR, rilascio, esempi) sono nel modulo **`git.md`**.
+Claude fa commit locali con conferma; `push`, tag, PR e rilasci sono consentiti sempre, eseguiti su richiesta o con conferma, e PR e rilasci passano da `gh` solo se la GitHub CLI è installata (regola 11 del §6); l'avvio di una pipeline richiede una domanda esplicita di conferma per ogni esecuzione. Le regole complete (ambito, branch, messaggi Conventional Commits, granularità, repository e hook, PR, rilascio, esempi) sono nel modulo **`git.md`**.
 
 ---
 
@@ -137,7 +137,7 @@ Claude fa solo commit locali; `push`, PR, tag e rilasci sono a carico dell'utent
 8. **Dipendenze:** non aggiungere pacchetti senza dichiarare nome, versione e motivo. Preferisci quelli già presenti.
 9. **Lingua:** codice, identificatori e commenti in inglese; spiegazioni e risposte in italiano; messaggi di commit in inglese.
 10. **Regole di progetto:** le specificità (nome soluzione, database, comandi di build) stanno nel `CLAUDE.md` del singolo progetto. Questi file restano generali.
-11. **Azioni git e distruttive:** Claude fa solo commit locali (vedi `git.md`). `push`, PR, tag e rilasci sono a carico dell'utente, salvo approvazione per progetto registrata nel `CLAUDE.md` (sezione «Integrazione GitHub: verifica e approvazione per progetto» di `git.md`): senza, Claude non li esegue mai. L'esecuzione di pipeline resta sempre all'utente. Mai `reset --hard`, `push --force`, cancellazione di branch o di dati senza conferma.
+11. **Azioni git e distruttive:** Claude fa commit locali con conferma (vedi `git.md`). `push`, tag, PR e rilasci sono consentiti sempre, ma Claude li esegue solo su richiesta o con conferma dell'utente; PR e rilasci passano da `gh` solo se la GitHub CLI è installata sul PC, come registrato nel `CLAUDE.md` (sezione «Integrazione GitHub» di `git.md`). L'avvio di una pipeline richiede una domanda esplicita di conferma per ogni esecuzione. Mai `reset --hard`, `push --force`, cancellazione di branch o di dati senza conferma.
 12. **Refactoring ampi:** se la richiesta implica toccare molti file o cambiare un'architettura esistente, descrivi il piano e chiedi conferma prima di procedere.
 13. **API delle librerie:** non fidarti della memoria per API che cambiano spesso (Angular, PrimeNG, `OperationResults`, FusionCache): controlla la versione installata e la sua documentazione.
 14. **Segnalazione di conflitti:** se una richiesta contraddice queste regole (es. una dipendenza a pagamento, un `any`), dillo e proponi l'alternativa conforme prima di eseguire.

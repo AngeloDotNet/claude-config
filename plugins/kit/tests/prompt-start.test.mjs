@@ -27,7 +27,7 @@ function run(script, input, { home, cwd } = {}) {
 }
 
 test("ask-one-question: il promemoria della regola inviolabile esce su stdout con exit 0", () => {
-  const r = run("ask-one-question.mjs", {});
+  const r = run("prompt-start.mjs", {});
   assert.equal(r.code, 0);
   assert.match(r.out, /Regola inviolabile/);
   assert.match(r.out, /UNA SOLA domanda/);

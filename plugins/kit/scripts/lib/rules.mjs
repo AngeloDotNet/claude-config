@@ -1,6 +1,6 @@
 // Funzioni condivise dagli hook che sorvegliano i file di regole (CLAUDE.md e
 // .claude/rules/*.md): impronte SHA-256 e stato salvato in ~/.claude/session-rules-state.json
-// (una voce per cartella di progetto). Usato da session-plan.mjs e rules-watch.mjs.
+// (una voce per cartella di progetto). Usato da session-plan.mjs e prompt-start.mjs.
 // Fail-open: loadState/saveState non lanciano mai.
 
 import { execFileSync } from "node:child_process";
