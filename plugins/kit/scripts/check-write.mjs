@@ -92,8 +92,8 @@ function qualityFindings(file, text) {
   // Frontend
   if (/\.ts$/i.test(base) && /(?::\s*|\bas\s+|<)any(?![\w$])/.test(text)) out.push("uso di `any` (core.md §0b: nessun any)");
   if (/\.(ts|html)$/i.test(base)) {
-    if (/\binnerHTML\b/.test(text)) out.push("uso di innerHTML (security.md, Frontend: vietato senza sanitizzazione)");
-    if (/\bbypassSecurityTrust\w*/.test(text)) out.push("uso di bypassSecurityTrust* (security.md, Frontend: vietato senza motivazione)");
+    if (/\binnerHTML\b/.test(text)) out.push("uso di innerHTML (security-frontend.md: vietato senza sanitizzazione)");
+    if (/\bbypassSecurityTrust\w*/.test(text)) out.push("uso di bypassSecurityTrust* (security-frontend.md: vietato senza motivazione)");
   }
   if (/\.ts$/i.test(base) && text.split("\n").some((line) => /['"`]#[0-9a-fA-F]{3,8}\b/.test(line) && HEX.test(line))) {
     out.push("colore esadecimale hardcoded (frontend.md: colori dai token del tema)");
@@ -140,20 +140,20 @@ const PRACTICE_RULES = [
     id: "anonimo",
     files: /\.cs$/i,
     re: /\[AllowAnonymous\]|\.AllowAnonymous\(\)/,
-    why: "endpoint anonimo (security.md: AllowAnonymous solo come eccezione esplicita e motivata)",
+    why: "endpoint anonimo (security-backend.md: AllowAnonymous solo come eccezione esplicita e motivata)",
   },
   {
     id: "regex",
     files: /\.cs$/i,
     re: /\bnew\s+Regex\s*\((?![^;]*matchTimeout)(?![^;]*NonBacktracking)/,
-    why: "Regex senza matchTimeout (security.md, Abuso di risorse)",
+    why: "Regex senza matchTimeout (security-backend.md, Abuso di risorse)",
   },
   {
     id: "log",
     files: /\.ts$/i,
     exceptTests: true,
     re: /\bconsole\.log\s*\(/,
-    why: "console.log nel codice (security.md, Frontend: nessun dato sensibile in console)",
+    why: "console.log nel codice (security-frontend.md: nessun dato sensibile in console)",
   },
   {
     id: "log",

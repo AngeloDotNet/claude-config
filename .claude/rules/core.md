@@ -1,7 +1,7 @@
 # Regole Core (sempre caricate)
 
 > Versione 3.32 — ultima revisione: 2026-11-08. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
-> Moduli correlati: `frontend.md` (Angular/UI), `backend.md`, `backend-architecture.md` e `backend-app.md` (.NET/dati: stack e regole comuni; architettura e accesso ai dati; logica applicativa, errori e test; si caricano insieme; opzionali `backend-email.md` per l'invio email e `backend-infra.md` per messaggistica, cache ed eventi, aggiunti quando servono), `feature-workflow.md` (opzionale, solo fullstack e su conferma: flusso per entità, backend → frontend), `security.md` (sicurezza), `docker.md` (deploy), `git.md` (commit). Un progetto importa solo quelli che gli servono.
+> Moduli correlati: `frontend.md` (Angular/UI), `backend.md`, `backend-architecture.md` e `backend-app.md` (.NET/dati: stack e regole comuni; architettura e accesso ai dati; logica applicativa, errori e test; si caricano insieme; opzionali `backend-email.md` per l'invio email e `backend-infra.md` per messaggistica, cache ed eventi, aggiunti quando servono), `feature-workflow.md` (opzionale, solo fullstack e su conferma: flusso per entità, backend → frontend), `security.md` (sicurezza: principi), `security-backend.md` (sicurezza backend) e `security-frontend.md` (sicurezza frontend), `docker.md` (deploy), `git.md` (commit). Un progetto importa solo quelli che gli servono.
 
 ## Regola inviolabile: nel dubbio, una domanda alla volta
 **MUST, sempre attiva, senza che l'utente debba ricordarla o richiederla.** Se c'è un dubbio, un'ambiguità o più strade ragionevoli, Claude **non decide in autonomia e non procede per assunzione**: si ferma, pone **una sola domanda**, e **attende la risposta** prima di fare altro che ne dipenda.
@@ -26,11 +26,11 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti al pro
 - [ ] Lint e formattazione puliti.
 - [ ] ▲ Nessun `any`, nessuna stringa hardcoded, nessun colore hardcoded (frontend).
 - [ ] Nuove chiavi di traduzione fornite (IT/EN).
-- [ ] Endpoint protetti (se la sicurezza è prevista dal progetto, vedi `security.md`), input validati lato server, controlli di proprietà (anti-IDOR).
+- [ ] Endpoint protetti (se la sicurezza è prevista dal progetto, vedi `security-backend.md`), input validati lato server, controlli di proprietà (anti-IDOR).
 - [ ] Se la funzionalità tocca autenticazione, autorizzazione, upload, URL esterni o dati personali: security review eseguita (`security.md`).
 - [ ] Per le stesse funzionalità sensibili: threat model leggero (ADR in `docs/adr/`) approvato prima del codice, comportamento fail closed e relativo test (`security.md`, «Progettazione sicura e fail closed»).
-- [ ] Upload: controlli e test con file ostili (`security.md`). Link assoluti in email o redirect: indirizzo da configurazione, test con `Host` ostile (`security.md`).
-- [ ] Endpoint di elenco con `pageSize` limitato, rate limit e timeout configurati, regex con `matchTimeout`; risposte autenticate con `no-store`; endpoint operativi non pubblici; webhook in ingresso con firma e anti-replay (`security.md`, «Abuso di risorse» e «Protezione dell'API»).
+- [ ] Upload: controlli e test con file ostili (`security-backend.md`). Link assoluti in email o redirect: indirizzo da configurazione, test con `Host` ostile (`security-backend.md`).
+- [ ] Endpoint di elenco con `pageSize` limitato, rate limit e timeout configurati, regex con `matchTimeout`; risposte autenticate con `no-store`; endpoint operativi non pubblici; webhook in ingresso con firma e anti-replay (`security-backend.md`, «Abuso di risorse» e «Protezione dell'API»).
 - [ ] Eventi di sicurezza registrati con nome stabile e alert come concordato; `SECURITY.md` e runbook presenti (`security.md`).
 - [ ] Migrazioni con l'utente database dedicato e connessione cifrata, nessun servizio interno esposto (`backend-app.md` §4.4, `security.md`).
 - [ ] Migrazione EF inclusa, se il modello è cambiato.
@@ -77,8 +77,8 @@ Queste regole valgono per entrambi i lati e non vanno reinterpretate.
 ---
 
 ## 4. Test e Qualità
-- **Backend:** xUnit v3 per i progetti nuovi (un progetto esistente su xUnit v2 resta tale finché non si decide la migrazione per progetto), con due livelli: **unit test** (handler, validatori, servizi e logica di business isolati, con dipendenze sostituite, senza database né rete) e **integration test** (con `WebApplicationFactory`, per endpoint, pipeline e accesso ai dati). Ogni nuova funzionalità prevede entrambi i livelli dove hanno senso; se uno dei due non si applica, lo dichiari. Gli integration test stanno in un **progetto dedicato** (`*.IntegrationTests`, xUnit + `WebApplicationFactory`) che usa un **database reale di prova** sullo stesso motore del progetto, con le regole di `backend-app.md` §4.5. Se un test richiede un database diverso (es. SQLite), **chiedi prima di procedere** e non presumere: SQLite non è mai una scelta di default e va valutata caso per caso (può comportarsi diversamente dal motore reale). Mai EF Core InMemory. Il mock di `DbContext` e `DbSet` è ammesso solo nei unit test di logica, se il `CLAUDE.md` lo dichiara (`backend-app.md` §4.5); gli integration test non lo usano mai.
-- **Frontend:** unit test dei servizi (`HttpTestingController`) e dei componenti con logica; Playwright per i flussi E2E principali.
+- **Backend:** xUnit v3 per i progetti nuovi (un progetto esistente su xUnit v2 resta tale finché non si decide la migrazione per progetto), con due livelli: **unit test** (handler, validatori, servizi e logica di business isolati, con dipendenze sostituite, senza database né rete) e **integration test** (con `WebApplicationFactory`, per endpoint, pipeline e accesso ai dati). Ogni nuova funzionalità prevede entrambi i livelli dove hanno senso; se uno dei due non si applica, lo dichiari. Gli integration test, su database reale di prova, sono regolati da `backend-app.md` §4.5 (progetto dedicato, isolamento, privilegi, mock). Se un test richiede un database diverso (es. SQLite), **chiedi prima di procedere**: SQLite non è mai una scelta di default, perché può comportarsi diversamente dal motore reale. Mai EF Core InMemory.
+- **Frontend:** unit test ed E2E come da `frontend.md` §10.
 - **Regola:** ogni nuova feature arriva con i suoi test.
 - **Analisi statica:** analyzers Roslyn, `.editorconfig`, ESLint, Prettier. Build senza warning.
 - **Copertura:** minimo 80% sulla logica di business (handler, validatori, servizi); la copertura non sostituisce test sensati. Si misura nel backend con `coverlet.collector` (MIT) e il report con `ReportGenerator` (Apache-2.0), nel frontend con la copertura di Vitest (provider v8); licenze e versioni si verificano al primo uso (§3) e gli strumenti si dichiarano come dipendenze. Per ogni bug corretto, un test che lo riproduce.

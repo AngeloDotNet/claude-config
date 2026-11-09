@@ -94,13 +94,13 @@ const RULES = [
     id: "api-vietata",
     files: /\.(cs|ts|js)$/i,
     re: /AllowAnyOrigin\s*\(|BinaryFormatter|\bMD5\.Create\s*\(|\bSHA1\.Create\s*\(|\bMD5CryptoServiceProvider\b|\bSHA1Managed\b|\beval\s*\(/,
-    why: "API vietata (security.md: CORS con AllowAnyOrigin, deserializzazione con BinaryFormatter, hash MD5/SHA1, eval)",
+    why: "API vietata (security-backend.md: CORS con AllowAnyOrigin, deserializzazione con BinaryFormatter, hash MD5/SHA1, eval)",
   },
   {
     id: "sql-interpolato",
     files: /\.cs$/i,
     re: /\b(?:FromSql|ExecuteSql)Raw\s*\(\s*\$"/,
-    why: "SQL costruito con interpolazione (security.md: query parametrizzate, mai input concatenato)",
+    why: "SQL costruito con interpolazione (security-backend.md: query parametrizzate, mai input concatenato)",
   },
   {
     id: "npm-install",

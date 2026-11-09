@@ -5,6 +5,8 @@ paths:
 
 # Regole Backend: logica applicativa e infrastruttura
 
+> Versione 1.1 — ultima revisione: 2026-11-09.
+
 > Richiede `core.md` e `backend.md`. Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §4: errori e risposte API (4.1), concorrenza (4.2), paginazione (4.3), database ed EF Core (4.4), integration test (4.5), utente corrente e proprietà (4.6); la numerazione dei paragrafi è quella storica di `backend.md`.
 
 ## 4. Logica Applicativa e Infrastruttura
@@ -58,11 +60,11 @@ paths:
 - **Pipeline:** la CI richiede un'istanza del motore raggiungibile e la sua connection string come segreto; se non disponibile, i test non si saltano in silenzio ma falliscono con un messaggio che nomina la variabile mancante.
 
 ### 4.6 Utente corrente e controlli di proprietà
-Si applica ai progetti con autenticazione (decisa secondo `security.md`); senza autenticazione la sezione non c'è. Completa la regola anti-IDOR di `security.md` ("ogni query filtra per utente o tenant").
+Si applica ai progetti con autenticazione (decisa secondo `security-backend.md`); senza autenticazione la sezione non c'è. Completa la regola anti-IDOR di `security-backend.md` ("ogni query filtra per utente o tenant").
 - **`ICurrentUser`:** astrazione che espone `UserId`, `TenantId` (se multi-tenancy), ruoli/claim necessari e `IsAuthenticated`. Definita in `Application` (in VSA nel progetto condiviso) nella cartella `Interfaces/`, implementata in `Api` leggendo `HttpContext.User` tramite `IHttpContextAccessor`; nei job in background e nei consumer non c'è un utente di richiesta: l'identità si passa esplicitamente nel messaggio o nel job, mai letta da un contesto ambientale. Nei test è sostituita da una implementazione fissa.
 - **Filtro nel servizio, non nell'endpoint:** i servizi (o le slice) applicano il filtro per proprietario/tenant a **ogni** query e comando che tocca dati di un utente (`Where(x => x.OwnerId == currentUser.UserId)`), così l'endpoint non contiene controlli di proprietà e non si può dimenticare chiamandolo da un altro punto. Il tenant si applica con il global query filter (§4.4) alimentato da `ICurrentUser`; il filtro per proprietario di un'entità è un metodo di estensione riusabile (§2c).
 - **Risorsa altrui = non trovata (default):** una risorsa che esiste ma non appartiene all'utente produce `ItemNotFound` (404), non 403, per non rivelarne l'esistenza (§4.1). Il 403 resta per le azioni vietate su risorse visibili. Un progetto può derogare con il 403 (es. applicazioni interne dove la UX conta più dell'anti-enumerazione) solo annotandolo nel `CLAUDE.md`; i test di §4.6 si adeguano al codice scelto.
-- **Proprietà impostate dal server:** `OwnerId`, `TenantId` e simili vengono da `ICurrentUser`, mai dal DTO di richiesta (vedi mass assignment in `security.md`).
-- **Autorizzazione per risorsa (solo con permessi granulari):** se `security.md` ha portato alla scelta di permessi granulari per risorsa/azione, si usano policy con `IAuthorizationHandler` e `IAuthorizationService.AuthorizeAsync(user, resource, policy)` nel servizio; con le sole scelte "solo autenticazione", ruoli o policy su claim bastano `ICurrentUser` e il filtro. Il motivo dell'eventuale handler per risorsa va nel `CLAUDE.md`.
-- **`IgnoreQueryFilters` e RLS:** ogni uso di `IgnoreQueryFilters` è un'eccezione motivata e rivista; su PostgreSQL la Row-Level Security è la difesa in profondità raccomandata per le tabelle multi-tenant (`security.md`, «Autenticazione e Autorizzazione»).
+- **Proprietà impostate dal server:** `OwnerId`, `TenantId` e simili vengono da `ICurrentUser`, mai dal DTO di richiesta (vedi mass assignment in `security-backend.md`).
+- **Autorizzazione per risorsa (solo con permessi granulari):** se `security-backend.md` ha portato alla scelta di permessi granulari per risorsa/azione, si usano policy con `IAuthorizationHandler` e `IAuthorizationService.AuthorizeAsync(user, resource, policy)` nel servizio; con le sole scelte "solo autenticazione", ruoli o policy su claim bastano `ICurrentUser` e il filtro. Il motivo dell'eventuale handler per risorsa va nel `CLAUDE.md`.
+- **`IgnoreQueryFilters` e RLS:** ogni uso di `IgnoreQueryFilters` è un'eccezione motivata e rivista; su PostgreSQL la Row-Level Security è la difesa in profondità raccomandata per le tabelle multi-tenant (`security-backend.md`, «Autenticazione e Autorizzazione»).
 - **Test:** per ogni risorsa di un utente, un integration test (§4.5) che verifica che un secondo utente (e un secondo tenant) non possa leggerla, modificarla né eliminarla (404), oltre ai test di ruolo/policy.

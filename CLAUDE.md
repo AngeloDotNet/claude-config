@@ -2,17 +2,17 @@
 
 <!--
 Copia questo file nella radice del progetto come `CLAUDE.md` e compila i campi tra [parentesi].
-I moduli delle regole stanno in `.claude/rules/` e Claude Code li carica da solo, senza import: `core`, `git` e `security` all'avvio; `frontend`, `backend` e `docker` solo quando si legge o modifica un file corrispondente (`paths:` nell'intestazione). I moduli opzionali stanno in `.claude/rules-optional/` (non si caricano): `feature-workflow` (solo fullstack e solo se confermato all'avvio, domanda 8), `backend-email` e `backend-infra` (non all'avvio: si attivano spostandoli in `.claude/rules/` quando servono invio email o messaggistica/cache/eventi).
+I moduli delle regole stanno in `.claude/rules/` e Claude Code li carica da solo, senza import: `core`, `git` e `security` all'avvio; `frontend`, `security-frontend`, `backend`, `security-backend` e `docker` solo quando si legge o modifica un file corrispondente (`paths:` nell'intestazione). I moduli opzionali stanno in `.claude/rules-optional/` (non si caricano): `feature-workflow` (solo fullstack e solo se confermato all'avvio, domanda 8), `backend-email` e `backend-infra` (non all'avvio: si attivano spostandoli in `.claude/rules/` quando servono invio email o messaggistica/cache/eventi).
 Il modulo non scelto all'avvio si sposta in `.claude/rules-optional/` (es. `frontend.md` in un progetto solo API), poi si compilano i campi tra [parentesi].
 In modalità "solo Git" (progetto esistente) restano solo le sezioni "Regole", "Progetto", "Git" ed "Eccezioni alle regole globali", con i moduli `core` e `git`.
 Questo file PREVALE sulle regole globali in caso di conflitto. Tienilo breve: solo ciò che è specifico del progetto.
 -->
 
 ## Regola inviolabile (prevale su tutto, sempre attiva)
-Nel dubbio, un'ambiguità o più strade ragionevoli, Claude **non decide in autonomia**: si ferma, pone **una sola domanda** (anche con `AskUserQuestion`: una per chiamata, mai più insieme) e **attende la risposta** prima di procedere. Non serve che l'utente lo ricordi. Dettagli in `core.md` (sezione in testa e §6, punto 5).
+Nel dubbio Claude **non decide in autonomia**: pone **una sola domanda alla volta** e **attende la risposta**. Il testo completo, con le eccezioni, è in `core.md` (sezione in testa e §6, punto 5), che prevale su questo riepilogo solo per i dettagli.
 
 ## Regole
-I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `git.md` e `security.md` all'avvio; `frontend.md` (`**/*.{ts,html,css,scss}`), `backend.md`, `backend-architecture.md` e `backend-app.md` (tutti e tre `**/*.{cs,csproj,props}`) e `docker.md` (Dockerfile, compose, `docker/**`) quando si legge o modifica un file corrispondente (`paths:` nell'intestazione). I moduli opzionali stanno in `.claude/rules-optional/` (non si caricano): si attivano spostandoli in `.claude/rules/` e annotandolo qui. Per verificare cosa è caricato: `/context`. Non aggiungere altri `.md` in `.claude/rules/` se non sono regole: vengono caricati tutti.
+I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `git.md` e `security.md` all'avvio; `frontend.md` (`**/*.{ts,html,css,scss}`), `backend.md`, `backend-architecture.md` e `backend-app.md` (tutti e tre `**/*.{cs,csproj,props}`) `security-backend.md` (come i moduli backend, `**/*.{cs,csproj,props}`), `security-frontend.md` (come `frontend.md`) e `docker.md` (Dockerfile, compose, `docker/**`) quando si legge o modifica un file corrispondente (`paths:` nell'intestazione). I moduli opzionali stanno in `.claude/rules-optional/` (non si caricano): si attivano spostandoli in `.claude/rules/` e annotandolo qui. Per verificare cosa è caricato: `/context`. Non aggiungere altri `.md` in `.claude/rules/` se non sono regole: vengono caricati tutti.
 
 - **Versione delle regole copiate:** `core.md` v[x.y] del [data]
 - **Moduli rimossi o non attivati (fuori ambito):** [nessuno | security | docker | frontend | backend | feature-workflow | backend-email | backend-infra]
@@ -42,14 +42,14 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `g
 - **Soft delete:** [no | sì]
 - **Sicurezza backend:** [da chiedere a Claude | nessuna (endpoint pubblici) | ASP.NET Core Identity | Keycloak o altro IdP self-hosted gratuito]
 - **Livello ASVS:** [1 | 2 | 3] (chiesto, non presunto; vedi `security.md`)
-- **Indirizzo pubblico e host ammessi:** `App:PublicBaseUrl` [dominio pubblico], `AllowedHosts` [elenco] (chiesto, non presunto; valori reali da variabile d'ambiente; vedi `security.md`, «Host header e URL assoluti»)
+- **Indirizzo pubblico e host ammessi:** `App:PublicBaseUrl` [dominio pubblico], `AllowedHosts` [elenco] (chiesto, non presunto; valori reali da variabile d'ambiente; vedi `security-backend.md`, «Host header e URL assoluti»)
 - **Utenti del database:** applicativo (senza DDL) e utente separato per le migrazioni (`ConnectionStrings:Migrations`), valori solo da variabili d'ambiente valorizzate da `.env`, elencati in `.env.example`; connessione cifrata [Encrypt=True | SslMode=VerifyFull], CA fidata [..] (chiesto, non presunto; vedi `backend-app.md` §4.4)
-- **Upload di file:** [non previsto | previsto: tipi ammessi, limiti, antivirus/disarmo dei contenuti sì/no] (chiesto, non presunto; vedi `security.md`, «Upload e parsing di file»)
+- **Upload di file:** [non previsto | previsto: tipi ammessi, limiti, antivirus/disarmo dei contenuti sì/no] (chiesto, non presunto; vedi `security-backend.md`, «Upload e parsing di file»)
 - **Eccezioni a `npm ci --ignore-scripts`:** [nessuna | pacchetto: motivo e script lanciato a parte] (vedi `security.md`, «Supply chain»)
-- **Limiti e rate limiting:** `pageSize` predefinito e massimo [20 / 100 | ..], limiti per IP e per utente [..], timeout database e HTTP [..] (concordati, non presunti; vedi `security.md`, «Abuso di risorse»)
+- **Limiti e rate limiting:** `pageSize` predefinito e massimo [20 / 100 | ..], limiti per IP e per utente [..], timeout database e HTTP [..] (concordati, non presunti; vedi `security-backend.md`, «Abuso di risorse»)
 - **Allerta sugli eventi di sicurezza:** [solo log strutturati, controllati da: .. | alert su Grafana/Prometheus, canale: ..]; retention dei log di audit [..] (concordata, non presunta; vedi `security.md`, «Log di sicurezza e allerta»)
 - **DAST (OWASP ZAP baseline):** [no | sì, in CI su istanza di prova] (opzionale; vedi `security.md`, «Scansione dinamica, segnalazioni e risposta agli incidenti»); `SECURITY.md` e `docs/runbook-sicurezza.md` [presenti | da creare]
-- **CSP della SPA statica:** [hash alla build con `autoCsp` (default) | nonce inserito dal server | deroga: ..] (vedi `security.md`, «Protezione dell'API»)
+- **CSP della SPA statica:** [hash alla build con `autoCsp` (default) | nonce inserito dal server | deroga: ..] (vedi `security-backend.md`, «Protezione dell'API»)
 - **Token JWT (se Identity e solo API):** [no | sì — ciclo di vita: solo creazione e verifica | anche rinnovo | anche rinnovo e revoca; algoritmo, durata access token]
 - **Granularità (se Identity):** [solo autenticazione | ruoli | policy/claim | permessi granulari] — extra: [registrazione, conferma email, reset password, MFA, login esterni, lockout, multi-tenancy, UI amministrativa]
 - **Sessione SPA (se c'è un frontend con autenticazione):** [cookie HttpOnly | BFF]

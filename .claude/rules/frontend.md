@@ -5,8 +5,8 @@ paths:
 
 # Regole Frontend (Angular, TypeScript & UI)
 
-> Versione 1.1 — ultima revisione: 2026-11-09.
-> Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md`.
+> Versione 1.3 — ultima revisione: 2026-11-09.
+> Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md` e `security-frontend.md`.
 
 ## 1. Stack Frontend
 - **Framework:** Angular (ultima versione stabile compatibile con PrimeNG; minimo 20, dove zoneless è stabile). Componenti Standalone e Signals in modo nativo.
@@ -104,15 +104,15 @@ paths:
 ---
 
 ## 5. Autorizzazione nella UI
-> Vale solo se il progetto prevede autenticazione/autorizzazione (vedi `security.md` e il `CLAUDE.md`); altrimenti non si applica.
+> Vale solo se il progetto prevede autenticazione/autorizzazione (vedi `security-backend.md` e il `CLAUDE.md`); altrimenti non si applica.
 
 - Mostra, nascondi o disabilita azioni in base ai permessi tramite una direttiva strutturale o un `computed` su un `AuthService` basato su signal (es. `*appHasPermission`). Il controllo vero resta sempre sul server: la UI è solo UX.
 - I permessi arrivano dal profilo (claim o endpoint dedicato), mai dedotti dal frontend.
 - Una pagina negata mostra la pagina di sistema 403, non un errore generico.
-- **Sessione con cookie o BFF** (scelta di `security.md`, nel `CLAUDE.md`):
+- **Sessione con cookie o BFF** (scelta di `security-backend.md`, nel `CLAUDE.md`):
   - **Credenziali:** le chiamate all'API usano `withCredentials` solo verso l'origine concordata, preferibilmente la stessa dell'SPA; nessun token in `localStorage` o `sessionStorage`.
   - **CSRF:** con i cookie le richieste mutanti portano il token antiforgery (`withXsrfConfiguration`, con nome di cookie e header concordati con il backend); mai richieste mutanti senza token.
-  - **Sessione scaduta:** su 401 la route corrente viene salvata, l'utente va al login e, dopo l'accesso, torna alla route salvata; il ritorno accetta solo percorsi locali, mai URL esterni (open redirect, vedi `security.md`).
+  - **Sessione scaduta:** su 401 la route corrente viene salvata, l'utente va al login e, dopo l'accesso, torna alla route salvata; il ritorno accetta solo percorsi locali, mai URL esterni (open redirect, vedi `security-backend.md`).
 
 ---
 
@@ -143,7 +143,7 @@ paths:
 ---
 
 ## 9. Sicurezza Frontend
-Le regole (niente `innerHTML` né `bypassSecurityTrust*` senza sanitizzazione, nessun dato sensibile in `localStorage`, URL o console, CSP con nonce, Trusted Types, `postMessage`, source map, service worker) sono nella sezione "Frontend" di `security.md`, che è l'unica fonte: qui non si ripetono. Se il progetto non include `security.md`, Claude lo segnala e chiede se importare almeno quella sezione.
+Le regole (niente `innerHTML` né `bypassSecurityTrust*` senza sanitizzazione, nessun dato sensibile in `localStorage`, URL o console, CSP con nonce, Trusted Types, `postMessage`, source map, service worker) sono nella sezione "Frontend" di `security-frontend.md`, che è l'unica fonte: qui non si ripetono. Se il progetto non include `security.md`, Claude lo segnala e chiede se importare almeno quella sezione.
 
 ---
 
@@ -160,7 +160,7 @@ Le regole (niente `innerHTML` né `bypassSecurityTrust*` senza sanitizzazione, n
 - **Query dei test:** nei test dei componenti e in Playwright si cercano gli elementi per ruolo, etichetta o testo accessibile (`getByRole`, `getByLabel`), non per classi CSS; `data-testid` solo se non c'è alternativa accessibile.
 - **Dati E2E:** ogni test crea i propri dati tramite API o seed dedicato dell'ambiente di test e non dipende da dati lasciati da altri test; utenti di test sintetici con credenziali da variabili d'ambiente (mai password reali nel repository). L'ambiente E2E gira sul compose del progetto con un database di test separato e azzerabile; istanza e modalità di quel database si **chiedono ogni volta**, senza presumerle (per l'istanza di prova del backend vedi `backend-app.md` §4.5).
 - **Stabilità:** nessuno `waitForTimeout`; si attende uno stato osservabile (elemento, risposta di rete). Trace e screenshot di Playwright salvati solo in caso di fallimento.
-- **Accessibilità automatica:** `@axe-core/playwright` sulle pagine principali, con zero violazioni gravi (`core.md` §4), verificato nei flussi E2E con tema light e dark. Licenza da verificare al primo uso (`core.md` §3).
+- **Accessibilità automatica:** i flussi E2E con axe (`core.md` §4) si ripetono con tema light e dark.
 - **Temi e lingue:** i flussi principali sono verificati almeno con la lingua di default e un secondo tema; le chiavi di traduzione mancanti fanno fallire il test, non mostrano la chiave grezza.
 - **Chiusura di un lavoro frontend:** prima di dichiararlo concluso, `npm test` e la build di produzione (`npm run build`) sono verdi, insieme a lint e formattazione.
 - **Verifica di un refactoring senza cambi di comportamento** (spostamento o separazione di file, rinomine): si confronta la build di produzione senza hash nei nomi prima e dopo, con `ng build --configuration production --output-hashing none --output-path <cartella fuori dal repository>` e `diff -r` tra le due uscite. Una build identica byte per byte dimostra che il codice compilato non è cambiato. Se cambiano solo i nomi dei chunk o delle variabili minificate (per esempio dopo uno spostamento di cartelle), lo si dichiara e si prende la build nuova come riferimento.
@@ -182,7 +182,7 @@ Non sono il default. Il caricamento a richiesta per feature si ottiene già con 
 - **Struttura:** una shell (host) che carica i remote tramite lazy loading delle route; ogni remote è un'app Angular a sé con le stesse regole di questo file (standalone, signals, OnPush, file separati per componente, test). Angular, PrimeNG, RxJS e la libreria di traduzione sono dipendenze condivise come singleton, con versioni compatibili e bloccate; il tema (§4.1), il `TranslationService` (§4.2) e l'autenticazione (§5) vivono nella shell e sono condivisi, mai duplicati nei remote.
 - **Confini:** valgono le regole di §2: un remote non importa da un altro remote. Il codice comune sta in una libreria condivisa o nella shell. La comunicazione tra remote passa da servizi condivisi basati su signal o da contratti espliciti, mai da dipendenze dirette.
 - **Docker e configurazione a runtime:** gli URL dei remote si leggono da configurazione a runtime (come `config.json`, §2), non incorporati nella build. Una sola immagine per tutti gli ambienti resta valida per ogni applicazione (shell e ciascun remote); il numero di immagini e di servizi nel compose si concorda con l'utente (`docker.md`).
-- **Sicurezza:** CSP e origini dei remote in allow-list esplicita (`security.md`); un remote caricato da origine non fidata è vietato. Gli stessi controlli di tipo `innerHTML`/`bypassSecurityTrust*` valgono nei remote.
+- **Sicurezza:** CSP e origini dei remote in allow-list esplicita (`security-frontend.md`); un remote caricato da origine non fidata è vietato. Gli stessi controlli di tipo `innerHTML`/`bypassSecurityTrust*` valgono nei remote.
 - **Test:** unit test in ogni remote (§10); E2E Playwright sulla shell con i remote reali per i flussi principali.
 
 ## 13. Linee guida per i template
