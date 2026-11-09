@@ -22,8 +22,8 @@ function run(script, input) {
 }
 
 const bash = (command) => run("guard-commands.mjs", { tool_input: { command }, cwd: os.tmpdir() });
-const secrets = (file_path, content) => run("guard-secrets.mjs", { tool_input: { file_path, content } });
-const editSecrets = (file_path, new_string) => run("guard-secrets.mjs", { tool_input: { file_path, old_string: "", new_string } });
+const secrets = (file_path, content) => run("guard-write.mjs", { tool_input: { file_path, content } });
+const editSecrets = (file_path, new_string) => run("guard-write.mjs", { tool_input: { file_path, old_string: "", new_string } });
 
 function withPlan(text, fn, name = "PIANO.md") {
   const dir = mkdtempSync(path.join(os.tmpdir(), "kit-guards-"));
@@ -139,7 +139,7 @@ test("secrets: token JWT bloccato nei file di codice, consentito nei .md (docume
 
 test("secrets: Edit e MultiEdit controllano il nuovo testo", () => {
   assert.equal(editSecrets("appsettings.json", '"Token": "abcdef1234567890XYZ"').code, 2);
-  const multi = run("guard-secrets.mjs", {
+  const multi = run("guard-write.mjs", {
     tool_input: { file_path: "appsettings.json", edits: [{ old_string: "a", new_string: '"ApiKey": "9f8e7d6c5b4a39281706"' }] },
   });
   assert.equal(multi.code, 2);
@@ -149,7 +149,7 @@ test("secrets: Edit e MultiEdit controllano il nuovo testo", () => {
 
 test("plan: [x] senza esito di build e test segnalato", () => {
   withPlan("- [x] 1. Modifica il parser\n", (file) => {
-    const r = run("check-plan.mjs", { tool_input: { file_path: file } });
+    const r = run("check-write.mjs", { tool_input: { file_path: file } });
     assert.equal(r.code, 2);
     assert.match(r.err, /Modifica il parser/);
   });
@@ -158,26 +158,26 @@ test("plan: [x] senza esito di build e test segnalato", () => {
 test("plan: [x] con build e test riportati passa", () => {
   const text = "- [x] 1. Modifica il parser\n  Verifica: build senza errori, test 12/12 verdi\n- [ ] 2. Altro\n";
   withPlan(text, (file) => {
-    assert.equal(run("check-plan.mjs", { tool_input: { file_path: file } }).code, 0);
+    assert.equal(run("check-write.mjs", { tool_input: { file_path: file } }).code, 0);
   });
 });
 
 test("plan: passi aperti e file non PIANO.md ignorati", () => {
   withPlan("- [ ] 1. Da fare\n", (file) => {
-    assert.equal(run("check-plan.mjs", { tool_input: { file_path: file } }).code, 0);
+    assert.equal(run("check-write.mjs", { tool_input: { file_path: file } }).code, 0);
   });
   withPlan("- [x] 1. Senza verifica\n", (file) => {
-    assert.equal(run("check-plan.mjs", { tool_input: { file_path: file } }).code, 0);
+    assert.equal(run("check-write.mjs", { tool_input: { file_path: file } }).code, 0);
   }, "NOTE.md");
 });
 
 test("plan: promemoria di fine sessione solo con passi aperti", () => {
   withPlan("- [ ] 1. Da fare\n- [x] 2. Fatto\n  Verifica: build ok, test ok\n", (_file, dir) => {
-    const r = run("plan-reminder.mjs", { cwd: dir });
+    const r = run("session-close.mjs", { cwd: dir });
     assert.equal(r.code, 0);
     assert.match(r.out, /"systemMessage".*restano 1 passi aperti/);
   });
   withPlan("- [x] 1. Fatto\n  Verifica: build ok, test ok\n", (_file, dir) => {
-    assert.equal(run("plan-reminder.mjs", { cwd: dir }).out, "");
+    assert.equal(run("session-close.mjs", { cwd: dir }).out, "");
   });
 });

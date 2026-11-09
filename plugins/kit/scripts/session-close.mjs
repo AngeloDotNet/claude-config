@@ -1,18 +1,38 @@
 #!/usr/bin/env node
-// Hook Stop (batch C): promemoria a fine sessione su ciò che risulta non fatto nelle modifiche
-// non ancora committate. Non blocca la chiusura: mostra solo un systemMessage all'utente.
-// - codice modificato senza CHANGELOG.md aggiornato (core.md §5b).
-// - modello EF (DbContext, Configuration, Entity) modificato senza una nuova migrazione (core.md §0b).
-// - file di traduzione modificati con chiavi it.json / en.json diverse (core.md §0b, frontend.md §10).
-// Usa `git status` (senza git o con errori: nessun output). Attivo solo nei progetti con .claude/rules/core.md.
-// Fail-open: qualunque errore -> nessun output.
+// Hook Stop: unisce due promemoria di fine sessione. Non bloccano la chiusura: mostrano solo un
+// systemMessage all'utente, uno solo per sessione (il protocollo prevede un JSON per hook).
+// - plan-reminder (core.md §6.15-16): se PIANO.md (root del progetto) ha passi con casella `[ ]` o
+//   `[~]`, lo segnala prima di chiudere.
+// - check-close (core.md §5b, §0b, frontend.md §10): sulle modifiche non ancora committate ricorda
+//   codice modificato senza CHANGELOG.md, modello EF cambiato senza migrazione, chiavi it.json /
+//   en.json diverse. Usa `git status`; attivo solo nei progetti con il kit.
+// Ogni controllo è isolato. Fail-open: qualunque errore -> nessun output.
 //
-// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js e git nel PATH.
+// Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js; git nel PATH per check-close.
 
 import { execFileSync } from "node:child_process";
-import { readFileSync, existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { projectUsesKit } from "./lib/text.mjs";
+
+// --- plan-reminder ---
+
+const OPEN_STEP = /^\s*(?:[-*]|\d+\.)\s+\[[ ~]\]/;
+
+/** Numero di passi con casella aperta (`[ ]` o `[~]`). */
+function openSteps(text) {
+  return text.split(/\r?\n/).filter((line) => OPEN_STEP.test(line)).length;
+}
+
+/** Promemoria del piano, o null se non ci sono passi aperti o PIANO.md manca. */
+function planNote(cwd) {
+  const file = path.join(cwd, "PIANO.md");
+  if (!existsSync(file)) return null;
+  const open = openSteps(readFileSync(file, "utf8"));
+  return open > 0 ? `PIANO.md: restano ${open} passi aperti. Prima di chiudere aggiorna le caselle o annota dove riprendere.` : null;
+}
+
+// --- check-close ---
 
 const CODE = /\.(cs|csproj|props|ts|html|scss|css)$/i;
 const MODEL = /(?:DbContext|Configuration|Entity|Entities|Configurations)[^/]*\.cs$|(?:^|\/)(?:Entities|Configurations)\//i;
@@ -61,6 +81,28 @@ function closeFindings(paths, root) {
   return notes;
 }
 
+/** Promemoria di chiusura sulle modifiche non committate (lista vuota se nulla o senza git). */
+function closeNotes(cwd) {
+  if (!projectUsesKit(cwd)) return [];
+  const opts = { cwd, encoding: "utf8", timeout: 5000, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] };
+  const root = execFileSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], opts).trim();
+  const status = execFileSync("git", ["-C", cwd, "status", "--porcelain", "-uall"], opts);
+  const paths = status
+    .split("\n")
+    .filter((l) => l.length > 3)
+    .map((l) => l.slice(3).split(" -> ").pop().replace(/^"|"$/g, "").replace(/\\/g, "/"));
+  return closeFindings(paths, root);
+}
+
+/** Esegue un controllo isolato: un errore restituisce il valore di ripiego. */
+function attempt(fn, fallback) {
+  try {
+    return fn();
+  } catch {
+    return fallback;
+  }
+}
+
 let raw = "";
 process.stdin.setEncoding("utf8");
 process.stdin.on("data", (chunk) => (raw += chunk));
@@ -68,18 +110,12 @@ process.stdin.on("end", () => {
   try {
     const input = JSON.parse(raw);
     const cwd = typeof input?.cwd === "string" && input.cwd ? input.cwd : process.cwd();
-    if (!projectUsesKit(cwd)) process.exit(0);
-    const opts = { cwd, encoding: "utf8", timeout: 5000, windowsHide: true, stdio: ["ignore", "pipe", "ignore"] };
-    const root = execFileSync("git", ["-C", cwd, "rev-parse", "--show-toplevel"], opts).trim();
-    const status = execFileSync("git", ["-C", cwd, "status", "--porcelain", "-uall"], opts);
-    const paths = status
-      .split("\n")
-      .filter((l) => l.length > 3)
-      .map((l) => l.slice(3).split(" -> ").pop().replace(/^"|"$/g, "").replace(/\\/g, "/"));
-    const notes = closeFindings(paths, root);
-    if (notes.length) {
-      process.stdout.write(JSON.stringify({ systemMessage: `Promemoria prima di chiudere: ${notes.join("; ")}.` }) + "\n");
-    }
+    const messages = [];
+    const plan = attempt(() => planNote(cwd), null);
+    if (plan) messages.push(plan);
+    const close = attempt(() => closeNotes(cwd), []);
+    if (close.length) messages.push(`Promemoria prima di chiudere: ${close.join("; ")}.`);
+    if (messages.length) process.stdout.write(JSON.stringify({ systemMessage: messages.join("\n") }) + "\n");
   } catch {
     process.exit(0);
   }

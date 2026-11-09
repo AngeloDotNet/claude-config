@@ -6,12 +6,7 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/ask-one-question.mjs"]
-          },
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/rules-watch.mjs"]
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/prompt-start.mjs"]
           }
         ]
       }
@@ -43,17 +38,7 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/guard-secrets.mjs"]
-          }
-        ]
-      },
-      {
-        "matcher": "Write|Edit|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/guard-patterns.mjs"]
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/guard-write.mjs"]
           }
         ]
       }
@@ -65,17 +50,7 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check-plan.mjs"]
-          },
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check-quality.mjs"]
-          },
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check-practice.mjs"]
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check-write.mjs"]
           }
         ]
       }
@@ -86,12 +61,7 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/plan-reminder.mjs"]
-          },
-          {
-            "type": "command",
-            "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check-close.mjs"]
+            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/session-close.mjs"]
           }
         ]
       }

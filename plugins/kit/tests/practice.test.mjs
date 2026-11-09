@@ -9,7 +9,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "check-practice.mjs");
+const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "check-write.mjs");
 
 /** Progetto temporaneo; `kit` aggiunge il marcatore .claude/rules/core.md. */
 function project(kit = true) {

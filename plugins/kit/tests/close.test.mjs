@@ -9,7 +9,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "check-close.mjs");
+const script = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts", "session-close.mjs");
 
 /** Repository git temporaneo con il marcatore del kit (se `kit`). */
 function repo(kit = true) {
