@@ -18,7 +18,7 @@ La documentazione è nel sito [wiki.aepserver.it](http://wiki.aepserver.it/claud
 | Documento | Contenuto |
 |---|---|
 | [Cosa contiene](http://wiki.aepserver.it/claude-config/contenuto) | Struttura del repository, moduli delle regole, cartella `_template/` e plugin |
-| [Plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) | Hook personali (domanda unica, comandi vietati, piano a inizio sessione, regole aggiornate) e comandi `/kit:...`: installazione, aggiornamento, migrazione |
+| [Plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) | Hook personali (domanda unica, comandi vietati, regole aggiornate) e comandi `/kit:...`: installazione, aggiornamento, migrazione |
 | [Come si usa, nei dettagli](http://wiki.aepserver.it/claude-config/uso) | Quale caso è il tuo (progetto nuovo, esistente senza regole, esistente con regole), il template come cartella a parte, `/kit:copia-regole` e `/kit:aggiorna-regole`, moduli da tenere per tipo di progetto |
 | [Come funziona](http://wiki.aepserver.it/claude-config/funzionamento) | Caricamento delle regole, deroghe, cosa chiede Claude e cosa fa da solo |
 | [Manutenzione](http://wiki.aepserver.it/claude-config/manutenzione) | Verifiche periodiche, risoluzione dei problemi, punti aperti, aggiornamento del template |
@@ -36,11 +36,11 @@ claude plugin marketplace add AngeloDotNet/claude-config
 claude plugin install kit@claude-config
 ```
 
-I controlli del plugin sono dodici e stanno in sette script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica e regole cambiate), `session-plan` (piano e regole a inizio sessione) e `session-close` (promemoria di fine sessione).
+I controlli del plugin stanno in sei script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica, regole cambiate e, finché non si risponde, la domanda sulla wiki del progetto) e `session-close` (promemoria a fine di ogni risposta: piano, chiusura e sito di documentazione). I controlli sono tredici in tutto. Non c'è più un hook che inserisce il piano a inizio sessione: la rilettura di `CLAUDE.md`, delle regole e di `PIANO.md` è la regola di `core.md` §6.16, che Claude applica a ogni sessione. Il comando `/kit:buongiorno` la ripete su richiesta, con il riepilogo del lavoro.
 
 ## Comandi del plugin
 
-Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
+Il plugin aggiunge diciannove comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
 - `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`.
@@ -48,7 +48,11 @@ Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono dispo
 - `/kit:copia-regole`: copia le regole in un progetto che non le ha.
 - `/kit:aggiorna-regole`: aggiorna le regole di un progetto, con conferma per ogni file.
 - `/kit:consegna`: controlla il lavoro corrente contro la checklist di consegna.
-- `/kit:code-review`: revisione del codice secondo le regole del progetto.
+- `/kit:review-regole`: revisione del codice secondo le regole del progetto.
+- `/kit:pr-develop` e `/kit:pr-main` si usano solo se la GitHub CLI è installata e autenticata (`gh --version`, `gh auth status`): altrimenti terminano subito e dicono cosa manca. `/kit:commit-passo` non richiede `gh`.
+- `/kit:commit-passo`: crea i commit uno alla volta, mai su `main` o `develop` (propone il branch di lavoro), con piano in `piano-commit.md`; chiede il tipo di commit solo se ambiguo e l'ok prima di ogni commit. Con un numero (`/kit:commit-passo 5`) esegue fino a N commit di fila senza ok a ciascuno, entro il tetto per lotto del `CLAUDE.md` (chiesto una volta, solo quando si passa il numero).
+- `/kit:pr-develop`: apre con `gh` la PR dal branch di lavoro verso `develop`, dopo conferma di push e creazione; il merge (squash) resta all'utente.
+- `/kit:pr-main`: apre con `gh` la PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, dopo il controllo di `main` avanti rispetto a `develop`; il merge (merge commit) resta all'utente.
 - `/kit:aggiorna-docs`: aggiorna README, CHANGELOG e, se esiste, il sito di documentazione; crea il README se manca e scrive la voce di rilascio su richiesta.
 - `/kit:verifica`: esegue i controlli di una soluzione .NET (ripristino, build, test, pacchetti vulnerabili, modello EF, spazi bianchi) e riporta l'esito, senza modificare file.
 - `/kit:qualita-test`: revisiona i test (falsa sicurezza, fragilità, duplicati) e propone test xUnit parametrici e leggibili.
@@ -59,7 +63,7 @@ Il plugin aggiunge sedici comandi, che si lanciano solo su richiesta. Sono dispo
 - `/kit:colori-tema`: costruisce o verifica la palette per i temi chiaro e scuro, con il contrasto misurato.
 - `/kit:localizzazione`: verifica il layout per testi tradotti più lunghi, RTL, ordine di lettura e zoom.
 
-Dettagli nella pagina [Plugin](http://wiki.aepserver.it/claude-config/plugin).
+Tabella riepilogativa con gli argomenti di ogni comando: [`docs/skill.md`](docs/skill.md). Dettagli nella pagina [Plugin](http://wiki.aepserver.it/claude-config/plugin).
 
 ## Limiti noti
 
