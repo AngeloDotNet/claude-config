@@ -15,6 +15,7 @@ import path from "node:path";
 import { after, before, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { compareVersions } from "../scripts/lib/template.mjs";
+import { projectKey } from "../scripts/lib/rules.mjs";
 
 const scripts = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts");
 const repoRoot = path.resolve(scripts, "..", "..", "..");
@@ -38,8 +39,16 @@ function makeProject(root, rules = { "core.md": "> Versione 3.20 — rev\n# core
   return root;
 }
 
+/** La domanda sulla wiki (core.md §5b) è già risolta con «no»: i test delle regole non la devono vedere. */
+function answerWikiQuestion(cwd, home) {
+  const file = path.join(home, ".claude", "kit-progetti.json");
+  if (existsSync(file)) return;
+  write(file, JSON.stringify({ [projectKey(cwd)]: { sito: { esiste: false, chiesto: true } } }));
+}
+
 /** Esegue uno script degli hook come farebbe Claude Code: JSON su stdin, stato in una home finta. */
 function run(script, { cwd, home, template, session = "s1" }) {
+  answerWikiQuestion(cwd, home);
   const env = { ...process.env, USERPROFILE: home, HOME: home };
   if (template === undefined) delete env.KIT_CONFIG_TEMPLATE_DIR;
   else env.KIT_CONFIG_TEMPLATE_DIR = template;
