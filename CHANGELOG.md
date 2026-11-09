@@ -18,6 +18,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Verifica:** modifica di sola regola; nessun codice toccato. Testo riletto dopo la fusione delle due voci.
 **Note:** la voce «Propagazione del `traceId`» in §2 è stata aggiunta nel file durante la sessione, fuori da questo intervento, e non è descritta qui. Il numero di versione si riferisce al file intero.
 
+### Rilascio 1.10.0
+
+**Modificato:** il plugin `kit` esegue i suoi controlli con quattro script, uno per evento (`guard-write`, `check-write`, `session-close`, `prompt-start`), invece di dodici script separati; gli avvisi di `check-write` e di `session-close` escono in un unico messaggio. Push e tag sono sempre consentiti; PR e rilasci con `gh` passano solo se il `CLAUDE.md` del progetto dichiara la GitHub CLI installata. Le regole (`git.md`, `core.md` 3.32, `frontend.md` 1.1) e la documentazione allineate a questa policy.
+
+**Corretto:** `rules-watch` confronta la versione di ogni modulo di regole che la dichiara, non solo quella di `core.md`, e avvisa solo sui moduli che il progetto ha.
+
 ## 2026-11-08
 
 ### Unione degli hook del plugin kit (plugin 1.10.0)
