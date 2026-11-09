@@ -1,7 +1,7 @@
 {
   "name": "kit",
-  "version": "1.9.0",
-  "description": "Hook che fanno rispettare le regole del template: promemoria della regola inviolabile, una sola domanda per AskUserQuestion, blocco dei comandi vietati, controllo dei messaggi di commit e dello staging (git add -A, file sensibili), blocco dei segreti reali in appsettings, compose e file scritti, controllo degli esiti di build e test nel PIANO.md, avvisi di qualità su Docker, dipendenze e frontend, piano e regole a inizio sessione, controllo delle regole aggiornate (anche a sessione in corso e rispetto al template), push, tag, PR e rilasci bloccati salvo approvazione per progetto nel CLAUDE.md; sedici comandi /kit:... su richiesta (buongiorno, buonasera, avvia-progetto, copia-regole, aggiorna-regole, consegna, code-review, aggiorna-docs, verifica, qualita-test, dati-efcore, accessi-api, gdpr-dati, accessibilita-ui, colori-tema, localizzazione).",
+  "version": "1.10.0",
+  "description": "Hook che fanno rispettare le regole del template: promemoria della regola inviolabile, una sola domanda per AskUserQuestion, blocco dei comandi vietati, controllo dei messaggi di commit e dello staging (git add -A, file sensibili), blocco dei segreti reali in appsettings, compose e file scritti, controllo degli esiti di build e test nel PIANO.md, avvisi di qualità su Docker, dipendenze e frontend, piano e regole a inizio sessione, controllo delle regole aggiornate (anche a sessione in corso e rispetto al template), push e tag sempre consentiti, PR e rilasci con gh solo se la GitHub CLI è dichiarata installata nel CLAUDE.md; sedici comandi /kit:... su richiesta (buongiorno, buonasera, avvia-progetto, copia-regole, aggiorna-regole, consegna, code-review, aggiorna-docs, verifica, qualita-test, dati-efcore, accessi-api, gdpr-dati, accessibilita-ui, colori-tema, localizzazione).",
   "author": {
     "name": "Angelo Pirola"
   }
