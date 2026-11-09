@@ -5,6 +5,8 @@ paths:
 
 # Regole Backend: architettura e accesso ai dati
 
+> Versione 1.0 — ultima revisione: 2026-11-09.
+
 > Richiede `core.md` e `backend.md` (stack, regole comuni, errori e convenzioni). Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §2a Vertical Slice, §2b Clean Architecture, §2c accesso ai dati e pattern; la numerazione dei paragrafi è quella storica di `backend.md`.
 
 ### 2a. Vertical Slice Architecture

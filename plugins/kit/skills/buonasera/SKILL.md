@@ -13,6 +13,6 @@ Rispondi in italiano. Non committare nulla.
 4. Aggiorna `PIANO.md`:
    - spunta solo i passi verificati (build e test dove si applicano);
    - aggiungi o sostituisci la sezione `## Ripartenza` con: data, passo in corso, ultimo passo completato, prossimo passo, decisioni aperte, file toccati oggi, test rotti;
-   - se le priorità sono gestite, indicale accanto ai passi aperti.
+   - se le priorità sono gestite (`priorita: true`), scrivi l'etichetta `[P1]`, `[P2]` o `[P3]` all'inizio di ogni passo aperto, dopo la casella (`- [ ] [P1] ...`); i passi chiusi non la portano.
 5. Aggiorna `CHECKLIST.md` aggiungendo i problemi nuovi come voci `[ ]`. Non cancellare quelli esistenti.
 6. In fondo alla risposta stampa il prompt da copiare nella sessione successiva, esattamente così: «Riprendi il lavoro: usa /kit:buongiorno».

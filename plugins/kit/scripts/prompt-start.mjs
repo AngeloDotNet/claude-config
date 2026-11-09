@@ -4,17 +4,20 @@
 // - ask-one-question: ricorda la regola inviolabile di core.md ("nel dubbio, una domanda alla volta").
 //   Il testo qui sotto va tenuto allineato a core.md.
 // - rules-watch: confronta le impronte di CLAUDE.md e .claude/rules/*.md con quelle salvate in
-//   ~/.claude/session-rules-state.json (le stesse usate da session-plan.mjs). Se qualcosa è cambiato
+//   ~/.claude/session-rules-state.json. Se qualcosa è cambiato
 //   durante la sessione (per esempio dopo un `git pull`), ordina di rileggere i file cambiati e allega
 //   il `git diff` dei soli file cambiati, calcolato dall'hash di HEAD salvato. Una volta per sessione
 //   confronta anche le regole del progetto con quelle del template (KIT_CONFIG_TEMPLATE_DIR, vedi
 //   lib/template.mjs). Non copia nulla e non obbliga Claude a rileggere.
+// - site-question (core.md §5b, lib/sito.mjs): finché la voce `sito` di ~/.claude/kit-progetti.json
+//   manca o dice `esiste: false` senza `chiesto`, chiede a Claude di domandare se esiste una wiki.
 // Ogni controllo è isolato: una sezione che fallisce non nasconde l'altra. Fail-open: nessun blocco.
 //
 // Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js.
 
 import { headKey, loadState, projectKey, recordSnapshot, ruleFingerprints, rulesDiff, saveState } from "./lib/rules.mjs";
 import { templateSection } from "./lib/template.mjs";
+import { siteQuestion } from "./lib/sito.mjs";
 
 const REMINDER = `[Regola inviolabile, sempre attiva] Se hai un dubbio, un'ambiguità o più strade ragionevoli, NON decidere in autonomia e NON procedere per assunzione: fermati, poni UNA SOLA domanda (anche con AskUserQuestion: una domanda per chiamata, mai più insieme) e attendi la risposta prima di fare altro che ne dipenda. Dettagli: core.md, sezione in testa e §6 punto 5. Prima di modificare codice tieni il piano in PIANO.md (con le conclusioni dell'analisi); i problemi trovati lavorando vanno in CHECKLIST.md senza interrompere il lavoro (core.md §6 punti 20-22).`;
 
@@ -63,7 +66,7 @@ process.stdin.on("end", () => {
     }
     const state = loadState();
     const before = JSON.stringify(state);
-    for (const section of [() => rulesChangedSection(cwd, state), () => templateSection(cwd, sessionId, state)]) {
+    for (const section of [() => rulesChangedSection(cwd, state), () => templateSection(cwd, sessionId, state), () => siteQuestion(cwd)]) {
       try {
         const text = section();
         if (text) parts.push(text);

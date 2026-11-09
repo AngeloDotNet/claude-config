@@ -1,4 +1,4 @@
-// Test degli hook che sorvegliano le regole (prompt-start.mjs, session-plan.mjs e lib/).
+// Test degli hook che sorvegliano le regole (prompt-start.mjs e lib/).
 // Esecuzione, dalla root del repository:  node --test "plugins/kit/tests/*.test.mjs"
 // Richiede Node.js e git. Nessuna dipendenza esterna (node:test).
 //
@@ -15,6 +15,7 @@ import path from "node:path";
 import { after, before, describe, test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { compareVersions } from "../scripts/lib/template.mjs";
+import { projectKey } from "../scripts/lib/rules.mjs";
 
 const scripts = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "scripts");
 const repoRoot = path.resolve(scripts, "..", "..", "..");
@@ -38,8 +39,16 @@ function makeProject(root, rules = { "core.md": "> Versione 3.20 — rev\n# core
   return root;
 }
 
+/** La domanda sulla wiki (core.md §5b) è già risolta con «no»: i test delle regole non la devono vedere. */
+function answerWikiQuestion(cwd, home) {
+  const file = path.join(home, ".claude", "kit-progetti.json");
+  if (existsSync(file)) return;
+  write(file, JSON.stringify({ [projectKey(cwd)]: { sito: { esiste: false, chiesto: true } } }));
+}
+
 /** Esegue uno script degli hook come farebbe Claude Code: JSON su stdin, stato in una home finta. */
 function run(script, { cwd, home, template, session = "s1" }) {
+  answerWikiQuestion(cwd, home);
   const env = { ...process.env, USERPROFILE: home, HOME: home };
   if (template === undefined) delete env.KIT_CONFIG_TEMPLATE_DIR;
   else env.KIT_CONFIG_TEMPLATE_DIR = template;
@@ -269,34 +278,5 @@ describe("confronto con il template", () => {
     assert.ok(compareVersions("3.21", "3.20") > 0);
     assert.equal(compareVersions("3.20", "3.20.0"), 0);
     assert.ok(compareVersions("4", "3.99") > 0);
-  });
-});
-
-describe("session-plan: regole e piano a inizio sessione", () => {
-  test("prima sessione silenzio; regola cambiata nominata; PIANO.md incluso", () => {
-    const { home, project } = setup();
-    assert.equal(run("session-plan.mjs", { cwd: project, home }), "");
-    writeFileSync(path.join(project, ".claude", "rules", "core.md"), "> Versione 3.20 — rev\n# core cambiato\n");
-    write(path.join(project, "PIANO.md"), "# Piano\n- [ ] passo uno\n");
-    const out = run("session-plan.mjs", { cwd: project, home });
-    assert.match(out, /\[Regole cambiate dall'ultima sessione\].*core\.md/);
-    assert.match(out, /\[Promemoria di inizio sessione: PIANO\.md/);
-    assert.match(out, /passo uno/);
-  });
-
-  test("piano e diff grandi: l'output resta sotto il limite di 10.000 caratteri", () => {
-    const base = sandbox();
-    const home = path.join(base, "home");
-    mkdirSync(path.join(home, ".claude"), { recursive: true });
-    const clone = path.join(base, "clone");
-    cloneWithRules(clone);
-    git(clone, "checkout", "--quiet", "-b", "test/session-plan");
-    run("session-plan.mjs", { cwd: clone, home });
-    write(path.join(clone, "PIANO.md"), Array.from({ length: 120 }, (_, i) => `- [ ] passo ${i} ${"x".repeat(80)}`).join("\n"));
-    writeFileSync(path.join(clone, ".claude", "rules", "security.md"), readFileSync(path.join(clone, ".claude", "rules", "security.md"), "utf8") + Array.from({ length: 150 }, (_, i) => `- riga ${i} ${"y".repeat(90)}`).join("\n") + "\n");
-    const out = run("session-plan.mjs", { cwd: clone, home });
-    assert.ok(out.length <= 10000, `output di ${out.length} caratteri`);
-    assert.match(out, /security\.md/);
-    assert.match(out, /PIANO\.md/);
   });
 });
