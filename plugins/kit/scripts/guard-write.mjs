@@ -3,7 +3,7 @@
 // I messaggi restano quelli dei singoli controlli, con il loro nome logico: guard-secrets e guard-patterns.
 // - guard-secrets (security.md «Dati e Segreti», core.md §0b): blocca la scrittura di segreti reali.
 //   appsettings*.json: valori reali in chiavi come Password, Secret, Token, ApiKey, Key (es. Jwt:Key) o
-//   password in una stringa di connessione; docker-compose*.yml e Dockerfile: password o chiavi in chiaro;
+//   password in una stringa di connessione; docker-compose*/compose* (.yml e .yaml) e Dockerfile: password o chiavi in chiaro;
 //   qualunque file: chiavi private PEM, chiavi AWS (AKIA…), token JWT completi (esclusi i .md).
 //   Un segnaposto è valido solo se il valore intero ha una forma nota (vedi PLACEHOLDER_FULL).
 // - guard-patterns (core.md §6, punto 23): blocca i pattern che le regole vietano senza eccezioni.
