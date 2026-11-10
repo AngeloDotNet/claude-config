@@ -1,0 +1,47 @@
+# Workflow CI di esempio (core.md §5, security.md «Supply chain»): build, test, lint e audit a ogni pull request.
+# Copiare in .github/workflows/ del progetto e adattare cartelle, versioni e comandi (tabella Comandi del CLAUDE.md).
+# Cancellare il job che non serve (solo API o solo frontend). Le action sono fissate al commit SHA, con la
+# versione in commento (verificate il 2026-11-10 sui repository ufficiali; rifarlo al primo uso).
+# Non incluso: CodeQL, gitleaks, Trivy, SBOM e DAST (security.md): si aggiungono con lo stesso criterio di pinning.
+name: ci
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          global-json-file: global.json # oppure dotnet-version: "10.0.x"
+      - run: dotnet restore --locked-mode
+      - run: dotnet build --no-restore --configuration Release -warnaserror
+      - run: dotnet test --no-build --configuration Release
+      - name: Audit pacchetti NuGet
+        run: |
+          dotnet list package --vulnerable --include-transitive 2>&1 | tee audit.txt
+          ! grep -q "has the following vulnerable packages" audit.txt
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/web # adattare alla cartella del frontend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: src/web/.nvmrc
+          cache: npm
+          cache-dependency-path: src/web/package-lock.json
+      - run: npm ci --ignore-scripts # eccezioni: security.md «Supply chain»
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Audit pacchetti npm
+        run: npm audit --audit-level=high

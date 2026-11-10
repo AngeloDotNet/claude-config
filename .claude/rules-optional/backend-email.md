@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.{cs,csproj,props}"
+---
+
 # Regole Backend — Invio Email (modulo opzionale)
 
 > Richiede `core.md` e `backend.md`. Si importa solo nei progetti con backend che inviano email. Per messaggistica, cache e job vedi `backend-infra.md` e `backend.md`.

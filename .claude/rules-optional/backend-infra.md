@@ -1,3 +1,8 @@
+---
+paths:
+  - "**/*.{cs,csproj,props}"
+---
+
 # Regole Backend — Messaggistica, Cache ed Eventi (modulo opzionale)
 
 > Richiede `core.md` e `backend.md`. Si importa solo nei progetti con backend che usano RabbitMQ, una cache applicativa (FusionCache, memory cache, eventualmente Redis) o eventi (non si chiede all'avvio: si aggiunge quando serve, vedi `avvio-progetto.md` §4). L'esecuzione su più container resta in `backend.md` §5b.

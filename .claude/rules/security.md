@@ -1,13 +1,13 @@
 # Sicurezza (OWASP Top 10 / ASVS come riferimento)
 
-> Versione 2.0 — ultima revisione: 2026-11-09.
+> Versione 2.1 — ultima revisione: 2026-11-10.
 
 > Richiede `core.md`. Questo file contiene i principi di sicurezza sempre attivi. Le sezioni su autenticazione, protezione dell'API, abuso di risorse, vulnerabilità applicative e upload sono in `security-backend.md` (caricato sui file backend); la sezione Frontend è in `security-frontend.md` (caricato sui file Angular).
 > **Fonti e versioni di riferimento (verificate il 2026-11-04):** OWASP Top 10 2025 (A01 Broken Access Control … A10 Mishandling of Exceptional Conditions) e OWASP ASVS 5.0.0 (maggio 2025, capitoli V1–V17; mappa in «Mappa ASVS 5.0 e livelli»). Quando escono versioni nuove, si rivedono le regole prima di aggiornare questa riga.
 > **Livello ASVS:** il livello di OWASP ASVS cui il progetto tende (1, 2 o 3) si **chiede a ogni progetto**, senza default, e si registra nel `CLAUDE.md` (campo "Livello ASVS"). Le regole di questo file sono la base comune; un livello più alto può richiedere controlli in più, che Claude propone e non introduce di iniziativa.
 
 ## Mappa ASVS 5.0 e livelli
-Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2026-11-04 su `github.com/OWASP/ASVS/tree/v5.0.0/5.0/en`. Il livello di ogni singolo requisito (L1/L2/L3) non è stato letto requisito per requisito: la tabella dice dove cercare e cosa il kit aggiunge per livello, non sostituisce il testo dell'ASVS, che si consulta per il livello scelto.
+Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2026-11-04 su `github.com/OWASP/ASVS/tree/v5.0.0/5.0/en`. Il livello di ogni singolo requisito (L1/L2/L3) non è stato letto requisito per requisito: la tabella dice dove cercare e cosa il kit aggiunge per livello, non sostituisce il testo dell'ASVS, che si consulta per il livello scelto. Le sezioni «Autenticazione e Autorizzazione», «Completamenti dell'autenticazione», «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
 
 | Capitolo ASVS | Dove nelle regole |
 |---|---|
@@ -69,7 +69,7 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 Il kit non ha ancora moduli per il mobile (`core.md` §2): finché non esistono, queste sono le regole di base per un'app che parla con il backend; il riferimento completo è OWASP MASVS (gruppi di controlli: storage, crittografia, autenticazione, rete, piattaforma, codice, resilienza, privacy; elenco e versione da verificare alla fonte al primo uso, non a memoria).
 - **Storage:** token e segreti solo nel contenitore sicuro della piattaforma (Keychain su iOS, Keystore su Android, tramite il plugin del framework scelto), mai in preferenze, file o database in chiaro; nessun segreto del backend nell'app (il pacchetto è decompilabile).
 - **Rete:** solo HTTPS con verifica del certificato; il pinning del certificato o della chiave pubblica è una scelta da concordare per progetto (aumenta la sicurezza ma richiede un piano di rotazione, altrimenti l'app smette di funzionare).
-- **Autenticazione:** Authorization Code con PKCE tramite browser di sistema (mai credenziali in una WebView incorporata); token a vita breve e rinnovabili come da «Autenticazione e Autorizzazione»; sblocco biometrico solo come comodità locale, mai come unico fattore lato server.
+- **Autenticazione:** Authorization Code con PKCE tramite browser di sistema (mai credenziali in una WebView incorporata); token a vita breve e rinnovabili come da «Autenticazione e Autorizzazione» in `security-backend.md`; sblocco biometrico solo come comodità locale, mai come unico fattore lato server.
 - **Dati e log:** nessun dato personale o token nei log, negli screenshot di sistema o negli appunti; backup del dispositivo e anteprime dell'app valutati per i dati sensibili.
 - **Link e piattaforma:** deep link validati come ogni input esterno (`Open redirect` compreso); permessi richiesti al minimo.
 - **Build:** debug disattivato e codice offuscato dove la piattaforma lo prevede, build di release firmate. Il rilevamento di root o jailbreak non è un controllo di sicurezza affidabile: non si introduce di iniziativa.
