@@ -2,6 +2,15 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-11
+
+### Pubblicazione delle revisioni e aggiornamento della documentazione
+
+**Perché:** il lavoro del 2026-11-10 era rimasto non committato; le note «Non committato» delle voci di ieri non erano più vere dopo la consegna.
+**Cosa / Dove:** commit `docs(rules)` (regole, `lavoro.md`, `CHANGELOG.md`, `_template/`) e `feat(plugin)` (avvisi del frontend, `pr-main`, `copia-regole`), integrati in `develop` con le PR #24 e #25 e portati in `main` con la #26; sincronizzazione di `main` in `develop` con merge commit (#27, `bugfix/sync-main-into-develop`). Wiki: riga di `check-quality` in `docs/claude-config/plugin.md` con i nuovi avvisi del frontend.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 123 su 123 verdi prima del commit del plugin; nessuna build della wiki.
+**Note:** le voci del 2026-11-10 che dicono «Non committato» descrivono lo stato di allora e restano com'erano. La versione del plugin resta 1.11.0: un nuovo rilascio è una decisione a parte. La wiki non è committata e ha modifiche di un'altra sessione.
+
 ## 2026-11-10
 
 ### Wiki: pagina «Cosa contiene» allineata al template
