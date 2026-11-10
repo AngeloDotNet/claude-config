@@ -1,3 +1,9 @@
+---
+paths:
+  - "**/*.{cs,csproj,props}"
+  - "**/*.{ts,html,css,scss}"
+---
+
 # Regole di flusso per entità (backend → frontend)
 
 > Richiede `core.md` e `backend.md` e `frontend.md` (progetti fullstack); per i commit `git.md`. **Modulo opzionale**: solo per progetti fullstack, e solo se l'utente conferma di volerlo usare. Vale per Vertical Slice e per Clean Architecture. Descrive **in che ordine** si sviluppa una nuova entità (o funzionalità CRUD) e cosa va verificato a ogni fase; il *come* sta nei moduli richiamati.
@@ -20,7 +26,7 @@
 
 ## 2. Fase 1 — Backend completo
 Ordine interno, ciascun passo che builda e passa i test:
-1. **Modello e dati:** entità, configurazione EF (`IEntityTypeConfiguration<T>`), migrazione, indici e vincoli; denaro in `decimal` con precisione esplicita. Dove vanno i file: Vertical Slice → cartella della feature; Clean → `Domain` (entità) e `Infrastructure` (configurazione e migrazione), come da `backend-architecture.md` §2b. Le interfacce nuove stanno in `Interfaces/` alla radice del progetto che le contiene (`backend.md` §2). Il modello segue le scelte del `CLAUDE.md` (anemico o ricco, repository, Specification: `backend-architecture.md` §2b e §2c); se una scelta manca, Claude chiede e non la presume.
+1. **Modello e dati:** entità, configurazione EF (`IEntityTypeConfiguration<T>`), migrazione, indici e vincoli; denaro in `decimal` con precisione esplicita. Dove vanno i file: Vertical Slice → cartella condivisa (es. `Data/`), mai dentro una slice, come da `backend-architecture.md` §2a; Clean → `Domain` (entità) e `Infrastructure` (configurazione e migrazione), come da `backend-architecture.md` §2b. Le interfacce nuove stanno in `Interfaces/` alla radice del progetto che le contiene (`backend.md` §2). Il modello segue le scelte del `CLAUDE.md` (anemico o ricco, repository, Specification: `backend-architecture.md` §2b e §2c); se una scelta manca, Claude chiede e non la presume.
 2. **Contratti:** `record` DTO di richiesta e risposta (mai entità esposte), validatori `FluentValidation` con **chiavi** di traduzione, mapping manuale con metodi di estensione.
 3. **Servizio/handler:** logica di business che restituisce il tipo di risultato della libreria scelta; errori di business come chiavi (`ERROR_<ENTITY>_NOT_FOUND`) con parametri nel campo separato, e il risultato segue la tabella risultato → HTTP di `backend-app.md` §4.1. Per ogni risorsa di un utente il servizio usa `ICurrentUser` e filtra per proprietario o tenant (`backend-app.md` §4.6). Clean → in `Application`. Il service implementa la sua interfaccia (in `Interfaces/`) e si registra in DI con entrambi i tipi, con Scrutor se i service con lo stesso lifetime sono più di uno (`backend.md` §2, "Service e interfacce" e "Registrazione in blocco con Scrutor").
 4. **Endpoint:** Minimal API raggruppati con `MapGroup`, commenti XML, autorizzazione esplicita, paginazione/ordinamento dove serve. Clean → in `Api`.

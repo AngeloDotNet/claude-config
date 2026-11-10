@@ -5,7 +5,7 @@ paths:
 
 # Regole Backend: logica applicativa e infrastruttura
 
-> Versione 1.1 — ultima revisione: 2026-11-09.
+> Versione 1.2 — ultima revisione: 2026-11-10.
 
 > Richiede `core.md` e `backend.md`. Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §4: errori e risposte API (4.1), concorrenza (4.2), paginazione (4.3), database ed EF Core (4.4), integration test (4.5), utente corrente e proprietà (4.6); la numerazione dei paragrafi è quella storica di `backend.md`.
 
@@ -47,6 +47,7 @@ paths:
 - **Privilegi:** l'app serve le richieste con un utente a privilegi minimi (DML sì, DDL no); mai con il proprietario dello schema. Le migrazioni usano un **utente separato con DDL**, in ogni progetto (a prescindere dal livello ASVS): una seconda stringa di connessione (`ConnectionStrings:Migrations`, valore reale solo da variabile d'ambiente valorizzata da `.env`, voce in `.env.example`), usata solo da `Database.MigrateAsync()` all'avvio e mai per servire richieste.
 - **Letture:** `AsNoTracking` e proiezioni con `Select` verso DTO. Vietato N+1; indici definiti esplicitamente.
 - **Query raw:** solo parametrizzate.
+- **Log di EF Core:** `EnableSensitiveDataLogging` (che scrive nei log i valori dei parametri) e `EnableDetailedErrors` solo in Development, mai in produzione: i valori possono essere dati personali o segreti (`security.md`, «Dati e Segreti»).
 - **Soft delete / multi-tenancy:** se previsti, via global query filter, decisi una volta sola per progetto.
 - **Audit:** campi `CreatedAt/By`, `UpdatedAt/By` e audit trail sulle entità critiche.
 
