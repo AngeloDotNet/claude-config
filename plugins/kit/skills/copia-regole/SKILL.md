@@ -1,5 +1,5 @@
 ---
-description: Copia le regole del template in un progetto che non le ha ancora, con i moduli scelti in conversazione; con la modalità solo Git copia soltanto core.md e git.md. Si lancia solo su richiesta.
+description: Copia le regole del template in un progetto che non le ha ancora, con i moduli scelti in conversazione; con la modalità solo Git copia soltanto core.md, lavoro.md e git.md. Si lancia solo su richiesta.
 argument-hint: [cartella-progetto]
 disable-model-invocation: true
 ---
@@ -12,8 +12,8 @@ Rispondi in italiano. Una sola domanda per messaggio. Il template è la cartella
 2. Chiedi il percorso del progetto (se non è stato passato come argomento). Verifica che la cartella esista e non coincida con il template.
 3. Se il progetto ha già `.claude/rules/`, fermati e suggerisci `/kit:aggiorna-regole`.
 4. Chiedi se il progetto è **solo Git** (solo branch e commit: nessun backend, frontend, Docker o sicurezza previsti).
-   - **Sì, solo Git:** copia `core.md` e `git.md` in `.claude/rules/`. Non chiedere i moduli facoltativi (punto 5) né `NuGet.config` e `.editorconfig` (punto 6). Chiedi solo `.gitignore` e `.gitattributes`, uno per volta, se mancano.
-   - **No:** copia sempre `core.md` e `git.md` in `.claude/rules/` del progetto, poi continua con il punto 5.
+   - **Sì, solo Git:** copia `core.md`, `lavoro.md` e `git.md` in `.claude/rules/`. Non chiedere i moduli facoltativi (punto 5) né `NuGet.config` e `.editorconfig` (punto 6). Chiedi solo `.gitignore` e `.gitattributes`, uno per volta, se mancano.
+   - **No:** copia sempre `core.md`, `lavoro.md` e `git.md` in `.claude/rules/` del progetto, poi continua con il punto 5.
 5. Chiedi, una per volta, se includere: `security.md` (principi di sicurezza), con `security-backend.md` se c'è un backend e `security-frontend.md` se c'è un frontend Angular, backend (`backend.md`, `backend-architecture.md`, `backend-app.md`: tre file sempre insieme), `frontend.md`, `docker.md`, e tra i moduli opzionali `feature-workflow.md`, `backend-email.md`, `backend-infra.md` (questi tre in `.claude/rules-optional/`, non caricati). Solo nel caso «No» del punto 4.
 6. File di root, uno per volta: `CLAUDE.md` (copiato solo se manca; se esiste non va toccato), `NuGet.config`, `.editorconfig`, `.gitignore`, `.gitattributes` (questi ultimi quattro solo se l'utente li vuole, e solo se mancano). Nel caso solo Git si chiedono solo `CLAUDE.md`, `.gitignore` e `.gitattributes`.
 7. Crea `_template/avvio-progetto.md` nel progetto, copiandolo dal template.

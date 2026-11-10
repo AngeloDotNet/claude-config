@@ -4,12 +4,95 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-10
 
+### Wiki: pagina «Cosa contiene» allineata al template
+
+**Perché:** la pagina `contenuto.md` della wiki non elencava `lavoro.md`, i nuovi `paths:` di `frontend.md` né gli esempi aggiunti in `_template/`.
+**Cosa / Dove:** `docs/claude-config/contenuto.md` (repository `wiki`): riga di `lavoro.md` nella tabella dei moduli, `angular.json` e `tsconfig*.json` tra i file che caricano `frontend.md`, righe `ci.yml`, `eslint.config.example.js` e `settings.example.json` nella tabella di `_template/`.
+**Verifica:** solo testo, nessuna build della wiki; nessun percorso reale nella pagina.
+**Note:** la riga di `check-quality` in `plugin.md` resta da aggiornare (`CHECKLIST.md`): la pagina ha modifiche non committate di un'altra sessione. Wiki non committata.
+
+### Esempi di ESLint e di CI nel template
+
+**Perché:** le regole dicono «verificato dal lint» e «CI a ogni PR», ma il template non aveva alcuna configurazione di riferimento (analisi, punto 6c).
+**Cosa / Dove:** `_template/eslint.config.example.js` (flat config con `angular-eslint`: no `any`, `OnPush`, `inject()`, prefisso dei selettori, control flow, accessibilità dei template, confini tra `core/`, `shared/` e `features/`); `_template/ci/ci.yml` (job backend e frontend: build, test, lint, audit; action fissate allo SHA: checkout v7.0.1, setup-node v7.1.0, setup-dotnet v6.1.0, lette il 2026-11-10 dai repository ufficiali con `gh api` in sola lettura); descrizione in `_template/avvio-progetto.md` §4.
+**Verifica:** `node --check` sul file ESLint; il YAML non è stato eseguito su GitHub e i nomi delle regole non sono stati provati su un progetto Angular. Segnalato nei commenti dei file e in `avvio-progetto.md`.
+**Note:** gli SHA e le regole vanno riverificati al primo uso. Non committato (`piano-commit.md`).
+
+### Regole frontend moderne (Angular)
+
+**Perché:** `frontend.md` non diceva nulla su Signal Forms, `@let`, router moderno, uso di SSR e accessibilità con il CDK; scelta dell'utente: partire dal solo testo (6b), senza `eslint.config.js` né CI.
+**Cosa / Dove:** `frontend.md` 1.6: Signal Forms non finché la versione installata non è stabile (§2 Form); guard e resolver funzionali, `canMatch`, `withComponentInputBinding()` (§2 Routing); regole d'uso di SSR (`afterNextRender`, niente `window` nel costruttore, nessun segreto nello stato trasferito, §8); `@let` (§13); `@angular/cdk/a11y` (§3 A11y). Tutte PREFER o condizionate alla versione.
+**Verifica:** solo testo, nessuna build; `git diff --check` da eseguire.
+**Note:** restano da fare, su richiesta, `eslint.config.js` e CI di esempio (6b). Non committato (`piano-commit.md`).
+
+### Nuovi avvisi del frontend nel plugin `kit`
+
+**Perché:** diverse regole di `frontend.md` erano solo scritte, senza alcun controllo. Verificato sul codice, il plugin copriva già l'Angular legacy (`guard-patterns`), i colori nei `.css` e i nomi Compose `compose*.yaml`: i controlli mancanti erano meno di quelli segnalati dall'analisi. Per scelta dell'utente sono avvisi non bloccanti, per evitare falsi positivi che fermino il lavoro.
+**Cosa / Dove:** `plugins/kit/scripts/check-write.mjs` (`check-quality`): avvisa su `@Input`/`@Output`/`@ViewChild`/`@ContentChild` (§14), `@HostBinding`/`@HostListener` (§15), `template:`/`styles:` inline (§2), `mutate()` su un signal (§13), `waitForTimeout` (§10), `ngClass`/`ngStyle` (§14) e `transition: all` (§3). Commenti di intestazione di `check-write.mjs` e `guard-write.mjs` aggiornati. `plugins/kit/tests/quality.test.mjs`: tre test nuovi.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 123 su 123 verdi (erano 120); `git diff --check` pulito.
+**Note:** nessun hook `SessionStart`: `prompt-start` già segnala le regole cambiate, e `core.md` §6.16 non chiede più la rilettura di tutte le regole. Il plugin cambia (con la skill `copia-regole` della fase 5): la versione si decide al prossimo rilascio. La riga di `check-quality` nella wiki (`plugin.md`) non è aggiornata (`CHECKLIST.md`). Non committato (`piano-commit.md`).
+
+### Mancanze tecniche di backend e Docker
+
+**Perché:** l'analisi delle regole segnalava lacune su health check, log di EF Core, hardening dei container e tipi di risposta degli endpoint. Verificate sui file, molte voci proposte erano già presenti (`TimeProvider`, `IExceptionHandler`, utente non root, `read_only`, `cap_drop`): sono state scritte solo quelle davvero mancanti, ognuna approvata dall'utente.
+**Cosa / Dove:** `backend-app.md` (1.2) §4.4: `EnableSensitiveDataLogging` e `EnableDetailedErrors` solo in Development. `docker.md` (1.2): `no-new-privileges` nell'hardening del compose di produzione; endpoint `/health/live` e `/health/ready` per un monitor esterno, solo se concordati per progetto, non pubblici e senza `HEALTHCHECK` nel container. `backend.md` (1.3): `TypedResults` e `Results<...>` per le risposte degli endpoint (PREFER).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito.
+**Note:** le API citate (health check, `TypedResults`) sono stabili e non sono state rilette sulla documentazione in questa sessione; `backend.md` chiede di verificarle sulla versione installata. Scartati per scelta dell'utente: pooling e retry di EF Core, `LoggerMessage`. Frontend, `eslint.config.js` e CI di esempio rimandati. Non committato (`piano-commit.md`).
+
+### Nuovo modulo `lavoro.md` e permessi di esempio
+
+**Perché:** le regole non dicevano come lavorare con Claude Code su contesto e token, indagine dei difetti, review, contenuti non fidati e imprevisti, e il template non offriva un punto di partenza per i permessi.
+**Cosa / Dove:** `.claude/rules/lavoro.md` (1.0, circa 3 KB, sempre caricato): lettura mirata e subagent di sola lettura per le ricerche ampie, `/clear` e plan mode, indagine di un difetto (riprodurre, una ipotesi alla volta, causa radice, test di regressione), review (`/code-review`, verifica di ogni rilievo prima di applicarlo), contenuti non fidati come dati (prompt injection), imprevisti e rollback (migrazione distruttiva, `git revert`). `_template/settings.example.json`: `deny` per `.env`, chiavi e `secrets/`, `allow` per i comandi di sola verifica; descritto in `avvio-progetto.md` §4, non copiato da solo. `lavoro.md` aggiunto agli elenchi dei moduli sempre previsti: `core.md` (moduli correlati), `CLAUDE.md`, `avvio-progetto.md` e skill `/kit:copia-regole` (anche nella modalità solo Git).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; JSON valido; `git diff --check` pulito.
+**Note:** la sintassi dei permessi di `settings.example.json` va verificata sulla versione di Claude Code installata (non verificata in questa sessione). Non committato (`piano-commit.md`). Il rilascio del plugin non cambia, ma la skill `/kit:copia-regole` è modificata: valutare la versione del plugin al prossimo rilascio.
+
+### Percorsi di caricamento dei moduli (`paths:`)
+
+**Perché:** `docker.md` non si caricava sui file Compose con estensione `.yaml` o chiamati `compose.yml` (il nome preferito da Compose V2), né su `.dockerignore`; `frontend.md` e `security-frontend.md` non si caricavano su `angular.json` e `tsconfig*.json`, cui si riferiscono le regole su compilatore e budget; i moduli opzionali, una volta attivati, si sarebbero caricati sempre perché senza `paths:`.
+**Cosa / Dove:** `docker.md` (1.2): `**/{docker-compose,compose}*.{yml,yaml}`, `**/.dockerignore`. `frontend.md` e `security-frontend.md`: aggiunti `**/angular.json` e `**/tsconfig*.json`. `backend-email.md`, `backend-infra.md` e `feature-workflow.md`: aggiunta l'intestazione `paths:` (backend, e backend più frontend per l'ultimo). `CLAUDE.md`: elenco dei percorsi aggiornato.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito.
+**Note:** scelta dell'utente: solo `paths:` e intestazioni, nessun contenuto spostato (le sezioni lunghe di `core.md`, `git.md` e `security.md` restano sempre caricate). Il controllo dei segreti del plugin (`guard-write.mjs`) non riconosce ancora i nuovi nomi Compose: annotato in `CHECKLIST.md`. Non committato (`piano-commit.md`).
+
+### Deduplica di regole ripetute tra i moduli
+
+**Perché:** lo stesso concetto era scritto in più punti (permessi git, regola «una domanda alla volta», piano, checklist di sicurezza, sicurezza del frontend, micro frontend), con il rischio che le copie divergessero e con più token sempre caricati.
+**Cosa / Dove:** `core.md` (3.37): §6.11 rimanda a `git.md`; §5 (CI/CD) e §0b (prima voce) accorciati; §6.20, §6.21 e §6.16 ridotti a rimandi al punto 15 e alla regola inviolabile; in §0b quattro voci di sicurezza unite in due. `git.md` (1.4): intro e «Sicurezza della cronologia» rimandano a «Integrazione GitHub». `frontend.md` (1.5): §9, §2 «Performance» e §12 «Quando valutarli» senza ripetizioni. `CLAUDE.md`: voce «Push, PR, tag…» rimanda a `git.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito. Risparmio di circa 1,5 KB nei file sempre caricati: la riduzione sostanziale è nella fase 4.
+**Note:** nessuna regola eliminata. Molti duplicati segnalati dall'analisi erano già rimandi (per esempio il primo amministratore e le migrazioni in `docker.md`) e non sono stati toccati. Non committato (`piano-commit.md`).
+
+### Correzione di contraddizioni e rimandi tra i moduli
+
+**Perché:** un'analisi delle regole ha trovato punti in contrasto tra moduli o con rimandi imprecisi; ognuno è stato verificato sui file prima di correggerlo (`PIANO.md`, fase 1) e le scelte sostanziali sono state decise dall'utente.
+**Cosa / Dove:**
+- `git.md` (1.4): suffisso `(#NNN)` dei commit (squash su `develop`, `merge:` su `main`); push eseguito da Claude solo su richiesta o con conferma (nessun «a cura dell'utente» in «Commit multipli»); «Repository» non dice più che Claude non ha accesso ai repository; la CI verde è a cura dell'utente.
+- `core.md` (3.37): copertura 80% sulla logica di business del codice nuovo o modificato (§4); plan mode di Claude Code conciliato con `PIANO.md` (§6.15: il piano approvato si copia in `PIANO.md` prima di toccare file); §6.16 rilegge solo `PIANO.md` e `CLAUDE.md`, le regole sono già caricate; la cancellazione dei piani senza conferma è un'eccezione voluta al punto 11.
+- `security-backend.md` (1.1): niente `secret` Docker, solo variabili d'ambiente da `.env`, come `docker.md`. `security.md` (2.1) e `security-frontend.md` (1.1): i rimandi a «Autenticazione e Autorizzazione» indicano `security-backend.md`.
+- `backend.md` (1.3): rimando a `backend-architecture.md` §2c; motivo del divieto di Quartz.NET e Hangfire (scelta del kit, derogabile su proposta approvata).
+- `feature-workflow.md`: in Vertical Slice le entità stanno in una cartella condivisa (`Data/`), come `backend-architecture.md` §2a.
+- `frontend.md` (1.5): `transition` solo sulle proprietà che cambiano, mai `all`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito.
+**Note:** non committato (`piano-commit.md`). Il rilascio del plugin non cambia.
+
+### Best practice ufficiali di .NET e di Angular nelle regole
+
+**Perché:** le regole non dicevano esplicitamente che Claude, per ciò che esse non disciplinano, segue le best practice ufficiali di .NET e di Angular; restava solo il rimando generico alle convenzioni del linguaggio in `core.md` §6.17.
+**Cosa / Dove:** `.claude/rules/backend.md` (versione 1.2): nuova voce «Best practice .NET (PREFER)» in fondo a §2, con rimando alla documentazione ufficiale Microsoft. `.claude/rules/frontend.md` (versione 1.4): nuova voce «Guida ufficiale di Angular (PREFER)» in testa a §15 «Migliori pratiche di Angular» (angular.dev). In entrambe: verifica sulla versione installata e non a memoria (`core.md` §6.13), prevalenza delle regole del kit e del `CLAUDE.md`, scelte nuove da proporre prima (`core.md` §6.18).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito. `README.md` e la wiki (`docs/claude-config/contenuto.md`) non descrivono il contenuto dei due moduli: nessuna modifica.
+**Note:** nessuna sezione «§17» separata, per non duplicare §15. Non committato (`piano-commit.md`). Il rilascio del plugin non cambia.
+
+### Nome libero per il branch di sincronizzazione di main in develop
+
+**Perché:** dopo la chiusura di una PR di sincronizzazione il branch `bugfix/sync-main-into-develop` esisteva ancora in locale e ha costretto a scegliere a mano `-2` e `-3`; la skill e `git.md` non dicevano cosa fare.
+**Cosa / Dove:** `plugins/kit/skills/pr-main/SKILL.md` (passo 4): se il nome esiste già in locale o sul remoto, propone il primo nome libero (`-2`, `-3`, ...) con la domanda singola, verificando con `git branch --list` e `git ls-remote --heads origin`, senza cancellare né riusare il vecchio. `.claude/rules/git.md` (versione 1.3, «Strategia di merge con git flow»): stessa regola.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito. `README.md` e wiki non citano il nome del branch.
+**Note:** la skill è testo senza test automatici. Non committato (`piano-commit.md`). La versione del plugin non cambia.
+
 ### Rilascio del plugin kit 1.11.0
 
 **Perché:** le novità del plugin dopo la 1.10.0 (skill per commit e PR, promemoria del sito, riordino delle regole di sicurezza) erano ferme in `develop` con la versione 1.10.0.
 **Cosa / Dove:** `plugins/kit/.claude-plugin/plugin.json`: versione 1.11.0. Sezione `### Rilascio 1.11.0` qui sotto. Wiki, `docs/claude-config/plugin.md`: nota di aggiornamento per la 1.11.0 (rinomina di `/kit:code-review` in `/kit:review-regole`, diciannove comandi, tredici controlli).
 **Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 120 su 120 verdi; `git diff --check` pulito; JSON validi.
-**Note:** tag, PR e merge (merge commit, perché coinvolgono `main`) restano da fare su richiesta.
+**Note:** PR #22 chiusa con merge commit su `main` (`15b04a9`); tag `v1.11.0` e release GitHub pubblicati; `main` riportato in `develop` con le PR #23 (repository) e #37 (wiki).
 
 ### Rilascio 1.11.0
 

@@ -85,6 +85,31 @@ test("frontend: token --nome in scss non segnalati, colore fuori token sì", () 
   assert.match(notes("card.scss", ".card { color: #ff0000; }"), /fuori dai token/);
 });
 
+test("frontend: decoratori legacy, host decorator, template inline, mutate, waitForTimeout segnalati in .ts", () => {
+  assert.match(notes("a.component.ts", "class A { @Input() name = ''; }"), /@Input\/@Output/);
+  assert.match(notes("a.component.ts", "@ViewChild('x') el;"), /@Input\/@Output\/@ViewChild/);
+  assert.match(notes("a.component.ts", "class A { @HostListener('click') on() {} }"), /@HostBinding\/@HostListener/);
+  assert.match(notes("a.component.ts", "@Component({\n  template: `<p>x</p>`,\n})"), /template o stili inline/);
+  assert.match(notes("a.component.ts", "@Component({\n  styles: ['p{}'],\n})"), /template o stili inline/);
+  assert.match(notes("a.component.ts", "const s = signal([]);\ns.mutate(v => v.push(1));"), /mutate\(\)/);
+  assert.match(notes("flow.e2e.ts", "await page.waitForTimeout(500);"), /waitForTimeout/);
+});
+
+test("frontend: input()/output(), templateUrl, mutate fuori dai signal e attese osservabili non segnalati", () => {
+  assert.equal(notes("a.component.ts", "name = input<string>();\nsaved = output<void>();"), "");
+  assert.equal(notes("a.component.ts", "@Component({ templateUrl: './a.component.html', styleUrl: './a.component.css' })"), "");
+  assert.equal(notes("a.service.ts", "store.mutate(x);"), "");
+  assert.equal(notes("flow.e2e.ts", "await expect(page.getByRole('button')).toBeVisible();"), "");
+});
+
+test("frontend: ngClass/ngStyle e transition: all segnalati, binding nativi e proprietà singole no", () => {
+  assert.match(notes("a.component.html", '<div [ngClass]="cls"></div>'), /ngClass\/ngStyle/);
+  assert.match(notes("a.component.ts", "imports: [NgStyle], host: { '[ngStyle]': 's' }"), /ngClass\/ngStyle/);
+  assert.match(notes("a.component.css", ".b { transition: all 200ms ease; }"), /transition: all/);
+  assert.equal(notes("a.component.html", '<div [class.active]="on" [style.width.px]="w"></div>'), "");
+  assert.equal(notes("a.component.css", ".b { transition: background-color 200ms ease; }"), "");
+});
+
 // --- Ambito ---
 
 test("nessun output per file fuori ambito o senza problemi", () => {
