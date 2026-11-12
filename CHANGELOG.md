@@ -4,6 +4,25 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-11
 
+### Commit di bump proposto da Claude a fine piano
+
+**Perché:** il commit di bump partiva solo da una richiesta esplicita; il rilascio restava dimenticato a fine lavoro.
+**Cosa / Dove:** `.claude/rules/git.md` (1.5), «Rilascio»: a fine di ogni piano concluso Claude valuta se serve un rilascio e propone di sua iniziativa il commit di bump con la versione SemVer motivata; ok esplicito dell'utente, mai su `main` o `develop` (branch `release/X.Y.Z` o `hotfix/X.Y.Z`).
+**Verifica:** solo testo, nessuna build né test.
+
+### Hook guard-commands: controllo sulla creazione dei tag
+
+**Perché:** il formato e il branch del tag erano solo regole scritte, senza controllo.
+**Cosa / Dove:** `plugins/kit/scripts/guard-commands.mjs`: `git tag` in creazione è bloccato se il nome non è `X.Y.Z` (es. `v1.0.0`) o se il branch corrente non è `main`; elenco e cancellazione dei tag passano. Test in `plugins/kit/tests/github.test.mjs` (4 test al posto del caso «tag passa sempre»).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126 su 126 verdi.
+**Note:** il via dell'utente prima di tag, push del tag e release non è verificabile dall'hook (sa solo bloccare): resta una regola scritta. Il branch richiesto è `main` fisso, per scelta: `git.md` adotta sempre `main` e `develop`, quindi un progetto con un altro nome (es. `master`) lo adotta prima.
+
+### Formato e momento del tag di rilascio
+
+**Perché:** le regole dicevano chi può creare tag e rilasci, ma non il formato del tag né quando crearlo, e il via dell'utente non era richiesto per tag, push del tag e rilascio.
+**Cosa / Dove:** `.claude/rules/git.md` (1.5), «Rilascio»: tag `X.Y.Z` annotato, senza `v`, creato solo dopo il merge su `main` e sul commit di merge; Claude propone di sua iniziativa tag, push del tag e `gh release` e chiede il via prima di ciascuno. «Integrazione GitHub» e `core.md` (3.38) §5c allineati («consentite sempre» ora rimanda alle condizioni di «Rilascio»). `plugins/kit/skills/pr-main/SKILL.md`, passo 9: promemoria coerente con la regola.
+**Verifica:** solo testo, nessuna build né test.
+
 ### Pubblicazione delle revisioni e aggiornamento della documentazione
 
 **Perché:** il lavoro del 2026-11-10 era rimasto non committato; le note «Non committato» delle voci di ieri non erano più vere dopo la consegna.
