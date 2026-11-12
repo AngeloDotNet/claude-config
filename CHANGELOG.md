@@ -2,6 +2,21 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-12
+
+### Rilascio del plugin kit 1.12.0
+
+**Perché:** il controllo dell'hook sulla creazione dei tag (PR #29) era in `develop` con la versione 1.11.0.
+**Cosa / Dove:** `plugins/kit/.claude-plugin/plugin.json`: versione 1.12.0. Sezione `### Rilascio 1.12.0` qui sotto.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`; `plugin.json` valido (esito in `PIANO.md`).
+**Note:** il tag sarà `1.12.0`, senza prefisso `v`, dopo il merge su `main` (`git.md`, «Rilascio»); i tag precedenti usano ancora `v`.
+
+### Rilascio 1.12.0
+
+**Aggiunto:** `guard-commands` blocca la creazione di un tag il cui nome non è `X.Y.Z` o fatta fuori da `main` (elenco e cancellazione dei tag passano).
+
+**Modificato:** `git.md` 1.5 e `core.md` 3.38: tag annotato `X.Y.Z` dopo il merge su `main`, via dell'utente per tag, push del tag e `gh release`, commit di bump proposto da Claude a fine piano; promemoria del passo 9 di `/kit:pr-main` allineato; `.editorconfig` senza tre voci di stile C#.
+
 ## 2026-11-11
 
 ### Commit di bump proposto da Claude a fine piano
