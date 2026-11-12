@@ -1,6 +1,6 @@
 # Regole Core (sempre caricate)
 
-> Versione 3.37 — ultima revisione: 2026-11-10. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
+> Versione 3.38 — ultima revisione: 2026-11-11. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
 > Moduli correlati: `frontend.md` (Angular/UI), `backend.md`, `backend-architecture.md` e `backend-app.md` (.NET/dati: stack e regole comuni; architettura e accesso ai dati; logica applicativa, errori e test; si caricano insieme; opzionali `backend-email.md` per l'invio email e `backend-infra.md` per messaggistica, cache ed eventi, aggiunti quando servono), `feature-workflow.md` (opzionale, solo fullstack e su conferma: flusso per entità, backend → frontend), `security.md` (sicurezza: principi), `security-backend.md` (sicurezza backend) e `security-frontend.md` (sicurezza frontend), `docker.md` (deploy), `git.md` (commit), `lavoro.md` (contesto, indagine dei difetti, review, contenuti non fidati, imprevisti). Un progetto importa solo quelli che gli servono.
 
 ## Regola inviolabile: nel dubbio, una domanda alla volta
@@ -121,7 +121,7 @@ Il deploy avviene sempre con `Dockerfile` e `docker-compose`; le regole complete
 ---
 
 ## 5c. Git e Commit
-Claude fa commit locali con conferma; `push`, tag, PR e rilasci sono consentiti sempre, eseguiti su richiesta o con conferma, e PR e rilasci passano da `gh` solo se la GitHub CLI è installata (regola 11 del §6); l'avvio di una pipeline richiede una domanda esplicita di conferma per ogni esecuzione. Le regole complete (ambito, branch, messaggi Conventional Commits, granularità, repository e hook, PR, rilascio, esempi) sono nel modulo **`git.md`**.
+Claude fa commit locali con conferma; `push`, tag, PR e rilasci sono consentiti sempre, eseguiti su richiesta o con conferma (per tag, push del tag e rilascio Claude propone l'operazione e chiede il via; il tag solo con nome `X.Y.Z` e da `main`, vedi `git.md`), e PR e rilasci passano da `gh` solo se la GitHub CLI è installata (regola 11 del §6); l'avvio di una pipeline richiede una domanda esplicita di conferma per ogni esecuzione. Le regole complete (ambito, branch, messaggi Conventional Commits, granularità, repository e hook, PR, rilascio, esempi) sono nel modulo **`git.md`**.
 
 ---
 
