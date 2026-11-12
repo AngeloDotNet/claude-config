@@ -10,7 +10,9 @@
 // equivalenti PowerShell, es. Remove-Item -Recurse -Force), git add -A / --all / . (e i file sensibili: .env,
 // secrets.json, chiavi e certificati), git commit con messaggio non Conventional Commits
 // (git.md: tipo(scope): descrizione, oggetto ≤ 72 caratteri; letto da -m o da heredoc).
-// Sempre consentiti: git push (normale), git tag (creazione). gh pr create/merge e gh release
+// git tag (creazione): solo con nome X.Y.Z (senza v) e dal branch main (git.md, «Rilascio»); il via
+// dell'utente non è verificabile dall'hook ed è una regola scritta. Sempre consentiti: git push (normale),
+// elenco e cancellazione dei tag. gh pr create/merge e gh release
 // create/delete/upload/edit passano solo se la GitHub CLI è installata sul PC: lo dice la riga
 // «GitHub CLI (gh) installata» nel CLAUDE.md della radice del repository (git.md), scritta una volta
 // per progetto dopo la domanda dell'utente. Fuori da un repository, vale il CLAUDE.md della cartella del comando.
@@ -225,6 +227,42 @@ function analyzeCommitMessage(rest) {
   return `messaggio di commit non conforme: ${problem}`;
 }
 
+// Opzioni di git tag che non creano un tag (elenco, cancellazione, verifica): sempre consentite.
+const TAG_READ_FLAGS = new Set([
+  "-l", "--list", "-d", "--delete", "-v", "--verify", "-n", "--contains", "--no-contains",
+  "--merged", "--no-merged", "--points-at", "--sort", "--format", "--column", "--no-column",
+]);
+// Opzioni di git tag che consumano il valore successivo.
+const TAG_VALUE_FLAGS = new Set(["-m", "--message", "-F", "--file", "-u", "--local-user", "--cleanup"]);
+
+/** Creazione di un tag (git.md, «Rilascio»): nome X.Y.Z senza `v`, solo dal branch main (dopo il merge). */
+function analyzeGitTag(rest, dir) {
+  if (rest.some((t) => !t.quoted && (TAG_READ_FLAGS.has(t.text) || t.text.startsWith("--sort=") || t.text.startsWith("--format=")))) return null;
+  let name = null;
+  for (let k = 0; k < rest.length; k++) {
+    if (!rest[k].quoted && TAG_VALUE_FLAGS.has(rest[k].text)) k++;
+    else if (!isFlag(rest[k])) {
+      name = rest[k].text;
+      break;
+    }
+  }
+  if (name === null) return null;
+  if (!/^\d+\.\d+\.\d+$/.test(name)) {
+    blockHint =
+      "Il tag di rilascio ha il formato X.Y.Z, senza prefisso v (git.md, «Rilascio»), uguale alla versione nel file di versione e " +
+      "nel CHANGELOG.md. Chiedi all'utente il via con UNA SOLA domanda prima di crearlo.";
+    return `nome del tag "${name}" non nel formato X.Y.Z`;
+  }
+  const branch = currentBranch(dir);
+  if (branch !== "main") {
+    blockHint =
+      "Il tag si crea solo dopo il merge su main, dal branch main e sul commit di merge (git.md, «Rilascio»). " +
+      "Chiedi all'utente il via con UNA SOLA domanda dopo aver verificato il merge.";
+    return `git tag dal branch "${branch || "sconosciuto"}" (git.md: il tag si crea solo da main, dopo il merge)`;
+  }
+  return null;
+}
+
 function analyzeGit(args, cwd) {
   let dir = cwd;
   let k = 0;
@@ -263,6 +301,8 @@ function analyzeGit(args, cwd) {
         : null;
     case "add":
       return analyzeGitAdd(rest);
+    case "tag":
+      return analyzeGitTag(rest, dir);
     case "commit": {
       const branch = currentBranch(dir);
       if (PROTECTED_BRANCHES.has(branch)) {

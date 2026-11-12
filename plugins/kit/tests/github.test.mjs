@@ -1,5 +1,6 @@
-// Test di guard-commands per le operazioni GitHub (git.md, «Integrazione GitHub»): push e tag sono
-// sempre consentiti; gh pr e gh release richiedono la riga «GitHub CLI (gh) installata» nel CLAUDE.md.
+// Test di guard-commands per le operazioni GitHub (git.md, «Integrazione GitHub»): push sempre
+// consentito; la creazione di un tag solo con nome X.Y.Z e dal branch main; gh pr e gh release
+// richiedono la riga «GitHub CLI (gh) installata» nel CLAUDE.md.
 // Ogni caso usa una cartella temporanea con (o senza) CLAUDE.md. Il hook è un processo con input JSON su stdin.
 // Eseguire con: node --test plugins/kit/tests/github.test.mjs
 
@@ -37,7 +38,7 @@ const ghLine = (value, suffix = "") =>
   `# Progetto\n\n## Eccezioni alle regole globali\n- [nessuna]\n` +
   `- **GitHub CLI (gh) installata:** ${value}${suffix}\n`;
 
-// --- push e tag: sempre consentiti ---
+// --- push sempre consentito; tag: formato e branch ---
 
 test("push: passa anche senza CLAUDE.md e senza riga gh", () => {
   project(null, (dir) => {
@@ -48,11 +49,53 @@ test("push: passa anche senza CLAUDE.md e senza riga gh", () => {
   });
 });
 
-test("tag: creazione passa sempre; elenco dei tag passa sempre", () => {
+/** Cartella temporanea con un repository sul branch indicato (nessun commit: basta il nome del branch). */
+function repoOn(branch, fn) {
+  return project(null, (dir) => {
+    // `-b` richiede git 2.28 o successivo: se l'inizializzazione fallisce il test lo dice, invece di dare un esito falso.
+    const init = spawnSync("git", ["init", "-q", "-b", branch], { cwd: dir, encoding: "utf8" });
+    assert.equal(init.status, 0, `git init -b ${branch} non riuscito: ${init.stderr}`);
+    return fn(dir);
+  });
+}
+
+test("tag: elenco e cancellazione passano sempre", () => {
   project(null, (dir) => {
-    assert.equal(guard("git tag v1.0.0", dir).code, 0);
-    assert.equal(guard("git tag -a v1.0.0 -m \"release\"", dir).code, 0);
+    assert.equal(guard("git tag", dir).code, 0);
     assert.equal(guard("git tag -l", dir).code, 0);
+    assert.equal(guard("git tag --list \"1.*\"", dir).code, 0);
+    assert.equal(guard("git tag -d v1.0.0", dir).code, 0);
+  });
+});
+
+test("tag: creazione X.Y.Z dal branch main passa", () => {
+  repoOn("main", (dir) => {
+    assert.equal(guard("git tag 1.0.0", dir).code, 0);
+    assert.equal(guard("git tag -a 1.0.0 -m \"release 1.0.0\"", dir).code, 0);
+    assert.equal(guard("git tag -m \"v2\" 7.1.3", dir).code, 0);
+  });
+});
+
+test("tag: nome con prefisso v o non X.Y.Z è bloccato", () => {
+  repoOn("main", (dir) => {
+    for (const cmd of ["git tag v1.0.0", "git tag -a v1.0.0 -m \"release\"", "git tag release-1", "git tag 1.0"]) {
+      const r = guard(cmd, dir);
+      assert.equal(r.code, 2, cmd);
+      assert.match(r.err, /X\.Y\.Z/);
+    }
+  });
+});
+
+test("tag: creazione da un branch diverso da main è bloccata", () => {
+  for (const branch of ["develop", "release/1.0.0"]) {
+    repoOn(branch, (dir) => {
+      const r = guard("git tag -a 1.0.0 -m \"release\"", dir);
+      assert.equal(r.code, 2, branch);
+      assert.match(r.err, /main/);
+    });
+  }
+  project(null, (dir) => {
+    assert.equal(guard("git tag 1.0.0", dir).code, 2);
   });
 });
 
