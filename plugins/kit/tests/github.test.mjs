@@ -225,6 +225,30 @@ test("cancellazione di branch remoti: solo feature/, bugfix/, release/, hotfix/,
   });
 });
 
+test("redirezioni (2>&1, > file, 2>/dev/null) non sono argomenti di git: non cambiano l'esito", () => {
+  project(ghLine("sì"), (dir) => {
+    for (const cmd of [
+      "git push origin --delete release/1.13.0 2>&1",
+      "git push origin --delete feature/x > out.txt",
+      "git push origin --delete feature/x 2>/dev/null",
+      "git push origin --delete feature/x 2> err.txt",
+      "git push origin :bugfix/y 2>&1 | tail -3",
+    ]) {
+      assert.equal(guard(cmd, dir).code, 0, cmd);
+    }
+    for (const cmd of [
+      "git push origin --delete main 2>&1",
+      "git push origin --delete feature/x main 2>&1",
+      "git push origin --delete develop > out.txt",
+      "git push --force origin main 2>&1",
+      "git add -A 2>&1",
+      "git add .env 2>/dev/null",
+    ]) {
+      assert.equal(guard(cmd, dir).code, 2, cmd);
+    }
+  });
+});
+
 test("reset --hard e --no-verify: bloccati anche con gh sì", () => {
   project(ghLine("sì"), (dir) => {
     assert.equal(guard("git reset --hard HEAD~1", dir).code, 2);
