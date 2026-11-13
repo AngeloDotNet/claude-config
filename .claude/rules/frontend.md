@@ -7,7 +7,7 @@ paths:
 
 # Regole Frontend (Angular, TypeScript & UI)
 
-> Versione 1.6 — ultima revisione: 2026-11-10.
+> Versione 1.8 — ultima revisione: 2026-11-13.
 > Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md` e `security-frontend.md`.
 
 ## 1. Stack Frontend
@@ -54,7 +54,7 @@ paths:
 - **Lint e formattazione:** `angular-eslint` + Prettier. Il codice non deve introdurre warning.
 - **Node e npm fissati:** versione di Node dichiarata in `.nvmrc` (LTS attiva) e in `engines` di `package.json`, con `engine-strict=true` in `.npmrc`; stessa versione nel Dockerfile e nella CI. `npm ci` e lock file committato; mai `npm install` che modifica il lock senza che sia lo scopo del compito.
 - **Aggiornamenti di Angular:** solo con `ng update` (mai modificare a mano le versioni dei pacchetti `@angular/*`, che devono restare allineate). L'aggiornamento di versione maggiore è un compito a sé, in un branch dedicato: Claude lo propone e chiede conferma, perché può toccare PrimeNG, TypeScript e le API deprecate (vedi anche "Zoneless"). Le versioni minori e patch seguono Dependabot/Renovate.
-- **Performance:** budget dei bundle in `angular.json`, lazy loading delle route, `@defer` per i componenti pesanti, `NgOptimizedImage` per le immagini, font self-hosted. Per ridurre il tempo di caricamento si parte da questi strumenti (non dai micro frontend, §12).
+- **Performance:** budget dei bundle in `angular.json`, con valori di partenza i default di Angular CLI (`initial`: avviso a 500 kB, errore a 1 MB; stili per componente: avviso a 4 kB, errore a 8 kB), da adattare per progetto e annotare nel `CLAUDE.md` («Soglie di performance diverse dal default»); un budget superato è un errore di build, non si alza per far passare la build senza motivo dichiarato. Per le pagine pubbliche i Core Web Vitals di riferimento sono le soglie «buone» di web.dev al 75° percentile (LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1), misurati con Lighthouse o sul campo. Lazy loading delle route, `@defer` per i componenti pesanti, `NgOptimizedImage` per le immagini, font self-hosted. Per ridurre il tempo di caricamento si parte da questi strumenti (non dai micro frontend, §12).
 
 ---
 
@@ -76,10 +76,11 @@ paths:
 - **Pagine di sistema:** 404, 403, 500 e manutenzione, coerenti con il design dell'app.
 - **Iconografia:** una sola libreria (PrimeIcons).
 - **Accessibilità (A11y):**
-  - Contrasti WCAG AA (≥ 4.5:1 testo, ≥ 3:1 elementi UI); ogni input ha una `label` associata.
+  - Riferimento di accessibilità: WCAG 2.2 livello AA. Contrasti (≥ 4.5:1 testo, ≥ 3:1 elementi UI); ogni input ha una `label` associata.
   - Navigazione da tastiera completa (`Tab`, `Enter`, `Escape`), gestione corretta del focus nei dialog, skip link.
-  - `aria-live` per toast ed errori; area di tocco minima 44px.
-  - Verifica con axe / Lighthouse.
+  - `aria-live` per toast ed errori; area di tocco minima 44px (scelta del kit, più rigida dei 24px del criterio 2.5.8 di WCAG 2.2).
+  - Criteri nuovi di WCAG 2.2 da rispettare: il focus non è mai nascosto da elementi fissi come header o banner (2.4.11); ogni azione di trascinamento ha un'alternativa con un clic o la tastiera (2.5.7); i dati già inseriti nello stesso flusso non si richiedono di nuovo (3.3.7); l'autenticazione non richiede un test cognitivo e permette incolla e gestori di password (3.3.8).
+  - Verifica con axe / Lighthouse; axe non trova tutto, quindi per i flussi principali (login, form principali, navigazione) si aggiunge una verifica manuale con tastiera e con un lettore di schermo, annotata nella PR.
   - **PREFER:** per focus trap, `LiveAnnouncer` e navigazione con frecce nei componenti propri, `@angular/cdk/a11y` (MIT; si dichiara come dipendenza, `core.md` §6.8); i componenti PrimeNG li gestiscono già.
 
 ---
@@ -151,7 +152,7 @@ Le regole di sicurezza del frontend sono in `security-frontend.md`, che è l'uni
 ---
 
 ## 10. Test Frontend
-- **Strumenti e ambito:** Vitest per servizi e componenti con logica, Playwright per i flussi E2E principali (vedi `core.md` §4). I componenti puramente di presentazione non richiedono test dedicati se coperti dai flussi E2E.
+- **Strumenti e ambito:** Vitest per servizi e componenti con logica, Playwright per i flussi E2E principali (vedi `core.md` §4), con Chromium a ogni PR e, per rispettare i browser supportati (§8), anche Firefox e WebKit (motore di Safari) almeno prima di ogni rilascio e nella CI notturna, se il progetto la ha; se non la ha, prima di ogni rilascio. I componenti puramente di presentazione non richiedono test dedicati se coperti dai flussi E2E.
 - **Runner e comandi:** Vitest con ambiente DOM (jsdom) tramite il builder `@angular/build:unit-test`, se la versione di Angular installata lo prevede (verificalo, `core.md` §6.13). Gli script npm `test` e `test:coverage` stanno in `package.json` e nel `CLAUDE.md` (tabella Comandi); la soglia di copertura resta quella di `core.md` §4.
 - **Unit test (`*.spec.ts`):** ogni servizio, guard, interceptor, pipe, direttiva e componente con logica nuovo o modificato ha il suo unit test, scritto insieme al codice (non rimandato). Il file `.spec.ts` sta accanto al file testato e ne porta il nome (`nome-pagina.component.spec.ts`, `nome.service.spec.ts`); per un componente testa il comportamento osservabile (DOM, `input()`/`output()`, interazioni) e non i dettagli interni. Un test per ramo rilevante: caso normale, errore, stato vuoto, input non validi. La soglia di copertura è quella di `core.md` §4. Se per un componente di presentazione si sceglie di non scrivere lo spec, il file non si crea vuoto né con test finti.
 - **Cosa si mocka:** solo i confini esterni, cioè le chiamate HTTP (`HttpTestingController` o client API generato sostituito) e servizi di browser (`localStorage`, `matchMedia`, clock). Non si mockano il router, i signal, le pipe e i componenti figli: si usano reali. Niente mock del `TranslationService` se esiste un'implementazione di test con chiavi reali.
