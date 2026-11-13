@@ -2,7 +2,7 @@
 
 Repository di partenza per i nuovi progetti sviluppati con [Claude Code](https://claude.com/claude-code).
 
-Contiene le regole di sviluppo (stack .NET + Angular, git flow, sicurezza, Docker) già organizzate nel formato che Claude Code carica da solo, più un `CLAUDE.md` da compilare per il progetto.
+Contiene le regole di sviluppo (stack .NET + Angular, git flow, sicurezza, Docker come modulo opzionale) già organizzate nel formato che Claude Code carica da solo, più un `CLAUDE.md` da compilare per il progetto.
 
 Le regole sono in italiano; codice, identificatori e messaggi di commit che ne derivano sono in inglese.
 
@@ -43,7 +43,7 @@ I controlli del plugin stanno in sei script. I controlli su scrittura sono raggr
 Il plugin aggiunge ventuno comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
-- `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`, aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/compact`.
+- `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`, aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/clear` o `/compact`.
 - `/kit:avvia-progetto`: avvia un progetto nuovo con le domande di avvio, e compila il `CLAUDE.md`.
 - `/kit:copia-regole`: copia le regole in un progetto che non le ha (usa la cartella corrente quando è valida, altrimenti chiede il percorso).
 - `/kit:aggiorna-regole`: aggiorna le regole di un progetto (file diversi, moduli rimossi dal template e righe del `CLAUDE.md` legate alle regole), con conferma e `.bak`.
