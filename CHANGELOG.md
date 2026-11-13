@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-13
 
+### Rilascio 1.14.0
+
+**Aggiunto:** le skill `/kit:verifica-frontend` e `/kit:sicurezza`; ogni skill apre la risposta con la riga «Modello in uso», che mostra l'effetto del campo `model`.
+**Modificato:** le tredici skill di revisione non modificano più file (`disable-model-invocation` e `disallowed-tools`); `/kit:commit-passo` e `/kit:pr-develop` partono senza conferme intermedie; `/kit:consegna` separa le voci non verificabili e chiude con le skill da lanciare; `docker.md` è un modulo opzionale; etichette MUST e PREFER uniformi in `backend.md` e `frontend.md`; `/kit:buonasera` consiglia `/clear` o `/compact` secondo il criterio di `lavoro.md`.
+**Corretto:** `guard-commands` non legge più le redirezioni (`2>&1`, `> file`) come argomenti di git.
+
 ### Commit della revisione sul ramo
 
 **Perché:** le voci di questo giorno dicono «Nessun commit» o «non committato»: era vero quando sono state scritte, ma la revisione ora è committata e va letta con questa nota.
