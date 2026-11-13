@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-13
 
+### Commit della revisione sul ramo
+
+**Perché:** le voci di questo giorno dicono «Nessun commit» o «non committato»: era vero quando sono state scritte, ma la revisione ora è committata e va letta con questa nota.
+**Cosa / Dove:** otto commit su `feature/review-skills-and-rules`: `213c63f` fix(kit), redirezioni nel parsing degli argomenti git; `b3fd6dc` test(kit), casi di redirezione nel guard git; `8f89b5f` feat(kit), skill di revisione in sola lettura e controlli di `consegna`; `fdc1ca6` test(kit), passi condivisi di `pr-develop` e `pr-main` allineati; `3063c60` docs(rules), etichette MUST e PREFER e versioni di `backend.md` e `frontend.md`; `4ac8e39` chore(rules), regola Docker spostata in `rules-optional/`; `3727b26` docs(template), `CLAUDE.md`, `README.md`, `_template/avvio-progetto.md` e `docs/skill.md`; `a47436d` docs(changelog), registro della revisione.
+**Verifica:** test del plugin 129/129 verdi prima di ogni commit; `git diff --check` pulito; build non applicabile.
+**Note:** `PIANO.md` e `CHECKLIST.md` restano fuori dai commit, come file di lavoro. Le voci precedenti di questo giorno restano com'erano. La wiki non è toccata da questo passo.
+
 ### Etichette MUST e PREFER chiuse in `backend.md` e `frontend.md`
 
 **Perché:** tre voci erano ambigue: «Principi SOLID» senza etichetta, «OpenAPI» e «Routing» con una parte PREFER dentro una voce MUST. «C# 14 / .NET 10» e «Componenti piccoli e focalizzati» non contengono parole di preferenza e restano MUST.
