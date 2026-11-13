@@ -2,6 +2,21 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-13
+
+### Rilascio del plugin kit 1.13.0
+
+**Perché:** la PR #34 ha portato in `develop` la riduzione dei blocchi degli hook e delle conferme delle skill (voci del 2026-11-12).
+**Cosa / Dove:** `plugins/kit/.claude-plugin/plugin.json`: versione 1.13.0. Sezione `### Rilascio 1.13.0` qui sotto.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; `plugin.json` valido.
+**Note:** il tag sarà `1.13.0`, senza prefisso `v`, dopo il merge su `main` (`git.md`, «Rilascio»).
+
+### Rilascio 1.13.0
+
+**Aggiunto:** `guard-commands` consente `git push --delete` per i branch di lavoro (`feature/`, `bugfix/`, `release/`, `hotfix/`); `pr-main` pulisce i branch già uniti dopo il merge e allinea `main` e `develop`; `commit-passo` propone `pr-develop` a fine lavoro; `buonasera` elenca i file non più utili e ricorda `/compact`; `aggiorna-regole` gestisce i moduli rimossi dal template e allinea il `CLAUDE.md`; campo `model` in ogni skill.
+
+**Modificato:** i blocchi di `git init` e della forma del messaggio di commit (maiuscola, punto finale, 72 caratteri) sono tolti dall'hook e restano regole scritte; `attesa-test` e `nowarn` diventano avvisi; `commit-passo`, `pr-develop` e `pr-main` partono senza conferme intermedie (il lancio è il via libera); `pr-develop` e 8 skill di sola lettura possono essere lanciate anche da Claude; `aggiorna-docs` e `buonasera` aggiornano markdown e wiki senza domande; `copia-regole` usa la cartella corrente se valida; `git.md` 1.6 e `core.md` 3.39.
+
 ## 2026-11-12
 
 ### Skill `aggiorna-regole`: moduli rimossi e allineamento del `CLAUDE.md`
