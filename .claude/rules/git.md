@@ -1,6 +1,6 @@
 # Regole Git e Commit
 
-> Versione 1.7 — ultima revisione: 2026-11-13.
+> Versione 1.8 — ultima revisione: 2026-11-13.
 
 > Richiede `core.md`. Si importa in ogni progetto versionato con git; `core.md` §5c rimanda a questo modulo.
 
@@ -51,13 +51,12 @@ Una funzionalità non è un unico commit gigante: è una **serie di commit picco
 - Se un commit corregge il precedente della stessa serie e non è stato ancora pubblicato (nessun upstream che lo contiene), puoi fare `--amend` solo sull'ultimo commit creato da te in sessione; altrimenti crea un commit `fix` nuovo.
 
 ## Commit multipli: piano e passo-passo
-**Con `/kit:commit-passo`** il lancio è il via libera: la skill presenta il piano, crea tutti i commit in sequenza senza ok a ciascuno né pause, e si ferma con una domanda solo se un controllo fallisce, compare un possibile segreto, il tipo del commit è ambiguo, un file ha modifiche per commit diversi, la build o i test sono rossi o un hook fallisce. Il resto di questa sezione descrive il flusso **fuori dalle skill**: quando le modifiche da committare sono più di un'unità logica (o l'utente chiede "committa tutto"), Claude non crea i commit in blocco:
-1. **Piano:** prima di creare qualsiasi commit, elenca i commit che intende fare, numerati e in ordine (vedi "Granularità e sequenza"): per ognuno oggetto proposto e file inclusi. Segnala i file che non rientrano in nessun commit (segreti, generati, estranei al lavoro). Segnala anche i file con **modifiche destinate a commit diversi**: `git add -p` è interattivo e non disponibile, quindi per quei file Claude **chiede caso per caso** se spezzarli (preparando una patch parziale applicata con `git apply --cached`, mostrata prima di committare) oppure unire i commit interessati; non sceglie da solo. Il piano si può correggere: l'utente può unire, dividere, riordinare o escludere commit. Il piano dei commit si salva in un file dedicato, **`piano-commit.md`** nella root del progetto (distinto da `PIANO.md`, che resta il piano di sviluppo): una casella di stato per commit, aggiornata dopo ognuno, così non si perde in un lavoro lungo o tra sessioni; come `PIANO.md`, non si committa se l'utente non lo chiede e, finiti tutti i commit del piano (caselle tutte spuntate), si cancella senza chiedere conferma.
-2. **Un commit alla volta:** dopo l'approvazione del piano crea **solo il commit n. 1** (file aggiunti per nome, `git status` e `git diff --staged` controllati, regole di messaggio e hook come sopra) e mostra hash e oggetto.
-3. **Pausa e conferma:** dopo ogni commit si ferma e chiede se procedere con il successivo, indicando quale sarà (`n/N`, oggetto). Procede solo dopo il via dell'utente; se l'utente cambia idea sul piano, lo aggiorna e ripresenta l'elenco residuo.
-4. **Nessun via anticipato:** l'approvazione del piano non vale come approvazione di tutti i commit, e il "sì" a un commit non vale per i successivi. Un'eccezione ("fai tutti i commit di fila") vale solo per quel piano, se l'utente la dichiara esplicitamente; lanciare `/kit:commit-passo` è una dichiarazione di questo tipo.
-5. **Chiusura:** finiti i commit (o interrotti dall'utente) riepiloga quelli creati e quelli rimasti, e segnala che i commit sono pronti per il `push` (che Claude esegue solo su richiesta o con conferma). Poiché ogni commit è stato verificato prima di crearlo, si può fare `push` a lotti, anche intermedi, senza aspettare la fine della serie. Nel riepilogo (e nelle pause, se la serie è lunga) Claude **propone i punti sensati per un push intermedio**: dopo un gruppo di commit coerente (es. una funzionalità completa con i suoi test), con build e test verdi fino a lì. Resta una proposta: il push parte solo su richiesta o con conferma.
-6. **Se un commit fallisce** (hook, test rossi): corregge la causa, ricrea quel commit e ripresenta il punto del piano; non passa al successivo.
+**Con `/kit:commit-passo`** il lancio è il via libera: la skill crea tutti i commit in sequenza senza ok a ciascuno e si ferma con una domanda solo nei casi anomali elencati nella skill (controllo fallito, possibile segreto, tipo ambiguo, file con modifiche per commit diversi, build o test rossi, hook fallito). Il resto di questa sezione vale **fuori dalle skill**, quando le modifiche sono più di un'unità logica (o l'utente chiede "committa tutto"): Claude non crea i commit in blocco.
+1. **Piano:** prima di ogni commit elenca quelli che intende fare, numerati e in ordine ("Granularità e sequenza"), con oggetto e file. Segnala i file che non rientrano in nessun commit (segreti, generati, estranei) e quelli con **modifiche destinate a commit diversi**: `git add -p` non è disponibile, quindi **chiede caso per caso** se spezzarli (patch parziale con `git apply --cached`, mostrata prima) o unire i commit; non sceglie da solo. Il piano si salva in **`piano-commit.md`** nella root (distinto da `PIANO.md`), con una casella per commit aggiornata dopo ognuno; non si committa se l'utente non lo chiede e, a caselle tutte spuntate, si cancella senza chiedere.
+2. **Un commit alla volta:** dopo l'approvazione crea solo il n. 1 (file per nome, `git status` e `git diff --staged` controllati) e mostra hash e oggetto; poi si ferma e chiede se procedere col successivo (`n/N`, oggetto).
+3. **Nessun via anticipato:** l'approvazione del piano o il "sì" a un commit non valgono per i successivi. Fa eccezione "fai tutti i commit di fila", valido solo per quel piano; lanciare `/kit:commit-passo` è una dichiarazione di questo tipo.
+4. **Chiusura:** riepiloga commit creati e rimasti e segnala che sono pronti per il `push` (su richiesta o con conferma). Poiché ogni commit è verificato prima, il push può essere a lotti: Claude **propone i punti sensati per un push intermedio** (gruppo coerente con build e test verdi), senza eseguirlo.
+5. **Se un commit fallisce** (hook, test rossi): corregge la causa, ricrea quel commit e ripresenta il punto; non passa al successivo.
 
 ## Cosa non entra mai nel repository
 - Segreti, `.env`, certificati, chiavi, dump di database, file generati (`bin`, `obj`, `node_modules`, `dist`) e file di IDE personali. Verifica `.gitignore` all'inizio del progetto.
@@ -103,7 +102,7 @@ Tre skill a lancio manuale applicano queste regole; il lancio da parte dell'uten
 - `/kit:pr-develop`: PR da `feature/*` o `bugfix/*` verso `develop`, push e creazione senza altra conferma (titolo Conventional Commits, squash a cura dell'utente). Al termine di `/kit:commit-passo` Claude propone la PR con una sola domanda e, solo con il sì dell'utente, esegue la skill: è l'unica skill di PR che Claude può lanciare da sé (le altre skill che scrivono, committano, pubblicano o cancellano restano a lancio manuale).
 - `/kit:pr-main`: PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, push e creazione senza altra conferma; dopo il merge (confermato dall'utente ogni volta) pulizia dei branch di lavoro locali e remoti confermati e allineamento di `main` e `develop` con `git pull --ff-only`; con controllo di `main` avanti rispetto a `develop` e merge commit.
 
-## Esempi di riferimento
+## Esempio di riferimento
 ```
 feat(outputs): add OutputShareLink entity and service for read-only share links
 
@@ -112,20 +111,4 @@ for issue #319: a per-output, opt-in, revocable token ...
 
 Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>
 ```
-```
-test(outputs): cover OutputShareLinkService lifecycle and cross-user isolation
-
-Exercises enable/regenerate/revoke, expiry, garbage-token handling, and that
-resolution and management never cross user boundaries.
-```
-```
-fix(security): restore antiforgery middleware ordering after authentication
-
-<causa radice: cosa succedeva, perché, e come lo si è corretto>
-```
-```
-chore(release): bump version to 7.1.3
-
-- Update version prefix in Directory.Build.props
-- Add the 7.1.3 release entry to CHANGELOG
-```
+Un `fix` ha nel corpo la causa radice; il commit di rilascio ha il corpo a elenco (vedi «Rilascio»).

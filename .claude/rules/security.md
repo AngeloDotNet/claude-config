@@ -1,6 +1,6 @@
 # Sicurezza (OWASP Top 10 / ASVS come riferimento)
 
-> Versione 2.2 — ultima revisione: 2026-11-13.
+> Versione 2.3 — ultima revisione: 2026-11-13.
 
 > Richiede `core.md`. Questo file contiene i principi di sicurezza sempre attivi. Le sezioni su autenticazione, protezione dell'API, abuso di risorse, vulnerabilità applicative e upload sono in `security-backend.md` (caricato sui file backend); la sezione Frontend è in `security-frontend.md` (caricato sui file Angular).
 > **Fonti e versioni di riferimento (verificate il 2026-11-04):** OWASP Top 10 2025 (A01 Broken Access Control … A10 Mishandling of Exceptional Conditions) e OWASP ASVS 5.0.0 (maggio 2025, capitoli V1–V17; mappa in «Mappa ASVS 5.0 e livelli»). Quando escono versioni nuove, si rivedono le regole prima di aggiornare questa riga.
@@ -21,7 +21,7 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 | V8 Authorization | endpoint protetti, anti-IDOR, `backend-app.md` §4.6 |
 | V9 Self-contained Tokens | JWT (punto 3b: validazione, algoritmi, claim) |
 | V10 OAuth and OIDC | provider esterno (punto 4), Authorization Code + PKCE |
-| V11 Cryptography | «Crittografia», hashing delle password |
+| V11 Cryptography | «Crittografia»; hashing delle password in `security-backend.md`, «Chiavi e password (.NET)» |
 | V12 Secure Communication | HTTPS, HSTS, «Database e canali interni» |
 | V13 Configuration | «Dati e Segreti», «Configurazione e superficie esposta», «Supply chain» |
 | V14 Data Protection | «Dati e Segreti» (dati personali, backup, `no-store`) |
@@ -49,11 +49,11 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 
 ## Dati e Segreti
 ▲ Verificato dal plugin `kit`: hook `guard-secrets` (valori reali in `appsettings*.json`, password in chiaro in compose e Dockerfile, chiavi PEM, token JWT bloccati) e `check-quality` (avvisi).
-- Data Protection di ASP.NET Core: con più container le chiavi sono persistite in un archivio condiviso (database o volume), altrimenti cookie e antiforgery token si invalidano tra repliche. Le chiavi persistite sono in chiaro per impostazione predefinita: se cifrarle a riposo e con quale meccanismo (es. un certificato in un file fuori dal repository, con il percorso in una variabile d'ambiente valorizzata da `.env`) si **chiede per progetto** e la scelta va nel `CLAUDE.md` (sezione "Note per Claude").
+- Data Protection di ASP.NET Core e hashing delle password: regole in `security-backend.md`, «Chiavi e password (.NET)».
 - Rotazione dei segreti: i segreti hanno una data di scadenza o rotazione dichiarata nel `CLAUDE.md` di progetto; un segreto compromesso o finito per errore nel repository si considera bruciato e va sostituito, non solo rimosso.
 - Nessun segreto nel repository: User Secrets in sviluppo; in produzione variabili d'ambiente valorizzate da `.env` fuori dal repository (mai servizi cloud a pagamento come Azure Key Vault o AWS Secrets Manager).
 - **Database e canali interni:** il database si raggiunge con connessione cifrata e certificato verificato (SQL Server `Encrypt=True` con `TrustServerCertificate=False`; PostgreSQL `SslMode=VerifyFull`); se il server usa un certificato proprio, la CA fidata si concorda per progetto (host gestito dall'utente). Utente applicativo senza DDL e utente separato per le migrazioni: vedi `backend-app.md` §4.4. Redis e RabbitMQ richiedono sempre autenticazione (segreti da variabili d'ambiente valorizzate da `.env`) e non espongono porte sull'host in produzione (`docker.md`); se il traffico esce dalla rete interna del compose, passa su TLS. Nessun servizio interno (database, cache, broker, pannelli di gestione) è raggiungibile da Internet.
-- Password con l'hashing di ASP.NET Core Identity (`PasswordHasher`, PBKDF2 con HMAC-SHA512). Il default di Identity (100.000 iterazioni) è sotto il minimo indicato dalla Password Storage Cheat Sheet di OWASP per PBKDF2-HMAC-SHA512; il valore minimo va letto sulla cheat sheet al momento dell'uso (il numero cambia con le revisioni, quindi non si riporta qui). Si imposta `PasswordHasherOptions.IterationCount` ad almeno quel valore, letto dalla configurazione e con benchmark sull'hardware di produzione (aggiornando le password all'accesso: Identity rifà l'hash dei vecchi). Argon2id (OWASP: almeno 19 MiB di memoria, 2 iterazioni, parallelismo 1) solo come deroga motivata e approvata, per esempio con ASVS di livello 3 o su richiesta del cliente: non esiste in .NET né in Identity, quindi richiede una libreria di terzi con licenza permissiva verificata (`core.md` §3) e un hasher personalizzato da mantenere. Con un IdP esterno l'hashing è quello dell'IdP. Mai in chiaro, né nei log.
+- Le password non sono mai in chiaro, né nei log.
 - Dati personali: minimizzazione, cifratura dei campi sensibili, retention e diritto all'oblio (GDPR).
 - Dati di test: mai dati reali di produzione in sviluppo o test; usa dati sintetici o anonimizzati.
 - Backup e ripristino: backup automatici del database con ripristino testato periodicamente. RPO/RTO e retention si dichiarano nel `CLAUDE.md` di progetto; gli artefatti di backup sono descritti in `docker.md`.

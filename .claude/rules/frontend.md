@@ -7,7 +7,7 @@ paths:
 
 # Regole Frontend (Angular, TypeScript & UI)
 
-> Versione 1.8 — ultima revisione: 2026-11-13.
+> Versione 1.10 — ultima revisione: 2026-11-13.
 > Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md` e `security-frontend.md`.
 
 ## 1. Stack Frontend
@@ -23,13 +23,12 @@ paths:
   - Verifica sempre se esiste un componente **PrimeNG** adatto (es. `p-table`, `p-select`, `p-dialog`, `p-button`).
   - Usa i nomi correnti, non deprecati (`p-select` e non `p-dropdown`, `p-datepicker` e non `p-calendar`, `p-toggleswitch` e non `p-inputSwitch`). In caso di dubbio, verifica la documentazione della versione installata.
   - Angular Material solo per utility o se espressamente richiesto. Non mescolare due sistemi di tema: l'isolamento degli stili va gestito esplicitamente.
-- **Componenti:** standalone, nessun `NgModule`: vedi §15.
-- **Change detection e API a segnali:** vedi §14 (`OnPush`, `input()`, `output()`, `model()`, `viewChild()`).
-- **Zoneless:** nei nuovi progetti `provideZonelessChangeDetection()` è obbligatorio, senza `zone.js`. Eccezione solo se una dipendenza lo impedisce, da segnalare e motivare. Nei progetti esistenti NON migrare di tua iniziativa: chiedi come procedere.
+- **Componenti:** standalone, nessun `NgModule`; `OnPush`, `input()`, `output()`, `model()` e `viewChild()` sono in «Template, componenti, Angular e TypeScript» più sotto.
+- **Zoneless:** i nuovi progetti sono zoneless e senza `zone.js` (da Angular 21 è il default e non serve alcun provider; con Angular 20 si aggiunge `provideZonelessChangeDetection()` al bootstrap, guida zoneless di angular.dev letta il 2026-11-13). Eccezione solo se una dipendenza lo impedisce, da segnalare e motivare. Nei progetti esistenti NON migrare di tua iniziativa: chiedi come procedere.
 - **Stato:** `signal()`, `computed()`, `linkedSignal()` per stato locale e globale. `effect()` solo per effetti collaterali (log, `localStorage`, DOM), mai per propagare stato da un signal a un altro. RxJS solo per HTTP e flussi asincroni complessi. Usa `takeUntilDestroyed` per le sottoscrizioni manuali. Vietati i `subscribe` annidati: usa gli operatori (`switchMap`, `concatMap`...).
 - **`httpResource` / `resource`:** permessi solo per letture semplici legate a signal e solo se la versione installata li dà come stabili. Per tutto il resto (mutazioni, interceptor complessi) usa `HttpClient` con il client generato.
-- **Template e Dependency Injection:** vedi §13 (control flow, `@defer`, `inject()`).
-- **Form:** Typed Reactive Forms per i form non banali. Gli errori di validazione server-side (per campo) vanno mappati sui rispettivi controlli. **Signal Forms:** non si usano finché la versione installata non li dà come stabili (verifica su angular.dev); poi si propongono per i form nuovi, senza migrare quelli esistenti (`core.md` §6.18).
+- **Template e Dependency Injection:** vedi «Template, componenti, Angular e TypeScript» più sotto (control flow, `@defer`, `inject()`).
+- **Form:** Typed Reactive Forms (non template-driven) per i form non banali. Gli errori di validazione server-side (per campo) vanno mappati sui rispettivi controlli. **Signal Forms:** non si usano finché la versione installata non li dà come stabili (verifica su angular.dev); poi si propongono per i form nuovi, senza migrare quelli esistenti (`core.md` §6.18).
 - **Routing:** lazy loading delle route per feature (`loadComponent` / `loadChildren`), sempre, anche senza micro frontend: è già ciò che rende veloce il caricamento iniziale. I guard servono alla UX, mai come unico controllo di sicurezza. I micro frontend sono un'opzione ulteriore, non il default (§12). **PREFER:** guard e resolver funzionali (`CanActivateFn`, `ResolveFn`); `canMatch` per non caricare il chunk di una route non consentita; `withComponentInputBinding()` per ricevere parametri di route e query string come `input()` invece di leggere `ActivatedRoute`.
 - **Client API:** preferisci generare client e modelli TypeScript dallo schema OpenAPI (NSwag / OpenAPI Generator) invece di riscriverli a mano. I file generati stanno in una cartella dedicata e riconoscibile (es. `api/generated/`) e **non si modificano mai a mano**: ogni cambiamento passa dallo schema o dalla configurazione del generatore. Il comando di generazione è uno script npm e sta nel `CLAUDE.md` (tabella Comandi); il client si rigenera a ogni modifica dello schema.
 - **Gestione errori HTTP:** `HttpInterceptorFn` funzionale registrato con `provideHttpClient(withInterceptors([...]))`. I messaggi globali passano dal `MessageService` di PrimeNG (Toast). Gli errori di validazione per campo vanno invece mostrati sul form, non nel toast. 401/403 hanno un trattamento dedicato: redirect al login; refresh del token solo se il progetto prevede il rinnovo (vedi `security.md`).
@@ -55,6 +54,21 @@ paths:
 - **Node e npm fissati:** versione di Node dichiarata in `.nvmrc` (LTS attiva) e in `engines` di `package.json`, con `engine-strict=true` in `.npmrc`; stessa versione nel Dockerfile e nella CI. `npm ci` e lock file committato; mai `npm install` che modifica il lock senza che sia lo scopo del compito.
 - **Aggiornamenti di Angular:** solo con `ng update` (mai modificare a mano le versioni dei pacchetti `@angular/*`, che devono restare allineate). L'aggiornamento di versione maggiore è un compito a sé, in un branch dedicato: Claude lo propone e chiede conferma, perché può toccare PrimeNG, TypeScript e le API deprecate (vedi anche "Zoneless"). Le versioni minori e patch seguono Dependabot/Renovate.
 - **Performance:** budget dei bundle in `angular.json`, con valori di partenza i default di Angular CLI (`initial`: avviso a 500 kB, errore a 1 MB; stili per componente: avviso a 4 kB, errore a 8 kB), da adattare per progetto e annotare nel `CLAUDE.md` («Soglie di performance diverse dal default»); un budget superato è un errore di build, non si alza per far passare la build senza motivo dichiarato. Per le pagine pubbliche i Core Web Vitals di riferimento sono le soglie «buone» di web.dev al 75° percentile (LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1), misurati con Lighthouse o sul campo. Lazy loading delle route, `@defer` per i componenti pesanti, `NgOptimizedImage` per le immagini, font self-hosted. Per ridurre il tempo di caricamento si parte da questi strumenti (non dai micro frontend, §12).
+
+### Template, componenti, Angular e TypeScript
+- **Guida ufficiale di Angular (PREFER):** per tutto ciò che queste regole non disciplinano, lo sviluppo Angular segue le best practice ufficiali (guida di stile e documentazione su angular.dev). Si verificano nella documentazione della versione installata nel progetto, non a memoria (`core.md` §6.13). In caso di conflitto prevalgono le regole del kit e il `CLAUDE.md`; una best practice che introduce una scelta nuova per il progetto (pattern, libreria, struttura non presente) si propone con il motivo e si attende il via, come da `core.md` §6.18.
+- **Control flow moderno (MUST):** nei template solo la sintassi nativa (`@if`, `@for` con `track`, `@switch`); vietati `*ngIf` / `*ngFor` / `*ngSwitch`. Usa `@defer` per i componenti pesanti.
+- **`@let` (PREFER):** per un valore derivato usato più volte nel template (`@let user = user$ | async;`); la logica non banale resta in `computed()` nel componente.
+- **Async Pipe:** per mostrare nel template un Observable si usa l'`async` pipe, senza `subscribe` manuali nel componente (nessuna sottoscrizione da chiudere a mano).
+- **`inject()` (MUST):** la Dependency Injection avviene con `inject(MyService)`, non con l'iniezione tramite costruttore. Ogni servizio ha una sola responsabilità: un servizio che fa più cose si divide.
+- **Signal (MUST):** lo stato locale dei componenti è in `signal()`; ciò che deriva da altri signal si esprime con `computed()`, mai con un secondo `signal()` aggiornato a mano né con un `effect()` (dettagli in «Stato»). Vietato `mutate()` (rimosso dall'API pubblica dei signal in Angular 17): si aggiorna con `set()` o `update()` restituendo un nuovo valore.
+- **Componenti piccoli e focalizzati:** ogni componente ha una sola responsabilità; un componente che cresce o gestisce più cose si divide in componenti più piccoli.
+- **Input e output funzionali (MUST):** `input()`, `output()`, `model()`, `viewChild()` al posto dei decoratori `@Input` / `@Output` / `@ViewChild`.
+- **`OnPush` (MUST):** `ChangeDetectionStrategy.OnPush` su ogni componente.
+- **Host binding nei metadati (MUST):** binding e listener dell'host si dichiarano nella proprietà `host` del decoratore `@Component` / `@Directive`; vietati `@HostBinding` e `@HostListener`.
+- **`ngClass` e `ngStyle` (PREFER, non vietati):** classi e stili si associano di norma con i binding nativi `[class.nome]` / `[class]` e `[style.proprietà]` / `[style]`, che non richiedono import (anche la documentazione di angular.dev li indica per i casi semplici, e `NgClass` non è deprecato); le direttive restano ammesse dove i binding nativi non bastano, con il motivo. Valgono comunque i vincoli sui colori e sugli stili di §3 e §4.1.
+- **`NgOptimizedImage`:** le immagini si ottimizzano con `NgOptimizedImage` (`ngSrc`, con `width` e `height` o `fill`, e `priority` per l'immagine principale); `src` semplice solo dove la direttiva non è applicabile (es. immagini inline o `data:`), con motivo.
+- **Inferenza dove il tipo è evidente:** non si annotano i tipi che il compilatore deduce da solo (`const count = 0`, non `const count: number = 0`). Le annotazioni esplicite restano per i parametri, i valori di ritorno dei metodi pubblici, i modelli, i DTO e dove l'inferenza darebbe un tipo troppo largo. Il rigore dei tipi (`strict`, niente `any`) è in «TypeScript rigoroso» e «Compilatore».
 
 ---
 
@@ -96,7 +110,7 @@ paths:
 ### 4.2 Localizzazione
 - **Caricamento:** un `TranslationService` basato su **Signals** carica la mappa all'avvio tramite `provideAppInitializer(...)` (non `APP_INITIALIZER`, deprecato) dall'endpoint del dizionario (vedi `backend.md`).
 - **Uso nei template:** pipe `translate` o `ts.instant('KEY')`. MAI stringhe hardcoded in HTML o TS.
-- **Parametri e plurali:** le traduzioni supportano parametri e pluralizzazione (sintassi ICU MessageFormat, es. `{count, plural, one {# elemento} other {# elementi}}`).
+- **Parametri e plurali:** le traduzioni supportano parametri e pluralizzazione (sintassi ICU MessageFormat, es. `{count, plural, one {# elemento} other {# elementi}}`). La sintassi ICU non è nativa del runtime di Angular: richiede un compilatore di messaggi (per esempio il plugin `@jsverse/transloco-messageformat` per Transloco o `ngx-translate-messageformat-compiler` per ngx-translate, entrambi basati su messageformat.js); licenza e versione si verificano al primo uso (`core.md` §3) e la libreria scelta va dichiarata come dipendenza.
 - **Fallback:** se la chiave manca nella lingua richiesta, ripiega sulla lingua di default e registra un warning. Non mostrare mai la chiave grezza all'utente.
 - **Errori backend:** il backend restituisce chiavi (vedi `core.md`); il frontend le traduce con i parametri ricevuti.
 - **Formati locali:** numeri, valute e date seguono la lingua dell'utente (`Intl`). Se serve RTL, usa proprietà CSS logiche (`margin-inline-start`).
@@ -188,32 +202,3 @@ Non sono il default. Il caricamento a richiesta per feature si ottiene già con 
 - **Docker e configurazione a runtime:** gli URL dei remote si leggono da configurazione a runtime (come `config.json`, §2), non incorporati nella build. Una sola immagine per tutti gli ambienti resta valida per ogni applicazione (shell e ciascun remote); il numero di immagini e di servizi nel compose si concorda con l'utente (`docker.md`).
 - **Sicurezza:** CSP e origini dei remote in allow-list esplicita (`security-frontend.md`); un remote caricato da origine non fidata è vietato. Gli stessi controlli di tipo `innerHTML`/`bypassSecurityTrust*` valgono nei remote.
 - **Test:** unit test in ogni remote (§10); E2E Playwright sulla shell con i remote reali per i flussi principali.
-
-## 13. Linee guida per i template
-- **Control flow moderno (MUST):** nei template solo la sintassi nativa (`@if`, `@for` con `track`, `@switch`); vietati `*ngIf` / `*ngFor` / `*ngSwitch`. Usa `@defer` per i componenti pesanti.
-- **`@let` (PREFER):** per un valore derivato usato più volte nel template (`@let user = user$ | async;`); la logica non banale resta in `computed()` nel componente.
-- **Async Pipe:** per mostrare nel template un Observable si usa l'`async` pipe, senza `subscribe` manuali nel componente (nessuna sottoscrizione da chiudere a mano).
-- **Servizi con un unico scopo:** ogni servizio ha una sola responsabilità; un servizio che fa più cose si divide.
-- **`inject()` (MUST):** la Dependency Injection avviene con `inject(MyService)`, non con l'iniezione tramite costruttore.
-- **Signal per lo stato locale:** lo stato locale dei componenti è in `signal()` (dettagli su `computed()`, `linkedSignal()`, `effect()` e RxJS in §2, voce "Stato"). Vietato `mutate()`: si aggiorna con `set()` o `update()` restituendo un nuovo valore.
-
-## 14. Linee guida per i componenti
-- **Componenti piccoli e focalizzati:** ogni componente ha una sola responsabilità; un componente che cresce o gestisce più cose si divide in componenti più piccoli.
-- **Input e output funzionali (MUST):** `input()`, `output()`, `model()`, `viewChild()` al posto dei decoratori `@Input` / `@Output` / `@ViewChild`.
-- **`computed()` per lo stato derivato:** ciò che deriva da altri signal si esprime con `computed()`, mai con un secondo `signal()` aggiornato a mano né con un `effect()` (dettagli in §2, voce "Stato").
-- **`OnPush` (MUST):** `ChangeDetectionStrategy.OnPush` su ogni componente.
-- **Reactive Forms:** i form si realizzano con i moduli reattivi (Typed Reactive Forms), non con template-driven forms; per i form non banali e per la mappatura degli errori server-side vedi §2, voce "Form".
-- **Niente `ngClass` e `ngStyle`:** classi e stili si associano con i binding nativi `[class.nome]` / `[class]` e `[style.proprietà]` / `[style]`. Valgono comunque i vincoli sui colori e sugli stili di §3 e §4.1.
-
-## 15. Migliori pratiche di Angular
-- **Guida ufficiale di Angular (PREFER):** per tutto ciò che queste regole non disciplinano, lo sviluppo Angular segue le best practice ufficiali (guida di stile e documentazione su angular.dev). Si verificano nella documentazione della versione installata nel progetto, non a memoria (`core.md` §6.13). In caso di conflitto prevalgono le regole del kit e il `CLAUDE.md`; una best practice che introduce una scelta nuova per il progetto (pattern, libreria, struttura non presente) si propone con il motivo e si attende il via, come da `core.md` §6.18.
-- **Componenti standalone (MUST):** sempre componenti, direttive e pipe standalone; nessun `NgModule`.
-- **Signal per lo stato:** la gestione dello stato usa i signal (`signal()`, `computed()`, `linkedSignal()`); dettagli in §2, voce "Stato".
-- **Lazy loading delle route per feature:** ogni feature si carica a richiesta con `loadComponent` / `loadChildren`; dettagli (guard, rapporto con i micro frontend) in §2, voce "Routing".
-- **Host binding nei metadati (MUST):** binding e listener dell'host si dichiarano nella proprietà `host` del decoratore `@Component` / `@Directive`; vietati `@HostBinding` e `@HostListener`.
-- **`NgOptimizedImage`:** le immagini si ottimizzano con `NgOptimizedImage` (`ngSrc`, con `width` e `height` o `fill`, e `priority` per l'immagine principale); `src` semplice solo dove la direttiva non è applicabile (es. immagini inline o `data:`), con motivo.
-
-## 16. Best practice per TypeScript
-- **Controllo rigoroso dei tipi (MUST):** `strict` sempre attivo (opzioni del compilatore in §2, voce "Compilatore"); il codice è fortemente tipizzato.
-- **Inferenza dove il tipo è evidente:** non si annotano i tipi che il compilatore deduce da solo (`const count = 0`, non `const count: number = 0`). Le annotazioni esplicite restano per i parametri, i valori di ritorno dei metodi pubblici, i modelli, i DTO e dove l'inferenza darebbe un tipo troppo largo.
-- **Niente `any` (MUST):** vietato, come da «TypeScript rigoroso» in §2 (lì la regola è scritta per intero).
