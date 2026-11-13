@@ -7,7 +7,7 @@
 //   (tag `latest` o assente, porte host di database e broker), dipendenze (range `*`, `latest`, `[`)
 //   e promemoria di audit, frontend (`any`, `innerHTML`, `bypassSecurityTrust*`, colori esadecimali).
 // - check-practice (core.md §4, §5, §5b; security.md; backend-architecture.md §2c): avvisi non bloccanti
-//   su scrittura in blocco, soppressioni, AllowAnonymous, Regex senza timeout, log diretti, membri
+//   su scrittura in blocco, soppressioni, attese arbitrarie nei test, NoWarn di progetto, AllowAnonymous, Regex senza timeout, log diretti, membri
 //   pubblici senza ///, file di servizio nuovi senza test. Attivo solo nei progetti con il kit.
 // Gli avvisi di check-quality e check-practice escono in un unico JSON (systemMessage e
 // additionalContext), perché il protocollo prevede un solo JSON per hook. Ogni controllo è isolato:
@@ -130,6 +130,7 @@ function auditReminder(file, text) {
 // --- check-practice ---
 
 const TEST_FILE_CS_TS = /(\.(spec|test)\.(ts|tsx|js)|Tests?\.cs)$/i;
+const TEST_FILE_ALL = /(\.(spec|test)\.(ts|tsx|js)|Tests?\.cs|IntegrationTests[\\/][^\n]*\.cs)$/i;
 const SKIP_DIRS = new Set(["node_modules", "bin", "obj", ".git", "dist"]);
 const TYPE_DECL = /^\s*public\s+(?:(?:static|sealed|abstract|partial|readonly)\s+)*(?:class|record|interface|struct|enum)\s+\w+/;
 const METHOD_DECL = /^\s*public\s+(?!override\b)(?:(?:static|async|virtual|sealed|new)\s+)*[\w<>[\],?.]+\s+\w+\s*(?:<[^>]*>)?\s*\(/;
@@ -146,6 +147,18 @@ const PRACTICE_RULES = [
     files: /\.(cs|ts|js)$/i,
     re: /#pragma\s+warning\s+disable|\[SuppressMessage\(|eslint-disable|@ts-ignore|@ts-expect-error/,
     why: "soppressione di un controllo (security.md, Crittografia: serve un motivo e l'approvazione dell'utente)",
+  },
+  {
+    id: "attesa-test",
+    files: TEST_FILE_ALL,
+    re: /\bTask\.Delay\s*\(|\bThread\.Sleep\s*\(/,
+    why: "attesa arbitraria nel test (core.md §4: i test instabili si correggono alla causa, non con attese o sleep)",
+  },
+  {
+    id: "nowarn",
+    files: /\.(csproj|props)$/i,
+    re: /<NoWarn>[^<]*<\/NoWarn>/i,
+    why: "soppressione di warning a livello di progetto (core.md §4: build senza warning; un NoWarn va motivato)",
   },
   {
     id: "anonimo",

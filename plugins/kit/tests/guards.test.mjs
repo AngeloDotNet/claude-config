@@ -48,16 +48,10 @@ test("commit: messaggio generico bloccato", () => {
   assert.match(r.err, /non segue tipo\(scope\)/);
 });
 
-test("commit: descrizione con maiuscola o punto finale bloccata", () => {
-  assert.equal(bash('git commit -m "fix: Sistemo il bug"').code, 2);
-  assert.equal(bash('git commit -m "fix: sistemo il bug."').code, 2);
-});
-
-test("commit: oggetto oltre 72 caratteri bloccato", () => {
-  const long = "feat: " + "a".repeat(70);
-  const r = bash(`git commit -m "${long}"`);
-  assert.equal(r.code, 2);
-  assert.match(r.err, /massimo 72/);
+test("commit: maiuscola, punto finale e oggetto lungo non sono controllati dall'hook", () => {
+  assert.equal(bash('git commit -m "fix: Sistemo il bug"').code, 0);
+  assert.equal(bash('git commit -m "fix: sistemo il bug."').code, 0);
+  assert.equal(bash(`git commit -m "feat: ${"a".repeat(70)}"`).code, 0);
 });
 
 test("commit: messaggio letto da heredoc, valido passa e non valido bloccato", () => {
