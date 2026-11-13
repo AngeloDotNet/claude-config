@@ -29,7 +29,7 @@ La documentazione completa è disponibile [qui](http://wiki.aepserver.it/claude-
 
 Le regole non si "installano": si **copiano nel progetto** e Claude Code le legge da solo. Apri Claude Code nella cartella del progetto e scrivi, per un progetto nuovo, *"Avvia un nuovo progetto"*; negli altri casi (progetto esistente, solo regole Git, aggiornamento) vedi [Come si usa, nei dettagli](http://wiki.aepserver.it/claude-config/uso).
 
-Il [plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) rende tecnici i divieti (per esempio `git init`, `push --force`, `--no-verify`) e la regola della domanda unica; si installa una volta per macchina:
+Il [plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) rende tecnici i divieti (per esempio `push --force`, `reset --hard`, `--no-verify`) e la regola della domanda unica; si installa una volta per macchina:
 
 ```
 claude plugin marketplace add AngeloDotNet/claude-config
@@ -43,17 +43,17 @@ I controlli del plugin stanno in sei script. I controlli su scrittura sono raggr
 Il plugin aggiunge diciannove comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
-- `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`.
+- `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`, aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/compact`.
 - `/kit:avvia-progetto`: avvia un progetto nuovo con le domande di avvio, e compila il `CLAUDE.md`.
-- `/kit:copia-regole`: copia le regole in un progetto che non le ha.
-- `/kit:aggiorna-regole`: aggiorna le regole di un progetto, con conferma per ogni file.
+- `/kit:copia-regole`: copia le regole in un progetto che non le ha (usa la cartella corrente quando è valida, altrimenti chiede il percorso).
+- `/kit:aggiorna-regole`: aggiorna le regole di un progetto (file diversi, moduli rimossi dal template e righe del `CLAUDE.md` legate alle regole), con conferma e `.bak`.
 - `/kit:consegna`: controlla il lavoro corrente contro la checklist di consegna.
 - `/kit:review-regole`: revisione del codice secondo le regole del progetto.
 - `/kit:pr-develop` e `/kit:pr-main` si usano solo se la GitHub CLI è installata e autenticata (`gh --version`, `gh auth status`): altrimenti terminano subito e dicono cosa manca. `/kit:commit-passo` non richiede `gh`.
-- `/kit:commit-passo`: crea i commit uno alla volta, mai su `main` o `develop` (propone il branch di lavoro), con piano in `piano-commit.md`; chiede il tipo di commit solo se ambiguo e l'ok prima di ogni commit. Con un numero (`/kit:commit-passo 5`) esegue fino a N commit di fila senza ok a ciascuno, entro il tetto per lotto del `CLAUDE.md` (chiesto una volta, solo quando si passa il numero).
-- `/kit:pr-develop`: apre con `gh` la PR dal branch di lavoro verso `develop`, dopo conferma di push e creazione; il merge (squash) resta all'utente.
-- `/kit:pr-main`: apre con `gh` la PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, dopo il controllo di `main` avanti rispetto a `develop`; il merge (merge commit) resta all'utente.
-- `/kit:aggiorna-docs`: aggiorna README, CHANGELOG e, se esiste, il sito di documentazione; crea il README se manca e scrive la voce di rilascio su richiesta.
+- `/kit:commit-passo`: crea i commit in sequenza e senza conferme intermedie (il lancio è il via libera), mai su `main` o `develop` (crea direttamente il branch di lavoro), con piano in `piano-commit.md`; chiede il tipo di commit solo se ambiguo e si ferma con una domanda solo nei casi anomali.
+- `/kit:pr-develop`: apre con `gh` la PR dal branch di lavoro verso `develop`, con push e creazione senza altra conferma; si può lanciare anche da `/kit:commit-passo`, che a fine commit lo propone con una domanda; il merge (squash) resta all'utente.
+- `/kit:pr-main`: apre con `gh` la PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, dopo il controllo di `main` avanti rispetto a `develop`; il merge (merge commit) resta all'utente. Dopo il merge, quando lo confermi, elenca i branch di lavoro cancellabili (locali e remoti), cancella solo quelli che confermi e allinea `main` e `develop` con `git pull --ff-only`, segnalando se serve la sincronizzazione di `main` in `develop`.
+- `/kit:aggiorna-docs`: aggiorna README, CHANGELOG e, se esiste, il sito di documentazione, senza chiedere conferma; crea il README se manca e scrive la voce di rilascio su richiesta.
 - `/kit:verifica`: esegue i controlli di una soluzione .NET (ripristino, build, test, pacchetti vulnerabili, modello EF, spazi bianchi) e riporta l'esito, senza modificare file.
 - `/kit:qualita-test`: revisiona i test (falsa sicurezza, fragilità, duplicati) e propone test xUnit parametrici e leggibili.
 - `/kit:dati-efcore`: guida il lavoro con EF Core (letture senza tracking, migrazioni, `DbContext`, ottimizzazione delle query).
