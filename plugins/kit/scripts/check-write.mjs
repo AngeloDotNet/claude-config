@@ -106,14 +106,14 @@ function qualityFindings(file, text) {
   }
   if (/\.ts$/i.test(base)) {
     if (/@(?:Input|Output|ViewChild(?:ren)?|ContentChild(?:ren)?)\s*\(/.test(text)) {
-      out.push("decoratore @Input/@Output/@ViewChild/@ContentChild (frontend.md §14: input(), output(), model(), viewChild())");
+      out.push("decoratore @Input/@Output/@ViewChild/@ContentChild (frontend.md §2, Template e componenti: input(), output(), model(), viewChild())");
     }
-    if (/@(?:HostBinding|HostListener)\s*\(/.test(text)) out.push("@HostBinding/@HostListener (frontend.md §15: proprietà `host` del decoratore)");
+    if (/@(?:HostBinding|HostListener)\s*\(/.test(text)) out.push("@HostBinding/@HostListener (frontend.md §2, Template e componenti: proprietà `host` del decoratore)");
     if (/^\s*(?:template|styles)\s*:\s*[`'"[]/m.test(text)) out.push("template o stili inline nel componente (frontend.md §2: file .html e .css separati)");
-    if (/\bsignal\s*[<(]/.test(text) && /\.mutate\s*\(/.test(text)) out.push("mutate() su un signal (frontend.md §13: set() o update())");
+    if (/\bsignal\s*[<(]/.test(text) && /\.mutate\s*\(/.test(text)) out.push("mutate() su un signal (frontend.md §2, Template e componenti: set() o update())");
     if (/\bwaitForTimeout\s*\(/.test(text)) out.push("waitForTimeout (frontend.md §10: si attende uno stato osservabile)");
   }
-  if (/\.(ts|html)$/i.test(base) && /\bngClass\b|\bngStyle\b/.test(text)) out.push("ngClass/ngStyle (frontend.md §14: binding nativi [class] e [style])");
+  if (/\.(ts|html)$/i.test(base) && /\bngClass\b|\bngStyle\b/.test(text)) out.push("ngClass/ngStyle (frontend.md §2, Template e componenti: si preferiscono i binding nativi [class] e [style])");
   if (/\.(ts|css|scss|html)$/i.test(base) && /\btransition\s*:\s*all\b/.test(text)) out.push("`transition: all` (frontend.md §3: solo le proprietà che cambiano)");
 
   return out;

@@ -4,6 +4,356 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-13
 
+### Commit della revisione sul ramo
+
+**Perché:** le voci di questo giorno dicono «Nessun commit» o «non committato»: era vero quando sono state scritte, ma la revisione ora è committata e va letta con questa nota.
+**Cosa / Dove:** otto commit su `feature/review-skills-and-rules`: `213c63f` fix(kit), redirezioni nel parsing degli argomenti git; `b3fd6dc` test(kit), casi di redirezione nel guard git; `8f89b5f` feat(kit), skill di revisione in sola lettura e controlli di `consegna`; `fdc1ca6` test(kit), passi condivisi di `pr-develop` e `pr-main` allineati; `3063c60` docs(rules), etichette MUST e PREFER e versioni di `backend.md` e `frontend.md`; `4ac8e39` chore(rules), regola Docker spostata in `rules-optional/`; `3727b26` docs(template), `CLAUDE.md`, `README.md`, `_template/avvio-progetto.md` e `docs/skill.md`; `a47436d` docs(changelog), registro della revisione.
+**Verifica:** test del plugin 129/129 verdi prima di ogni commit; `git diff --check` pulito; build non applicabile.
+**Note:** `PIANO.md` e `CHECKLIST.md` restano fuori dai commit, come file di lavoro. Le voci precedenti di questo giorno restano com'erano. La wiki non è toccata da questo passo.
+
+### Etichette MUST e PREFER chiuse in `backend.md` e `frontend.md`
+
+**Perché:** tre voci erano ambigue: «Principi SOLID» senza etichetta, «OpenAPI» e «Routing» con una parte PREFER dentro una voce MUST. «C# 14 / .NET 10» e «Componenti piccoli e focalizzati» non contengono parole di preferenza e restano MUST.
+**Cosa / Dove:** `backend.md` 1.10, §2: «Principi SOLID (MUST)»; «OpenAPI» diviso in una voce MUST (UI solo in Development, mai in produzione, token da inserire) e in «Scelta della UI (PREFER)» (Swagger UI, Scalar solo su richiesta). `frontend.md` 1.14, §2: «Routing» diviso in «Routing (MUST)» e «Guard e resolver (PREFER)».
+**Verifica:** test del plugin 129/129 verdi; `git diff --check` pulito; build non applicabile.
+**Note:** il criterio WCAG 2.5.8 e 2.4.11 citato da `accessibilita-ui` e non elencato in `frontend.md` §3 è rimandato a `CHECKLIST.md`. Nessun commit.
+
+### Wiki allineata alle modifiche del giorno
+
+**Perché:** la pagina `plugin.md` diceva «dopo la 1.12.0 (non ancora rilasciata)» per modifiche già rilasciate con la 1.13.0, e non descriveva le novità di oggi.
+**Cosa / Dove:** wiki `docs/claude-config/plugin.md`: la nota diventa «Con la versione 1.13.0», e una nuova nota «Dopo la 1.13.0 (non ancora rilasciata)» elenca ventuno comandi, `disable-model-invocation` e `disallowed-tools`, riga «Modello in uso», novità di `consegna`, fix delle redirezioni, `docker.md` opzionale e criterio `/clear` o `/compact`. `funzionamento.md`: etichette Regola, Motivo ed Eccezione in `backend.md` e `frontend.md`. `contenuto.md`: criterio `/clear` o `/compact` nella riga di `lavoro.md`.
+**Verifica:** build non applicabile; testi ricontrollati con `CHANGELOG.md` e con i file delle regole.
+**Note:** gli altri file della wiki risultano già allineati (`docker.md` opzionale, tabella skill a 21 righe). La wiki ha altre modifiche non committate che non sono mie. Nessun commit.
+
+### Criterio per scegliere tra `/clear` e `/compact`
+
+**Perché:** le regole ricordavano solo `/compact` a fine attività, anche quando lo stato di ripartenza è già su file e `/clear` è la scelta migliore.
+**Cosa / Dove:** `lavoro.md` 1.3: nuova voce «`/clear` o `/compact`» (PREFER) con il criterio. `core.md` 3.44, §6.19: il promemoria nomina entrambi i comandi e rimanda al criterio. `/kit:buonasera` (descrizione e passo 8), `docs/skill.md` e `README.md` allineati.
+**Verifica:** build non applicabile; test del plugin 129 passati, 0 falliti; `git diff --check` pulito.
+**Note:** wiki aggiornata nelle due righe di `/kit:buonasera` (`funzionamento.md` e `plugin.md`). Nessun commit.
+
+### Tabelle delle skill allineate (`docs/skill.md` e wiki)
+
+**Perché:** dopo le modifiche del giorno le tabelle delle skill non dicevano più il vero: `docs/skill.md` affermava che quattordici skill possono partire da sole, e le righe di `consegna`, `verifica` e `qualita-test` non citavano i controlli aggiunti.
+**Cosa / Dove:** `docs/skill.md`: premessa riscritta (tutte le skill tranne `/kit:pr-develop` hanno `disable-model-invocation`; le tredici di revisione hanno anche `disallowed-tools`) e righe di `consegna` (gruppo «non verificata» e blocco «Da lanciare»), `verifica` (`using` inutilizzati) e `qualita-test` (scorciatoie vietate, test frontend). Wiki `docs/claude-config/plugin.md`: stesse tre righe, più le righe mancanti di `/kit:verifica-frontend` e `/kit:sicurezza` (la tabella ne aveva 19 su 21) e la premessa («ventuno comandi», `/kit:pr-develop` unica skill lanciabile da Claude, comandi di revisione senza `Edit` e `Write`).
+**Verifica:** build non applicabile; ricontrollati i testi con il frontmatter delle skill.
+**Note:** nella pagina `plugin.md` restano invariate le note storiche sulle versioni 1.11.0 e 1.12.0 («diciannove comandi» per la 1.11.0), che descrivono quei rilasci. La wiki ha altre modifiche non committate di sessioni precedenti, che non sono mie. Nessun commit.
+
+### Output doppio di `UserPromptSubmit`: non riproducibile
+
+**Perché:** una voce della checklist annotava che l'output del hook `UserPromptSubmit` compariva due volte per prompt, con causa non verificata.
+**Cosa / Dove:** nessuna modifica ai file del plugin. Controllato `plugins/kit/hooks/hooks.json` (una sola voce per `UserPromptSubmit`), `~/.claude/settings.json` (plugin abilitato una volta) e, dall'utente, `/hooks` (una sola voce per l'evento).
+**Verifica:** nella parte successiva della sessione il messaggio è comparso una volta sola per prompt.
+**Note:** la causa dell'osservazione iniziale non è stata trovata; la voce si riapre se il doppio output ricompare.
+
+### Plugin ICU e percorsi `Read(./...)` verificati sulle fonti
+
+**Perché:** due punti del passaggio sull'accessibilità e sulla localizzazione erano scritti come «non verificati»: licenza e versione dei plugin ICU, e il formato dei percorsi `Read(./...)` nei deny di `settings.example.json`.
+**Cosa / Dove:** `frontend.md` 1.13, §4.2: aggiunti licenza (MIT, anche per `@messageformat/core`), versioni al 2026-11-13 e requisiti di Angular di `@jsverse/transloco-messageformat` e `ngx-translate-messageformat-compiler`, letti dal registro npm. `_template/settings.example.json` non modificato: i percorsi sono forme valide secondo la pagina dei permessi di Claude Code.
+**Verifica:** letture del registro npm e della pagina dei permessi; test del plugin 129/129 verdi.
+**Note:** la compatibilità con la versione di Angular del singolo progetto resta da controllare al primo uso.
+
+### `backend.md` e `frontend.md`: etichette MUST e PREFER uniformi nelle regole di §2
+
+**Perché:** nelle sezioni «Regole» di `backend.md` e `frontend.md` solo alcune voci dichiaravano se sono MUST o PREFER (`core.md` §0), e motivo ed eccezione erano dentro frasi lunghe. Chi legge non poteva capire a colpo d'occhio quanto una voce fosse vincolante.
+**Cosa / Dove:**
+- `backend.md` 1.9, §2: `(MUST)` o `(PREFER)` su ogni voce che ne era priva (quindici voci tra «Errori, configurazione e resilienza» e «Servizi di contorno», più otto nelle prime sezioni); righe **Eccezione** o **Motivo** estratte da «Struttura API», «Asincronismo», «`CancellationToken`», «Validazione», «Service e interfacce», «Cartella `Interfaces/`» e «Using globali».
+- `frontend.md` 1.12, §2: etichetta su 25 voci (24 `MUST`, 1 `PREFER`, «Client API»); righe **Eccezione** in «Zoneless», «`NgOptimizedImage`» e «Inferenza dove il tipo è evidente».
+- Criterio concordato: una voce imperativa senza parole di preferenza è `MUST`; `PREFER` solo dove il testo dice «preferisci» o «si preferisce». Il contenuto delle regole non è cambiato: confronto delle parole prima e dopo, per sezione, identico salvo la riformulazione di «Asincronismo» in `backend.md` (approvata) e le modifiche Docker già in corso.
+**Verifica:** test del plugin 129/129 verdi, `git diff --check` pulito; build non applicabile.
+**Note:** «Principi SOLID» (`backend.md`) è rimasta senza etichetta perché ambigua («è un criterio, non una cerimonia»). «C# 14 / .NET 10», «OpenAPI» e «Routing» contengono parti `PREFER` dentro una voce `MUST`; «Componenti piccoli e focalizzati» (`frontend.md`) è `MUST` per il criterio scelto ma si potrebbe leggere come `PREFER`. Il resto di `backend.md` e `frontend.md` fuori da §2 non è stato toccato.
+
+### `disallowed-tools` nelle skill di sola lettura
+
+**Perché:** 13 skill dichiarano di non modificare file, ma lo dicevano solo nel testo. Secondo la documentazione di Claude Code (pagina delle skill) `allowed-tools` pre-approva soltanto e non limita nulla, mentre `disallowed-tools` toglie gli strumenti dal pool finché la skill è attiva.
+**Cosa / Dove:** `disallowed-tools: Edit Write NotebookEdit` nel frontmatter di `accessi-api`, `accessibilita-ui`, `buongiorno`, `colori-tema`, `consegna`, `dati-efcore`, `gdpr-dati`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`, `verifica-frontend`, `verifica` (le stesse 13 di `disable-model-invocation`). Nessuna usa `Edit` o `Write` nel corpo.
+**Verifica:** controllato che nessun corpo citi `Write` o `Edit`; test del plugin 129/129 verdi.
+**Note:** non limita `Bash`: un comando di shell può ancora scrivere (per esempio con un redirect), e lì resta solo l'hook `guard-commands`. Non ho letto gli ultimi 19 mila caratteri della pagina, quindi l'effetto reale del campo in una sessione nuova non è provato. `allowed-tools` non è stato aggiunto.
+
+### `consegna`: le voci non verificabili hanno un gruppo a parte
+
+**Perché:** la skill non esegue nulla, quindi molte voci della checklist (build, test, audit) non si possono verificare; finivano mescolate tra «manca» e «ok» senza dire che nessuno le aveva controllate.
+**Cosa / Dove:** `plugins/kit/skills/consegna/SKILL.md`: nuovo esito «non verificata» (quattro gruppi: ok, manca, non verificata, non pertinente), con l'indicazione della skill che la verifica. Le skill da lanciare si ricavano dai file del diff (`*.cs` per `/kit:verifica`, `*.ts` e `*.html` per `/kit:verifica-frontend`, temi sensibili per `/kit:sicurezza`, `/code-review` sempre, `/kit:gdpr-dati` solo con dati personali) e la skill chiude con un blocco «Da lanciare» (passo 6), così l'utente non deve decidere quali servano. Resta a sola lettura: non lancia le altre, perché sono a lancio manuale.
+**Verifica:** build non applicabile; il testo è stato riletto, nessun test del plugin lo copre.
+
+### Descrizioni di `pr-main` e `commit-passo` accorciate
+
+**Perché:** la descrizione di una skill è nell'elenco di ogni sessione; quelle di `pr-main` (633 caratteri) e `commit-passo` (557) contenevano dettagli che stanno già nel corpo della skill.
+**Cosa / Dove:** `plugins/kit/skills/pr-main/SKILL.md` e `plugins/kit/skills/commit-passo/SKILL.md`: descrizione ridotta a scopo, condizioni d'uso e limiti essenziali; il corpo non è cambiato.
+**Verifica:** test del plugin 129/129 verdi (127 più i 2 nuovi).
+**Note:** i passi 0 e 3 identici tra `pr-develop` e `pr-main` restano duplicati (scelta dell'utente: ogni skill si legge da sola, e un file condiviso avrebbe un meccanismo di percorsi non verificato). Li protegge il nuovo test `plugins/kit/tests/skills-sync.test.mjs`, che fallisce se le due copie divergono; l'ho provato alterando una copia, poi ripristinata.
+
+### `gdpr-dati`: rimando a `backend.md` §7 sostituito
+
+**Perché:** `backend.md` §7 tratta le convenzioni del database (nomi, indici, seeding, vincoli) e non ha un punto di contatto con i passi della skill; la sezione pertinente all'hashing delle password (passo 7) è in `security-backend.md`.
+**Cosa / Dove:** `plugins/kit/skills/gdpr-dati/SKILL.md`, riga «Riferimenti»: tolto `backend.md` §7, aggiunto `security-backend.md` («Chiavi e password (.NET)») per il punto 7.
+**Verifica:** build non applicabile; ho controllato che la sezione «Chiavi e password (.NET)» esista in `security-backend.md` (riga 54), senza rileggerne il contenuto.
+
+### `docker.md`: le credenziali di RabbitMQ in `.env.example`
+
+**Perché:** l'elenco delle variabili di `.env.example` citava Redis, JWT e SMTP ma non RabbitMQ, che le stesse regole richiedono autenticato (`security.md`, «Database e canali interni»).
+**Cosa / Dove:** `.claude/rules-optional/docker.md` 1.6, voce «Configurazione e segreti»: aggiunte le credenziali di RabbitMQ, sia quelle iniziali del container sia quelle di connessione dell'app. Non ho scritto nomi di chiavi precisi, perché nelle regole non esiste una sezione di configurazione di RabbitMQ: la sezione la sceglie il progetto.
+**Verifica:** build non applicabile (solo markdown).
+
+### `git.md`: l'apertura non contraddice più «Integrazione GitHub»
+
+**Perché:** la riga in grassetto in testa diceva «solo commit locali», ma la sezione subito sotto consente push, tag, PR e rilasci; il testo più letto del modulo era in contrasto con il resto.
+**Cosa / Dove:** `.claude/rules/git.md` 1.9: l'ambito in apertura ora cita commit locali, più push, tag, PR e rilasci alle condizioni di «Integrazione GitHub». Il secondo difetto della voce (elenco fuso in «Sicurezza della cronologia») era già a posto.
+**Verifica:** build non applicabile (solo markdown).
+
+### `verifica` e `qualita-test`: controlli che mancavano
+
+**Perché:** due voci della review. `verifica` non controllava gli `using` inutilizzati, che `backend.md` impone (MUST); `qualita-test` copriva solo xUnit e non cercava le scorciatoie vietate da `core.md` §4 e `backend-app.md` §4.5.
+**Cosa / Dove:** `plugins/kit/skills/verifica/SKILL.md`: nuovo punto 4b con `dotnet format style --diagnostics IDE0005 --verify-no-changes` (la sintassi va verificata sull'SDK in uso: se manca, «non verificato»). `plugins/kit/skills/qualita-test/SKILL.md`: punto 3b per test saltati o isolati, EF Core InMemory, mock di `DbContext` non dichiarati e soglie abbassate; punto 3c per i test frontend (Vitest e Playwright, `frontend.md` §10); descrizione e riferimenti aggiornati.
+**Verifica:** test del plugin 127/127 verdi; il comando di `IDE0005` non l'ho eseguito su una soluzione .NET reale.
+
+### `disable-model-invocation` nelle skill di sola richiesta
+
+**Perché:** 14 skill non avevano il flag, quindi il modello poteva lanciarle da solo e comparivano nell'elenco di ogni sessione, anche se le loro descrizioni dicono «solo su richiesta».
+**Cosa / Dove:** `disable-model-invocation: true` nel frontmatter di 13 skill di `plugins/kit/skills/`: `accessi-api`, `accessibilita-ui`, `buongiorno`, `colori-tema`, `consegna`, `dati-efcore`, `gdpr-dati`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`, `verifica-frontend`, `verifica`. Esclusa `pr-develop`, che `commit-passo` (passo 10) e `git.md` fanno lanciare a Claude dopo il sì dell'utente.
+**Verifica:** test del plugin 127/127 verdi, diff controllato (una riga aggiunta per skill); build non applicabile.
+**Note:** l'effetto sull'elenco delle skill di una nuova sessione non è ancora verificato.
+
+### `docker.md` diventa un modulo opzionale, solo su richiesta esplicita
+
+**Perché:** il kit trattava Docker come presupposto di ogni progetto (domanda all'avvio, «deploy sempre con Dockerfile e docker-compose»); un progetto che non si distribuisce con Docker ereditava comunque regole e vincoli che non lo riguardano.
+**Cosa / Dove:**
+- `.claude/rules/docker.md` spostato in `.claude/rules-optional/` (versione 1.5, nota in testa); si attiva solo se l'utente lo chiede esplicitamente (per esempio «crea un Dockerfile»), con la procedura di `avvio-progetto.md` §4.
+- Rimandi resi condizionali («con Docker», «se attivo») in `core.md` 3.43 (§5a riscritto), `security.md`, `security-backend.md` 1.5, `backend.md` 1.8, `backend-app.md` 1.5, `frontend.md` 1.11, `backend-infra.md`.
+- Template: `CLAUDE.md` (elenco dei moduli, riga «Deploy» `[non Docker | Dockerfile + docker-compose, solo se richiesto]`) e `_template/avvio-progetto.md` (domanda 3 non più usata, i numeri delle altre invariati; tabella dei moduli e §4).
+- Plugin `kit`: `copia-regole` non chiede più Docker e copia sempre `docker.md` in `rules-optional/`; `gdpr-dati` con rimandi condizionati. Invariati gli avvisi di `check-write.mjs` su Dockerfile e compose.
+- Documentazione: `README.md` e le pagine `docs/claude-config/` della wiki (`intro`, `contenuto`, `funzionamento`, `manutenzione`, `uso`).
+**Verifica:** build non applicabile (solo markdown e skill); test del plugin 127/127 verdi, `git diff --check` pulito.
+**Note:** i progetti che hanno già `docker.md` in `rules/` non vengono toccati. La wiki ha altre modifiche non committate di sessioni precedenti, che non ho toccato; non è stato committato nulla.
+
+### `lavoro.md`: i subagent diventano opzionali
+
+**Perché:** la regola raccomandava (PREFER) di delegare le ricerche ampie a un subagent, mentre la scelta dell'utente è di non usarli di iniziativa.
+**Cosa / Dove:** `lavoro.md` 1.2, voce «Ricerche ampie a un subagent»: ora opzionale, solo su richiesta dell'utente o se il `CLAUDE.md` del progetto li prevede; altrimenti `Grep` e `Read` mirati. Nessun altro file cita i subagent (controllato con Grep).
+**Verifica:** build non applicabile (solo markdown).
+
+### Mappa ASVS: «Completamenti dell'autenticazione» è una voce, non una sezione
+
+**Perché:** `security.md` elencava «Completamenti dell'autenticazione» tra le sezioni di `security-backend.md`, ma in quel file è una voce dell'elenco dentro «Autenticazione e Autorizzazione» (riga 45); un rimando per titolo non l'avrebbe trovata.
+**Cosa / Dove:** `security.md` 2.5, due punti: l'introduzione della mappa e la riga V6 della tabella ora dicono «Autenticazione e Autorizzazione» con la voce «Completamenti dell'autenticazione». La skill `accessi-api` già la chiamava voce.
+**Verifica:** build non applicabile (solo markdown); `git diff --check` pulito; titoli di `security-backend.md` controllati con Grep.
+
+### Hook `guard-commands`: le redirezioni non sono argomenti di git
+
+**Perché:** `git push origin --delete release/1.13.0 2>&1` veniva bloccato («cancellazione di un branch remoto non ammesso»), mentre la stessa riga senza `2>&1` passava. Colpiva anche la pulizia dei branch remoti di `/kit:pr-main` (passo 10c).
+**Cosa / Dove:** `plugins/kit/scripts/guard-commands.mjs`: il carattere `&` chiude il segmento, quindi `2>&1` lasciava nel comando il token `2>`, che finiva tra gli argomenti posizionali e faceva fallire il controllo dei branch. Nuova `stripRedirections()`, applicata a tutti i sottocomandi git (stesso difetto per `> file` e `2>/dev/null` anche su `add`, `commit` e `tag`): ignora i token di redirezione non quotati e, se l'operatore è da solo, anche il suo bersaglio.
+**Verifica:** test di regressione in `plugins/kit/tests/github.test.mjs` (cinque comandi consentiti, sei bloccati, tra cui `--delete main 2>&1`, `--force ... 2>&1` e `git add -A 2>&1`); prima del fix falliva, dopo i test del plugin sono 127/127 verdi. Build non applicabile.
+
+### Riga «Modello in uso» in ogni skill
+
+**Perché:** il campo `model` del frontmatter vale solo per il turno della skill e l'interfaccia continua a mostrare il modello della sessione (documentazione di Claude Code, pagina delle skill), quindi l'override non si vedeva.
+**Cosa / Dove:** in tutte le 21 `plugins/kit/skills/*/SKILL.md`, subito dopo il titolo, una riga che chiede di scrivere come prima riga della risposta «Modello in uso: <nome>». Il modello lo dichiara leggendolo dal proprio contesto: non è una verifica indipendente.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi; diff controllato (2 righe aggiunte per file).
+
+### Dettagli Angular e permessi verificati sulle fonti (review di skill e regole, punto 4.5)
+
+**Perché:** il piano segnava sette affermazioni tecniche (V) da controllare prima di correggerle; nessuna era stata riletta sulla fonte.
+**Cosa / Dove:**
+- **Zoneless** (`frontend.md` 1.10): da Angular 21 è il default e non serve alcun provider; con Angular 20 serve `provideZonelessChangeDetection()`. Fonte: guida zoneless di angular.dev. La regola «obbligatorio nei nuovi progetti» resta.
+- **`mutate()`** (`frontend.md`): rimosso dall'API pubblica dei signal in Angular 17 (release 17.0.0 e PR #51821 di angular/angular). Il divieto resta, con il motivo.
+- **`ngClass`/`ngStyle`** (`frontend.md`, `check-write.mjs`): da divieto a PREFER, perché la pagina `NgClass` di angular.dev lo dà come stabile, non deprecato, e raccomanda i binding diretti solo «per i casi semplici». Il messaggio dell'avviso del plugin dice ora «si preferiscono».
+- **ICU MessageFormat** (`frontend.md`): non è nativo del runtime; serve un compilatore (`@jsverse/transloco-messageformat` per Transloco, `ngx-translate-messageformat-compiler` per ngx-translate). Licenze e versioni non verificate.
+- **Trusted Types** (`security-frontend.md` 1.2): la guida elenca anche `angular#bundler` (chunk lazy) e `angular#unsafe-upgrade` (ibridi AngularJS); l'header raccomandato resta `trusted-types angular`. Regola: prova in Report-Only e aggiunta di `angular#bundler` solo se i report lo richiedono.
+- **`autoCsp`** (`security-backend.md` 1.4): opzione `security.autoCsp`; non è più dato come sperimentale nella guida (v22); copre solo gli script (`style-src` a parte) e non vale con il rendering lato server.
+- **Sintassi dei permessi:** `Bash(cmd:*)` è equivalente a `Bash(cmd *)` (documentazione di Claude Code), quindi `_template/settings.example.json` è corretto e non si cambia. Il formato dei percorsi di `Read(./...)` nei deny non è stato riletto.
+**Verifica:** build non applicabile (solo markdown e un messaggio di avviso), test del plugin 126/126 verdi. Le guide di angular.dev lette sono quelle della versione 22 (build 22.2.6); le altre fonti per ICU sono pagine di terzi.
+**Note:** non ho verificato le versioni dei plugin ICU né la compatibilità con la versione di Angular installata nei progetti (regola `core.md` §6.13: da fare al primo uso).
+
+### Tabella delle decisioni «chiesto, non presunto» (review di skill e regole, punto 4.4)
+
+**Perché:** le scelte da non presumere sono sparse tra `CLAUDE.md` (una trentina di campi) e sette moduli; non c'era un punto per trovare da dove nasce ciascuna domanda.
+**Cosa / Dove:** `_template/avvio-progetto.md`: nuova §1b con una tabella di 26 righe (decisione, campo del `CLAUDE.md`, regola che la motiva); la fonte resta il campo e la regola, la tabella serve a trovarli. `core.md` 3.42, §6.5: rimando alla §1b.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi; i nomi dei campi controllati con Grep su `CLAUDE.md`.
+**Note:** `avvio-progetto.md` si copia nei progetti (`copia-regole`), quindi la tabella arriva con i nuovi progetti; i progetti già avviati la ricevono con `aggiorna-regole`.
+
+### `frontend.md` §13–§16 fuse in §2 e `backend.md` §2 in sottosezioni (review di skill e regole, punto 4.3)
+
+**Perché:** §13–§16 erano aggiunte in coda che ripetevano §2 («signal per lo stato» in 4 punti, `any` in §2 e §16, rimandi incrociati); `backend.md` §2 aveva circa 40 voci di seguito.
+**Cosa / Dove:** `frontend.md` 1.9: le regole uniche di §13–§16 stanno ora in §2, sottosezione «Template, componenti, Angular e TypeScript»; eliminati i duplicati (standalone, lazy loading, `strict`, `any`, secondo elenco dei signal, `computed()` e Reactive Forms uniti a «Stato» e «Form»). Le sezioni dopo §12 non esistono più. `backend.md` 1.7: sei sottosezioni `###` in §2 (struttura e linguaggio; validazione, versioni e OpenAPI; codice e organizzazione; errori, configurazione e resilienza; tipi, dati, pacchetti e job; servizi di contorno), voci invariate. Rimandi aggiornati in `plugins/kit/scripts/check-write.mjs` (messaggi degli avvisi: `frontend.md §2, Template e componenti`) e in `_template/eslint.config.example.js`.
+**Verifica:** build non applicabile (solo markdown e un testo di messaggio), test del plugin 126/126 verdi; Grep: nessun altro rimando a §13–§16 del frontend.
+**Note:** le dimensioni di `frontend.md` restano quasi le stesse (il testo unico era poco ripetuto); il beneficio è di struttura. Restano non fatti il formato Regola/Motivo/Eccezione e l'uniformità MUST/PREFER nelle voci di §2.
+
+### `core.md` §6.15 diviso in 15a–15d (review di skill e regole, punto 4.2)
+
+**Perché:** il punto 15 è un blocco di circa 5 KB con quattro regole diverse (piano, piano già scritto, modifiche piccole, esecuzione a passi), difficile da citare con precisione.
+**Cosa / Dove:** `core.md` 3.41, §6 punto 15: le quattro parti hanno ora le etichette 15a (piano a inizio attività), 15b (piano già scritto), 15c (modifiche piccole), 15d (esecuzione a passi). Il numero 15 non cambia, quindi i circa 18 rimandi a «§6.15» in skill, hook e moduli restano validi. Precisati i rimandi interni: criteri di una modifica piccola → 15c (checklist §0b), spunta dopo la verifica → 15a, cancellazione dei piani `.md` → 15c (§6.11). Testo delle regole invariato.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi.
+**Note:** non ho spezzato il punto in voci numerate separate (§6.16 in poi sarebbe slittato e avrebbe rotto i rimandi a 16–23); i rimandi esterni ai sotto-punti si possono precisare in seguito.
+
+### Caricamento fisso alleggerito con tagli interni (review di skill e regole, punto 4.1)
+
+**Perché:** `core.md`, `git.md`, `security.md` e `lavoro.md` si caricano a ogni sessione (circa 90 KB); parte del testo era solo .NET o ripeteva la skill `commit-passo`. Scelta dell'utente: solo tagli interni, nessun modulo nuovo.
+**Cosa / Dove:** `security.md` 2.3: i punti «Data Protection» e «hashing delle password» passano in `security-backend.md` 1.3, nuova sezione «Chiavi e password (.NET)» (testo identico), con rimandi aggiornati nella mappa ASVS (V11) e nella riga «Data Protection» di `backend.md`. `git.md` 1.8: «Commit multipli» ridotta da 6 a 5 punti (la parte sul flusso della skill rimanda alla skill), «Esempi» ridotti a un esempio più una riga su `fix` e rilascio. Nessuna regola eliminata.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi. Caricamento fisso da 89,7 KB a 86,9 KB (circa 2,8 KB in meno): meno dei 5-6 KB stimati, perché la «Crittografia» non si è potuta spostare (citata da `.editorconfig`, `check-write.mjs`, `gdpr-dati`, `core.md` e `backend.md`). Il carico dei file `.cs` cresce di 1,5 KB (nuova sezione in `security-backend.md`).
+**Note:** `core.md` §5/§5b e i blocchi «Mobile» e «Mappa ASVS» restano dove sono (scelta dell'utente).
+
+### `.editorconfig` allineato a `backend.md` (review di skill e regole, punto 1.1)
+
+**Perché:** la review ha trovato sei impostazioni in contrasto con le regole: `Program.cs` senza top-level statements, campi privati `_camelCase`, `var` solo se il tipo è evidente, expression body obbligatorio per metodi, proprietà e operatori, namespace uguale alla cartella.
+**Cosa / Dove:** `.editorconfig`: `csharp_style_prefer_top_level_statements = false`; nuovo stile `underscore_camel_case` (prefisso `_`) per i campi privati e interni; `var_elsewhere` e `var_for_built_in_types` a `false`; expression body di metodi, operatori e proprietà a `true:suggestion`; `dotnet_style_namespace_match_folder = true:suggestion`; `insert_final_newline = true` e `charset = utf-8`.
+**Verifica:** nessuna build né test (solo file di stile, nessun progetto .NET nel repository); controllo a vista delle chiavi modificate.
+**Cosa / Dove (aggiunta):** per decisione dell'utente `CA5394` passa da `error` a `warning` in `.editorconfig`; `security.md` 2.2 («Crittografia») lo toglie dall'elenco delle regole a `error`, lo mette in `WarningsNotAsErrors` con `TreatWarningsAsErrors` e ammette `Random` solo per valori non sensibili (jitter), con commento sul perché.
+**Cosa / Dove (chiusura):** `backend.md` 1.4 (§2, riga «C# 14 / .NET 10»): `EnforceCodeStyleInBuild` in `Directory.Build.props`, rimando ad `AnalysisLevel`/`AnalysisMode` di `security.md`, `dotnet format --verify-no-changes --no-restore` in CI (blocca solo le regole a `warning` o superiore); `_template/ci/ci.yml`: passo `dotnet format` dopo il restore.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi. Il comportamento di `EnforceCodeStyleInBuild` e `dotnet format` non è stato provato su un progetto .NET (non c'è nel repository): la regola dice di verificarlo al primo uso.
+**Cosa / Dove (severità):** per decisione dell'utente le regole di stile MUST di `backend.md` passano a `warning` in `.editorconfig`: `var_elsewhere`, `var_for_built_in_types`, expression body di metodi, operatori e proprietà, `namespace_match_folder`, `prefer_top_level_statements`; `backend.md` 1.4 lo dice. Il naming dei campi `_camelCase` resta `suggestion`.
+**Note:** lasciato invariato `end_of_line` (la fine riga si decide caso per caso, `git.md`). Il rapporto tra `TreatWarningsAsErrors` e NuGet Audit resta al punto 1.6 del piano.
+
+### `settings.example.json`: segreti e comandi di verifica (review di skill e regole, punto 3.4d)
+
+**Perché:** i permessi di esempio negavano solo tre varianti di `.env` e non i certificati (`*.pfx`, `*.p12`) né le chiavi SSH; `npm test:*` non copre `npm run test:coverage`; mancavano i comandi di sola verifica che le skill `verifica` e `verifica-frontend` eseguono (formattazione, audit, `docker compose config`); nessuna nota diceva che il divieto di `Read` non ferma `cat .env`.
+**Cosa / Dove:** `_template/settings.example.json`: deny aggiunti per `.env.development`, `.env.staging`, `*.pfx`, `*.p12`, `id_rsa*` e `Edit` su chiavi e certificati; allow aggiunti per `dotnet list`, `dotnet format --verify-no-changes`, `npm run test:*`, `npm audit`, `npx prettier --check`, `docker compose config`. `_template/avvio-progetto.md` (voce «Permessi di Claude Code»): spiega perché le varianti di `.env` sono elencate una per una e non con `.env.*` (negherebbe anche `.env.example`, che Claude deve poter leggere e aggiornare) e l'avvertenza su `cat .env`.
+**Verifica:** JSON letto con `JSON.parse`; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** non ho adottato il pattern unico `Read(./.env.*)` suggerito dalla review, per il motivo sopra. La sintassi `Bash(comando:*)` è quella già presente nel file e non è stata riverificata sulla documentazione di Claude Code (la review ipotizzava la forma `Bash(comando *)`): resta da controllare, come dice già `avvio-progetto.md`. Gli allow nuovi sono comandi di sola lettura o di sola verifica.
+
+### Frontend: budget di performance, browser nei test, WCAG 2.2, tabella Comandi (review di skill e regole, punto 3.4c)
+
+**Perché:** `frontend.md` chiedeva «budget dei bundle» senza valori, dichiarava Chrome, Edge, Firefox e Safari come supportati ma testava solo con Playwright senza dire su quali motori, citava «WCAG AA» senza i criteri nuovi della 2.2 e non faceva distinzione tra 44px (scelta del kit) e il 24px del criterio 2.5.8; la tabella «Comandi» del `CLAUDE.md` non aveva build, copertura, formattazione e audit, e riportava `npm ci` senza `--ignore-scripts`, contro `security.md` («Supply chain»).
+**Cosa / Dove:** `frontend.md` 1.8: budget di partenza dai default di Angular CLI (`initial` 500 kB/1 MB, stili per componente 4 kB/8 kB) da annotare nel `CLAUDE.md` e non alzabili senza motivo; Core Web Vitals «buoni» di web.dev per le pagine pubbliche (LCP ≤ 2,5 s, INP ≤ 200 ms, CLS ≤ 0,1); §3 con i criteri WCAG 2.2 (2.4.11, 2.5.7, 3.3.7, 3.3.8), 44px dichiarato come scelta del kit e verifica manuale con tastiera e lettore di schermo per i flussi principali; §10 Playwright con Chromium a ogni PR e Firefox e WebKit prima di ogni rilascio e nella CI notturna. `CLAUDE.md`: righe «Comandi» per formattazione e audit backend, copertura, build, formattazione e audit frontend; installazione con `npm ci --ignore-scripts`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; solo markdown, nessuna build.
+**Note:** valori scelti dall'assistente e approvati con «procedi» alla proposta (500 kB/1 MB, Chromium sempre e gli altri motori a rilascio o notturna); i default di Angular CLI e le soglie di web.dev vengono dalla mia conoscenza e non sono stati riletti sulla fonte. Il numero dei criteri WCAG 2.2 e i loro titoli vanno confermati sulla specifica al primo uso.
+
+### Docker, MinIO e MediatR: hardening e avvertenze di licenza (review di skill e regole, punto 3.4b)
+
+**Perché:** `backend.md` proponeva MinIO (AGPL-3.0) come opzione di storage senza richiamare il vincolo sul copyleft di `core.md` §3; «NO MediatR» e «NO AutoMapper» erano scelte senza motivazione di licenza; `docker.md` non chiedeva un utente numerico esplicito, non sfruttava BuildKit per la cache né isolava la rete dei servizi di supporto.
+**Cosa / Dove:** `backend.md` 1.6: avvertenza su MinIO (AGPL-3.0, ammesso solo come container non modificato raggiunto con client S3 permissivo, verifica di licenza e perimetro dell'edizione gratuita, alternativa disco su volume) e motivazione di licenza per MediatR (commerciale dalla 13) e AutoMapper (dalla 15). `docker.md` 1.4: utente non root numerico (`USER $APP_UID`), cache montata BuildKit, `--no-restore` e `UseAppHost=false`, rete di supporto `internal: true`.
+**Verifica:** licenze di MediatR e AutoMapper confermate sul [post di Jimmy Bogard](https://www.jimmybogard.com/automapper-and-mediatr-commercial-editions-launch-today/) (via ricerca web): MediatR dalla 13 e AutoMapper dalla 15 sono sotto licenza commerciale, le precedenti restano open source; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** scelta dell'utente su MinIO: solo avvertenza, non rimosso. Non fatti: motivazioni su HybridCache e Quartz.NET (Quartz ha già la sua motivazione in `backend.md`; HybridCache sarebbe un'alternativa nuova a FusionCache, quindi da concordare prima, `core.md` §6.18). Le opzioni Docker (`APP_UID`, cache mount, `internal`) non sono state provate su un build reale e la regola dice di verificarle. Lo stato attuale dell'edizione gratuita di MinIO non è stato verificato: la regola lo chiede al primo uso.
+
+### Regole backend: ProblemDetails, resilienza, health, idempotenza, CORS (review di skill e regole, punto 3.4a)
+
+**Perché:** lacune segnalate dalla review: `ProblemDetails` non copriva le risposte senza corpo prodotte dal framework (404, 405, 401, 403); `AddStandardResilienceHandler` ritenta anche le richieste non idempotenti; l'health check era descritto solo in `docker.md`; «chiavi di idempotenza» era una riga senza dettagli; CORS non diceva nulla su configurazione, metodi/header e preflight.
+**Cosa / Dove:** `backend.md` 1.5 (§2: `AddProblemDetails()` e `UseStatusCodePages()`, `CustomizeProblemDetails`; resilienza con timeout e retry disattivato per `POST`/`PATCH`/`DELETE` salvo chiave di idempotenza; nuova voce «Stato dell'app» con rimando a `docker.md` e `security-backend.md`); `backend-app.md` 1.4 (§4.2: `Idempotency-Key`, scope per utente, 422 per richiesta diversa, 409 per richiesta in corso, scadenza da configurazione); `security-backend.md` 1.2 («Protezione dell'API»: whitelist CORS da configurazione, metodi e header ammessi, `SetPreflightMaxAge`).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; solo markdown, nessuna build.
+**Note:** i nomi delle API (`UseStatusCodePages`, `CustomizeProblemDetails`, `DisableForUnsafeHttpMethods`) e il comportamento dell'header `Idempotency-Key` (bozza IETF) vengono dalla mia conoscenza e non sono stati riletti sulla documentazione: le regole dicono di verificarli sulla versione installata al primo uso (`core.md` §6.13). Restano da fare 3.4b (Docker, MinIO e copyleft, motivazioni di HybridCache/Quartz/MediatR), 3.4c (budget di performance, Playwright, WCAG, tabella Comandi) e 3.4d (`settings.example.json`).
+
+### Ampliate `dati-efcore`, `accessi-api`, `gdpr-dati` (review di skill e regole, punto 3.3)
+
+**Perché:** le tre skill non coprivano regole già scritte nei moduli: `dati-efcore` ignorava concorrenza e 409, filtri globali, `decimal`, `EnableSensitiveDataLogging` e la stringa `Migrations`, e ripeteva N+1 ai punti 8 e 9; `accessi-api` non verificava le decisioni obbligatorie di `security-backend.md` né lockout, cookie, CSRF, CORS, redirect, rate limit del login e rinnovo dei token; `gdpr-dati` si fermava al backend e non trattava backup, log di audit, consenso, violazione dei dati e notifica entro 72 ore.
+**Cosa / Dove:** `plugins/kit/skills/dati-efcore/SKILL.md`: nuovi punti 9-11 (concorrenza e 409/412, filtri globali e `IgnoreQueryFilters`, mapping e configurazione), punto 12 senza ripetizioni, riferimenti a `backend-app.md` §4.1, §4.2 e §4.6. `plugins/kit/skills/accessi-api/SKILL.md`: verifica iniziale delle decisioni nel `CLAUDE.md`, nuovi punti 10-13 (cookie e CSRF, CORS e redirect, login non enumerante, lockout e rate limit, rinnovo e revoca, MFA e ri-autenticazione se scelti). `plugins/kit/skills/gdpr-dati/SKILL.md`: nuovi punti 10-12 (backup e log di audit, consenso e preferenze, violazione dei dati e runbook) e description aggiornata.
+**Verifica:** ogni regola aggiunta ricondotta a una riga dei moduli (`backend-app.md`, `backend.md`, `security-backend.md`, `security.md`, `frontend.md` §6); sezioni citate controllate; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** «Completamenti dell'autenticazione» è una voce di «Autenticazione e Autorizzazione», non una sezione: citata così nella skill; `security.md` (intro e tabella ASVS) la chiama ancora sezione, da correggere con il passo di pulizia dei rimandi. Skill non provate su un progetto reale.
+
+### Nuova skill `sicurezza` (review di skill e regole, punto 3.2)
+
+**Perché:** `core.md` §0b e `security.md` («Regola operativa») chiedono, per le funzionalità che toccano autenticazione, autorizzazione, upload, URL esterni o dati personali, la security review, il threat model approvato prima del codice, i test con input ostili, il fail closed, i controlli di abuso di risorse e di log, `SECURITY.md` e il runbook; nel kit non c'era una skill che li mettesse insieme e `consegna` non eseguiva nulla.
+**Cosa / Dove:** `plugins/kit/skills/sicurezza/SKILL.md` (nuova, `sonnet`, sola lettura, invocabile anche da Claude): decide se la revisione è dovuta, controlla l'ADR del threat model, poi i temi pertinenti (input, accessi e proprietà, fail closed, upload, link assoluti con `Host` ostile, abuso di risorse, log e alert, segreti, frontend, `SECURITY.md` e runbook, controlli opzionali per il livello ASVS), lancia `security-review` con lo strumento `Skill` e unisce i risultati in un esito con la scala di `lavoro.md`. `consegna` (passo 5) indica quale skill verifica ciò che non può controllare da sola (`verifica`, `verifica-frontend`, `sicurezza`, `/code-review`). `README.md`, `docs/skill.md` (ventuno skill, 14 invocabili da Claude, 16 su `sonnet`), `marketplace.json` e `plugin.json` aggiornati.
+**Verifica:** JSON validi (`JSON.parse`); conteggi controllati (21 skill, 7 con il flag, 5 su `haiku`, 16 su `sonnet`); sezioni e campi citati controllati sulle regole; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** non provata su un progetto reale; non è chiaro se una skill del plugin possa lanciare la skill integrata `security-review` con lo strumento `Skill`: il passo 6 prevede il ripiego (dirlo e segnalare che resta da eseguire). Verifica il lancio alla prima esecuzione. Versione del plugin non cambiata.
+
+### Nuova skill `verifica-frontend` e comandi espliciti in `verifica` (review di skill e regole, punto 3.1)
+
+**Perché:** `frontend.md` §10 e `core.md` §0b/§4 chiedono lint, `npm test`, build di produzione, `npm audit`, copertura, niente `any` e colori fissi, ma `verifica` copriva solo .NET e non indicava i comandi (la build non era davvero «senza avvisi», `git diff --check` non includeva lo stage, mancavano formattazione, controllo `using`, compose).
+**Cosa / Dove:** `plugins/kit/skills/verifica-frontend/SKILL.md` (nuova, `haiku`, sola lettura): `npm ci --ignore-scripts`, lint, Prettier, test, copertura, build, `npm audit --audit-level=high`, ricerche su `any`, colori fissi, stringhe fisse (dichiarata «parziale») e allineamento delle chiavi di traduzione, `git diff --check`; esito con comando e output di ogni controllo. `plugins/kit/skills/verifica/SKILL.md` riscritta con i comandi: `dotnet restore --locked-mode`, `dotnet format --verify-no-changes`, `dotnet build -warnaserror` in Release, `dotnet test`, copertura con `coverlet`, `dotnet list package --vulnerable --include-transitive`, `dotnet ef migrations has-pending-model-changes`, `docker compose config`, `git diff --check` e `--cached --check`. `README.md`, `docs/skill.md` (venti skill, 13 invocabili da Claude, 5 su `haiku`), `.claude-plugin/marketplace.json` e `plugins/kit/.claude-plugin/plugin.json` aggiornati.
+**Verifica:** i due JSON si leggono (`JSON.parse`); conteggi controllati (20 skill, 7 con il flag, 5 su `haiku`); `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** né i comandi né le due skill sono stati provati su un progetto reale (non c'è un progetto .NET o Angular nel repository). Da verificare al primo uso: `has-pending-model-changes` (EF Core 8 o successivo), `--locked-mode`, il comportamento di `dotnet format` con le regole a `warning` e il nome degli script npm. La soglia di copertura dell'80% sul codice nuovo resta «non verificata» in entrambe: serve un modo per misurarla sul solo diff. Il controllo dei `using` inutilizzati (`IDE0005`) non è incluso in `verifica`: dipende dalla configurazione `GenerateDocumentationFile`, da valutare. Versione del plugin non cambiata (si alza al rilascio).
+
+### Scala di gravità unica per le revisioni (review di skill e regole, punto 2.8)
+
+**Perché:** le skill di revisione usavano scale diverse (`review-regole`: bloccante/importante/suggerimento; `qualita-test`: alta/media/bassa; `accessibilita-ui`: critico/grave/moderato; `dati-efcore`, `accessi-api`, `gdpr-dati`: «per gravità» senza dire quale), quindi i rilievi non erano confrontabili.
+**Cosa / Dove:** `.claude/rules/lavoro.md` 1.1: nuova voce «Gravità dei rilievi» con le tre gravità (bloccante: viola un MUST/NEVER o compromette sicurezza, dati o funzionamento; importante: viola un PREFER o degrada in modo significativo; suggerimento: opzionale) e la precisazione che la gravità di una vulnerabilità di pacchetto resta quella dello strumento. Sei skill rimandano alla voce: `review-regole`, `qualita-test` (alta→bloccante, media→importante, bassa→suggerimento), `accessibilita-ui` (critico→bloccante, grave→importante, moderato→suggerimento), `dati-efcore`, `accessi-api`, `gdpr-dati`.
+**Verifica:** `Grep` sulle skill: sei rimandi, nessuna delle altre skill usa gravità; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** la scala è in `lavoro.md` (sempre caricato, circa 1 KB in più) e non in `core.md` per non gonfiare il file più grande. Il gate di `pr-main` (punto 2.1) non è stato aggiunto.
+
+### `copia-regole`, `aggiorna-regole`, `avvia-progetto`: coerenza dei passi, file di riferimento, versioni (review di skill e regole, punto 2.7)
+
+**Perché:** `copia-regole` si contraddiceva sul caso «solo Git» (il passo 4 chiedeva due file, il 6 tre), non diceva come decidere `security-backend.md` e `security-frontend.md` e non copiava `settings.example.json`, `eslint.config.example.js` e `ci/` che `avvio-progetto.md` cita; `aggiorna-regole` sovrascriveva (con conferma) senza confrontare le righe `> Versione`, non considerava i file di riferimento e di root, chiedeva sempre il percorso e non gestiva un `.bak` già presente; `avvia-progetto` non gestiva un `CLAUDE.md` esistente, ignorava l'argomento e non scriveva il `PIANO.md` di avvio richiesto da `core.md` §6.15 e dal §2b del file di avvio.
+**Cosa / Dove:** `plugins/kit/skills/copia-regole/SKILL.md`: passo 4 allineato al 6; passo 5 con ordine backend, frontend, docker, security e `security-backend`/`security-frontend` che seguono le risposte; passo 7 copia in `_template/` anche `settings.example.json`, `eslint.config.example.js` e `ci/` (consultazione, non attivi). `plugins/kit/skills/aggiorna-regole/SKILL.md`: passo 2 usa la cartella corrente se valida; passo 5 confronta le versioni e raccomanda di non sovrascrivere se quella del progetto è più recente; nuovo 5b per i file di riferimento e di root (`NuGet.config` ed `.editorconfig` di norma si tengono); `.bak` esistenti non sovrascritti. `plugins/kit/skills/avvia-progetto/SKILL.md`: domanda su `CLAUDE.md` esistente, copia del template come fonte, argomento come valore proposto, `PIANO.md` di avvio prima di scrivere.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; §2b di `_template/avvio-progetto.md` letto per confermare il piano di avvio.
+**Note:** non provate su un progetto reale. `aggiorna-regole` non aggiorna le righe del `CLAUDE.md` oltre quelle già previste. `docs/skill.md` e `README.md` descrivono ancora `aggiorna-regole` e `copia-regole` in modo generico, ancora valido.
+
+### `disable-model-invocation` e descrizioni coerenti con il corpo (review di skill e regole, punto 2.6)
+
+**Perché:** il 1.13.0 aveva deciso che pr-develop e le skill di sola lettura possono essere lanciate anche da Claude, ma `accessi-api`, `accessibilita-ui` e `dati-efcore` (solo revisione: «le modifiche si applicano con una richiesta separata») avevano ancora il flag; `docs/skill.md` aveva una frase sgrammaticata e imprecisa; tre descrizioni contraddicevano il corpo («Revisiona e corregge» in `accessibilita-ui`, «Controlla o imposta» in `localizzazione` che non modifica file, «Guida la configurazione» in `accessi-api` e `dati-efcore` che chiudono con un esito di revisione).
+**Cosa / Dove:** tolto `disable-model-invocation` da `plugins/kit/skills/accessi-api`, `accessibilita-ui`, `dati-efcore` (scelta dell'utente); descrizioni di quelle tre e di `localizzazione` riscritte («revisiona/controlla e propone, non modifica file»); `docs/skill.md` elenca le 7 skill a lancio manuale (`aggiorna-docs`, `aggiorna-regole`, `avvia-progetto`, `buonasera`, `commit-passo`, `copia-regole`, `pr-main`) e dice che le altre 12 possono partire da Claude, con la righe della tabella allineate; `README.md` allineato per `accessibilita-ui`.
+**Verifica:** conteggio dei flag con `grep -l`: 7; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** `allowed-tools` per le skill di sola lettura NON è stato aggiunto: la sintassi del campo e il suo effetto sui prompt di permesso vanno verificati sulla documentazione di Claude Code prima di usarli (resta da fare, `core.md` §6.13). Con il flag tolto, le descrizioni delle tre skill compaiono nell'elenco di ogni sessione (costo di contesto); l'effetto sull'elenco va visto in una nuova sessione.
+
+### `buonasera` e `aggiorna-docs`: assenza di `PIANO.md`, piano concluso, lingua, fonte unica (review di skill e regole, punto 2.5)
+
+**Perché:** `buonasera` presumeva che `PIANO.md` esistesse: con il piano concluso e cancellato (ma modifiche non committate) il passo 1 era ambiguo; scriveva `## Ripartenza` in un piano che il passo 7 cancella subito; ripeteva la logica di `aggiorna-docs` invece di rimandarvi; le etichette dei documenti erano in italiano fisso senza leggere il campo «Lingua della documentazione» (`core.md` §5b). In `aggiorna-docs` l'argomento `[cartella-progetto]` non era usato, mancava il caso «non è un repository» e la chiave del progetto in `kit-progetti.json` poteva duplicarsi per maiuscole o minuscole.
+**Cosa / Dove:** `plugins/kit/skills/buonasera/SKILL.md`: passo 1 con tre casi (nessun lavoro; nessun piano ma modifiche; piano concluso senza `## Ripartenza`), passo 4 solo se il piano ha passi aperti, passo 6 che applica i passi 3-6 di `/kit:aggiorna-docs` come fonte unica (la skill ha `disable-model-invocation`, quindi non si lancia: se ne seguono i passi), lingua dal `CLAUDE.md`, nota al passo 9 se il piano non esiste più. `plugins/kit/skills/aggiorna-docs/SKILL.md`: argomento cartella usato, uscita se non è un repository, riuso della voce esistente che differisce per maiuscole o minuscole, nuovo punto «Lingua» al passo 3.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; solo markdown, nessuna build.
+**Note:** nel `CLAUDE.md` di questo repository il campo «Lingua della documentazione» è ancora un segnaposto: le due skill chiederanno la lingua alla prima esecuzione qui.
+
+### `buongiorno` e `review-regole`: niente riletture totali, base del diff, file nuovi (review di skill e regole, punto 2.4)
+
+**Perché:** `buongiorno` rileggeva ogni mattina `CLAUDE.md` e tutte le regole, contro `core.md` §6.16 e `lavoro.md` («Contesto e token»: le regole sono già caricate); `review-regole` leggeva tutte le regole (circa 230 KB nel template completo), usava `<base>` senza definirla, non vedeva i file nuovi non tracciati (`git diff` non li mostra) e dava un giudizio «pronto» senza dire che non cerca difetti né vulnerabilità.
+**Cosa / Dove:** `plugins/kit/skills/buongiorno/SKILL.md`, passo 1: rilegge solo `CLAUDE.md`, `PIANO.md` e `CHECKLIST.md`; le regole solo se il hook segnala un cambio. `plugins/kit/skills/review-regole/SKILL.md`: base = `develop` (altrimenti il branch principale del `CLAUDE.md`), riconoscimento branch o percorso con `git rev-parse --verify`, file non tracciati inclusi, lettura dei soli moduli pertinenti ai file toccati (sempre `core.md`, `lavoro.md`, `git.md`, `security.md`; gli altri secondo `paths:`), giudizio indicativo con decisione all'utente e rimando a `/code-review` e `/security-review`.
+**Verifica:** i moduli senza `paths:` sono davvero solo `core`, `git`, `lavoro` e `security` (`grep -L`); `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** la scala di gravità di `review-regole` (bloccante, importante, suggerimento) non è stata toccata: si unifica al punto 2.8.
+
+### `commit-passo`: build e test per gruppo coerente, file in stage, `-F`, `origin/develop` (review di skill e regole, punto 2.3)
+
+**Perché:** il passo 8 diceva «se build o test sono rossi non committare» senza dire quando eseguirli, quindi di fatto non li eseguiva, mentre `git.md` vuole ogni commit verde; i file già in stage finivano nel primo commit; i messaggi su più righe passati con `-m` si rompono con le virgolette di PowerShell; `develop` presente solo sul remoto non era gestito; la description prometteva domande «solo nei casi anomali» ma il corpo ne pone altre.
+**Cosa / Dove:** `plugins/kit/skills/commit-passo/SKILL.md`: nuovo passo 7b (build e test sull'albero di lavoro prima del primo commit; dopo l'ultimo commit di ogni gruppo intermedio verifica dello stato committato in un `git worktree` temporaneo, o dichiarazione che non è verificato; esito nel riepilogo); passo 2 (domanda sui file già in stage, con `git restore --staged`); passo 3 (parte da `origin/develop` se manca il locale); passo 8 (messaggio in un file e `git commit -F`, controllo manuale della forma perché il hook non legge `-F`; rimando a `core.md` §4 per i rossi estranei); description corretta.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; verificato che `guard-commands` non blocca `git worktree` né `git restore`.
+**Note:** scelta dell'utente: build e test «per gruppo coerente» (opzione consigliata), non per ogni commit. Il worktree non è stato provato su un caso reale e ripristina le dipendenze da zero: per il frontend può essere lento, la skill lo prevede come non praticabile.
+
+### Modello `sonnet` per le skill rischiose e metodo di contrasto in `colori-tema` (review di skill e regole, punto 2.2)
+
+**Perché:** `pr-main` (risolve conflitti di sincronizzazione, cancella branch), `commit-passo` (git flow, segreti, tipi ambigui) e `aggiorna-regole` (sovrascrive e cancella file) erano su `haiku`, mentre `pr-develop` era su `sonnet`; `colori-tema` dice «misura il contrasto» ma non dava il metodo, e un modello piccolo tende a stimare a occhio.
+**Cosa / Dove:** `model: sonnet` in `plugins/kit/skills/pr-main`, `commit-passo`, `aggiorna-regole`, `colori-tema`; restano su `haiku` `avvia-progetto`, `copia-regole`, `verifica`, `buongiorno`. `docs/skill.md` allineato (4 `haiku`, 15 `sonnet`). `colori-tema`, passo 5: metodo di calcolo (composizione dell'alfa, luminanza relativa WCAG, rapporto arrotondato per difetto, coppie «non verificabili» dichiarate).
+**Verifica:** formula provata con Node (nero su bianco 21,00; `#777` su bianco 4,48, quindi non passa 4,5); `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** `sonnet` costa di più di `haiku` sulle quattro skill. `verifica` resta su `haiku` e va rivista con il punto 3.1 (comandi espliciti, parte frontend).
+
+### `pr-develop` e `pr-main`: gate, `git fetch`, ordine dei passi (review di skill e regole, punto 2.1)
+
+**Perché:** le due skill leggevano `origin/*` senza `git fetch`, quindi i conteggi dei commit e il controllo «`main` avanti rispetto a `develop`» potevano usare riferimenti vecchi; scrivevano la riga `gh` nel `CLAUDE.md` prima di controllare lo stato dell'albero, sporcandolo; `pr-develop` apriva la PR anche con test rossi o un possibile segreto, perché il passo 4 si limitava a riportare le voci mancanti.
+**Cosa / Dove:** `plugins/kit/skills/pr-develop/SKILL.md`: stato (con `git fetch origin`) al passo 2 e riga `gh` al passo 3, gate al passo 4 (build o test rossi o non verificabili, segreto nel diff, controllo bloccante mancante: niente passi 6 e 7, una sola domanda); rimando del passo 7 aggiornato. `plugins/kit/skills/pr-main/SKILL.md`: stessa inversione dei passi 2 e 3 e `git fetch origin`; messaggio del commit di sincronizzazione `chore(repo): merge main into develop` (`merge` non è un tipo ammesso, `git.md`); rimando del passo 8 aggiornato.
+**Verifica:** numerazione dei passi controllata con `Grep`; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** `pr-develop` resta senza `disable-model-invocation` (la lancia `commit-passo` dopo il sì dell'utente, `git.md`): decisione generale al punto 2.6. Il gate non è stato aggiunto a `pr-main` (passo 5 riporta solo le voci mancanti): da valutare al punto 2.8.
+
+### `qualita-test`: esempio di nome di test in inglese (review di skill e regole, punto 1.8)
+
+**Perché:** l'esempio `Sconto_applicato_quando_il_totale_supera_la_soglia` era un identificatore in italiano, contro `core.md` §6.9 (codice e identificatori in inglese).
+**Cosa / Dove:** `plugins/kit/skills/qualita-test/SKILL.md`, passo 5: esempio `Discount_applied_when_total_exceeds_threshold` e rimando a `core.md` §6.9.
+**Verifica:** `Grep` su plugin, docs, regole e template: nessun altro nome di test in italiano; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+
+### Riferimenti incrociati rotti (review di skill e regole, punto 1.7)
+
+**Perché:** cinque skill e due moduli citavano sezioni inesistenti o sbagliate (`backend-app.md` §8, `backend.md` §9 per `TimeProvider`, `security.md` «Log», `core.md` §4 per i dati di test, `backend-app.md` §4.4 per il seeding), «Errori» non è una sezione, «D5/D6» rimandavano a un registro che non esiste, e `accessibilita-ui` dichiarava WCAG 2.2 mentre `frontend.md` §3 diceva solo «WCAG AA».
+**Cosa / Dove:** `plugins/kit/skills/dati-efcore` (→ `backend.md` §8), `qualita-test` (→ `backend.md` §2 «Tempo»), `gdpr-dati` (→ `security-backend.md` «Log: injection e contenuto» e `security.md` «Dati di test»; il rimando a `backend.md` §7 resta), `.claude/rules-optional/feature-workflow.md` (→ `backend.md` §7 «Seeding»), `.claude/rules/security.md` («Errori» → `security-backend.md`; tolti D5 e D6), `frontend.md` 1.7 §3 (riferimento WCAG 2.2 livello AA).
+**Verifica:** ogni sezione citata controllata con `Grep` sui titoli; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; solo markdown, nessuna build.
+**Note:** `accessibilita-ui` cita criteri (2.5.8, 2.4.11) che `frontend.md` non elenca: resta da decidere se aggiungerli (punto 3.4 del piano).
+
+### NuGet Audit e `TreatWarningsAsErrors` (review di skill e regole, punto 1.6)
+
+**Perché:** le regole chiedono `TreatWarningsAsErrors` e `NuGetAudit` attivo senza dire come convivono: gli avvisi `NU1901`–`NU1904` diventano errori di restore, e una CVE bassa in una dipendenza transitiva blocca tutto.
+**Cosa / Dove:** `backend.md` 1.4 (§2): `NU1903` e `NU1904` (alta, critica) restano errori; `NU1901` e `NU1902` (bassa, moderata) vanno in `WarningsNotAsErrors` in `Directory.Build.props` e restano controllati dal passo di audit della CI. `core.md` 3.40 (§3 «Audit»): rimando a `backend.md` §2.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi; solo markdown, nessuna build.
+**Note:** la soglia (alta e critica bloccanti) è una mia scelta tra le due indicate nel piano, non una decisione già presa dall'utente; l'utente può cambiarla. ID e comportamento degli avvisi non sono stati verificati su un SDK reale (la regola dice di farlo al primo uso).
+
+### `docker.md` 1.3: backup SQL Server, porta, risorse (review di skill e regole, punto 1.5)
+
+**Perché:** `BACKUP DATABASE` di SQL Server scrive sul filesystem del server SQL, non nel volume `backups` del container, quindi il flusso descritto non funzionava così com'era; «si pubblica solo la porta dell'app» non diceva su quale interfaccia, e con nginx sullo stesso host `0.0.0.0` aggira il proxy; «limiti dove sensato» non era verificabile.
+**Cosa / Dove:** `.claude/rules/docker.md`: backup SQL Server con destinazione sul server da concordare (altrimenti il servizio `db-backup` non si genera per SQL Server) e client `pg_dump` della stessa versione maggiore del server; porta legata a `127.0.0.1` o rete condivisa con il proxy, interfaccia fornita dall'utente; `mem_limit` e `cpus` obbligatori nel compose di produzione, con deroga annotata.
+**Verifica:** solo markdown, nessuna build; `node --test plugins/kit/tests/*.test.mjs`: 126/126 verdi.
+**Note:** l'assenza di `HEALTHCHECK` resta una scelta esplicita del modulo (immagine chiseled senza shell, probe esterno già previsto): non modificata.
+
+### Identificatori, `xmin`, naming PostgreSQL, riga C# 14 (review di skill e regole, punto 1.4)
+
+**Perché:** `backend.md` presentava `Guid.CreateVersion7()` come «adatto agli indici» senza distinguere i motori: su SQL Server `uniqueidentifier` si ordina con un criterio di byte diverso e l'ordine per tempo di un v7 si perde nell'indice clusterizzato. `xmin` era citato senza dire come si mappa; `UseSnakeCaseNamingConvention` non è di Npgsql ma di un pacchetto da dichiarare; la riga C# 14 elencava funzioni di C# 12.
+**Cosa / Dove:** `backend.md` 1.4 (§2 «Identificatori», riga C# 14; §7 naming) e `backend-app.md` 1.3 (§4.2 concorrenza ottimistica): v7 consigliato su PostgreSQL, su SQL Server generatore sequenziale di EF Core o chiave non clusterizzata (v7 solo dopo benchmark); `xmin` come `uint` con `IsRowVersion()`; pacchetto `EFCore.NamingConventions` (Apache-2.0) da dichiarare; funzioni C# 14 corrette.
+**Verifica:** ricerca web del 2026-11-13: [docs Npgsql sulla concorrenza](https://www.npgsql.org/efcore/modeling/concurrency.html), [release notes Npgsql 7.0](https://npgsql.org/efcore/release-notes/7.0.html), [pacchetto NuGet EFCore.NamingConventions](https://www.nuget.org/packages/EFCore.NamingConventions/), [confronto GUID in SQL Server](https://msdn.Microsoft.com/en-us/library/ms254976.aspx).
+**Note:** le fonti sul comportamento di v7 su SQL Server sono blog e librerie, non Microsoft; per questo la regola chiede un benchmark. Lo stato `[Obsolete]` esatto di `UseXminAsConcurrencyToken` non è confermato: la regola dice solo che è sostituito. Solo markdown, nessuna build.
+
+### `sessionStorage` e token: una sola regola (review di skill e regole, punto 1.3)
+
+**Perché:** `frontend.md` §5 vieta i token sia in `localStorage` sia in `sessionStorage`, mentre `security-frontend.md` («Storage») ammetteva `sessionStorage` «quando la persistenza non serve». Anche `sessionStorage` è leggibile da qualunque XSS.
+**Cosa / Dove:** `.claude/rules/security-frontend.md`: token e identificatori di sessione né in `localStorage` né in `sessionStorage` (cookie `HttpOnly` o BFF); `sessionStorage` ammesso solo per stato non sensibile; l'elenco generale dei dati sensibili cita entrambi gli storage.
+**Verifica:** solo markdown, nessuna build; rimando a `frontend.md` §5 controllato.
+
+### `git.md` 1.7: tipo `merge`, rimando rotto, a capo, lingua del rilascio (review di skill e regole, punto 1.2)
+
+**Perché:** `git.md` chiedeva un oggetto `merge: ...` che non è tra i tipi ammessi (l'hook `guard-commands` lo bloccherebbe se lo scrivesse Claude); citava una sezione «Conferma del branch» che non esiste e chiedeva un branch «confermato» contro «Branch di lavoro, senza conferma»; imponeva la voce di rilascio «in italiano» contro `core.md` §5b; una riga era fusa con la successiva.
+**Cosa / Dove:** `.claude/rules/git.md`: precisato che `merge` è solo l'oggetto del merge commit fatto dall'utente su GitHub (non un tipo per i commit di Claude, che usa `chore(repo)`); rimando corretto in «Branch di lavoro, senza conferma»; a capo ripristinato in «Sicurezza della cronologia»; voce di rilascio nella lingua della documentazione del progetto.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs` (vedi sotto); hook non modificato, `COMMIT_TYPES` invariato.
+
 ### Rilascio del plugin kit 1.13.0
 
 **Perché:** la PR #34 ha portato in `develop` la riduzione dei blocchi degli hook e delle conferme delle skill (voci del 2026-11-12).

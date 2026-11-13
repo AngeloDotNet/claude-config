@@ -20,6 +20,7 @@ jobs:
         with:
           global-json-file: global.json # oppure dotnet-version: "10.0.x"
       - run: dotnet restore --locked-mode
+      - run: dotnet format --verify-no-changes --no-restore # backend.md §2: formattazione e regole .editorconfig
       - run: dotnet build --no-restore --configuration Release -warnaserror
       - run: dotnet test --no-build --configuration Release
       - name: Audit pacchetti NuGet

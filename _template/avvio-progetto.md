@@ -2,7 +2,7 @@
 
 > Procedura per Claude. Sta in `_template/` del **template** e **si elimina nel nuovo progetto** insieme al resto di `_template/`. Il template è la sorgente pulita: per un progetto nuovo è la copia di lavoro stessa, per un progetto esistente Claude lo **legge soltanto** (indicato dall'utente) e non lo modifica mai.
 >
-> **Struttura del template:** `.claude/rules/` (moduli caricati da Claude Code in automatico: `core`, `git`, `security` all'avvio; `frontend`, `docker` e i tre moduli backend (`backend`, `backend-architecture`, `backend-app`) con `paths:`, solo quando si tocca un file corrispondente), `.claude/rules-optional/` (moduli non caricati: `feature-workflow`, `backend-email`, `backend-infra`), `CLAUDE.md` (modello da compilare), `.editorconfig` e `NuGet.config` (solo backend .NET, si tengono su conferma, domanda 9 del §1), `.gitattributes`, `.gitignore`, e `_template/` (questo file; gli hook personali e i comandi `/kit:...` sono nel plugin `plugins/kit/`, fuori dal progetto; `/kit:avvia-progetto` (dalla versione 1.9.0) fa le domande di questa procedura una per messaggio, `/kit:copia-regole` copia le regole e `/kit:aggiorna-regole` le aggiorna). Nessuna sottocartella dentro `.claude/rules/`: i rimandi tra moduli (`backend.md` §5b, ecc.) restano validi.
+> **Struttura del template:** `.claude/rules/` (moduli caricati da Claude Code in automatico: `core`, `git`, `security` all'avvio; `frontend` e i tre moduli backend (`backend`, `backend-architecture`, `backend-app`) con `paths:`, solo quando si tocca un file corrispondente), `.claude/rules-optional/` (moduli non caricati: `docker`, `feature-workflow`, `backend-email`, `backend-infra`), `CLAUDE.md` (modello da compilare), `.editorconfig` e `NuGet.config` (solo backend .NET, si tengono su conferma, domanda 9 del §1), `.gitattributes`, `.gitignore`, e `_template/` (questo file; gli hook personali e i comandi `/kit:...` sono nel plugin `plugins/kit/`, fuori dal progetto; `/kit:avvia-progetto` (dalla versione 1.9.0) fa le domande di questa procedura una per messaggio, `/kit:copia-regole` copia le regole e `/kit:aggiorna-regole` le aggiorna). Nessuna sottocartella dentro `.claude/rules/`: i rimandi tra moduli (`backend.md` §5b, ecc.) restano validi.
 
 ## Quando si usa
 - "Avvia un nuovo progetto" (la cartella contiene la copia del template).
@@ -27,7 +27,7 @@ Le regole sono il punto di partenza: si applicano per intero, senza deroghe pree
 
 ### B. Progetto esistente (codice già presente)
 Le regole si **integrano** senza stravolgere ciò che c'è: Claude rileva, mostra, chiede; non presume e non adegua il codice da solo.
-1. Domande del §1, una per volta (tipo, sicurezza, Docker, stato = esistente; tecnologia frontend, mobile e ORM si **rilevano** dal codice e si fanno confermare, non si chiedono da zero).
+1. Domande del §1, una per volta (tipo, sicurezza, stato = esistente; tecnologia frontend, mobile e ORM si **rilevano** dal codice e si fanno confermare, non si chiedono da zero).
 2. **Ispezioni in sola lettura:** git e cronologia (§3b), poi scelte già presenti nel codice (§3c). Nessuna modifica in questa fase.
 3. **Riepilogo delle differenze** rispetto alle regole e, **una domanda per volta**, la decisione per ciascuna: *deroga* nel `CLAUDE.md` di quel progetto (la scelta esistente resta) oppure *adeguamento* con refactoring a parte, pianificato in `PIANO.md`.
 4. `PIANO.md` di integrazione (§2b), poi copia dei moduli in `.claude/rules/`, `CLAUDE.md` (campi noti compilati, gli altri `[..]`; se esiste già, anche perché copiato come modello o preesistente del progetto, lo **allinea e completa** senza sostituirlo né perdere il contenuto del progetto) e commit `chore(rules)` su branch confermato.
@@ -42,7 +42,7 @@ Se `.claude/rules/` e il `CLAUDE.md` esistono già, non si riparte: si usa il ri
 Prima di copiare qualunque file Claude pone queste domande all'utente **una per volta**, con risposte a scelta, e attende la risposta prima di porre la successiva (una domanda può dipendere dalla precedente: per esempio il tipo di progetto decide quali altre servono):
 1. **Tipo di progetto:** solo API · solo frontend · fullstack · **solo Git** (solo per progetti esistenti già in sviluppo, di cui si vogliono governare solo branch e commit).
 2. **Sicurezza** (`security.md`): sì · no. Significa solo includere o meno il modulo delle regole di sicurezza (CORS, header, segreti, upload, ecc.). Se il progetto richieda anche autenticazione/autorizzazione è una domanda distinta, posta da `security.md` quando diventa rilevante, non all'avvio.
-3. **Docker** (`docker.md`): sì · no.
+3. *(numero non più usato)* **Docker** non si chiede all'avvio: `docker.md` è opzionale e si attiva solo su richiesta esplicita dell'utente (§4, «Aggiunta di un modulo»). I numeri delle altre domande restano invariati.
 4. **Stato:** nuovo progetto · progetto esistente.
 5. **Tecnologia frontend** (solo se il tipo include un frontend): Angular (default, regole in `frontend.md`) · Blazor.
 6. **Sviluppo mobile** (solo se il tipo include un frontend): no · sì, con una di queste tecnologie: **PWA** (l'app web installabile, nessun codice nativo) · **Ionic + Capacitor** (riusa Angular, solo con frontend Angular) · **.NET MAUI** (nativo C#; con Blazor è possibile Blazor Hybrid) · **Flutter** · **React Native**. L'elenco è una proposta, non un vincolo: l'utente può indicarne un'altra.
@@ -54,6 +54,38 @@ La modalità **solo Git** ha senso solo con stato "progetto esistente": se l'ute
 **Blazor o mobile non-PWA:** le regole oggi coprono solo Angular (`frontend.md`) e nessuna tecnologia mobile. Se l'utente sceglie Blazor **come tecnologia del progetto** (resta Blazor), Claude **non tiene `frontend.md`** (le sue regole Angular/PrimeNG non si applicano), lo segnala e propone di creare un modulo ad hoc quando il lavoro frontend inizia; non inventa regole nel frattempo. Lo stesso vale per una tecnologia mobile diversa da PWA (con Ionic + Capacitor restano valide le regole Angular, ma l'impacchettamento nativo non è coperto). La scelta va comunque nel `CLAUDE.md`. Se invece il progetto ha già un frontend Blazor e l'utente vuole **sostituirlo con Angular**, vale il §3d (la tecnologia di destinazione è Angular, quindi `frontend.md` si tiene o si copia).
 Non sono una domanda e non si possono escludere: `core.md`, `lavoro.md` e `git.md` (le regole Git sono sempre previste).
 Se l'utente risponde in modo vago, Claude richiede la scelta: non decide al suo posto.
+
+## 1b. Decisioni «chiesto, non presunto» durante il lavoro
+Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal progetto precedente: quando il lavoro le rende rilevanti e il campo del `CLAUDE.md` è ancora un segnaposto, Claude le chiede **una per volta** (con opzioni, pro e contro e una raccomandazione) e scrive la risposta nel campo indicato. Se il campo è già compilato non le richiede. Il campo del `CLAUDE.md` e la regola che la motiva sono la fonte; questa tabella serve solo a trovarli.
+
+| Decisione | Campo del `CLAUDE.md` | Regola |
+|---|---|---|
+| Architettura backend (Vertical Slice o Clean) | «Architettura backend» | `core.md` §6.4, `backend-architecture.md` |
+| Modello del dominio, repository, Specification | «Modello del dominio», «Repository», «Specification pattern» | `backend-architecture.md` §2b e §2c |
+| ORM (EF Core o Dapper) | «ORM» | `backend.md` §1 |
+| Motore del database e versione | «Database» | `backend.md` §1 |
+| Database e mock EF nei test | «Database nei test», «Mock EF nei test unitari» | `core.md` §4, `backend-app.md` §4.5 |
+| Utenti del database e connessione cifrata | «Utenti del database» | `backend-app.md` §4.4 |
+| Esposizione del documento OpenAPI | «Esposizione del documento OpenAPI» | `backend.md` §2 |
+| Tecnologia frontend e sviluppo mobile | «Tecnologia frontend», «Sviluppo mobile» | questo file, §1 |
+| Micro frontend | «Micro frontend» | `frontend.md` §12 |
+| Autenticazione e autorizzazione (se serve, JWT, granularità, sessione SPA) | «Sicurezza backend», «Token JWT», «Granularità», «Sessione SPA» | `security-backend.md`, «Autenticazione e Autorizzazione» |
+| Livello ASVS | «Livello ASVS» | `security.md` |
+| Indirizzo pubblico e host ammessi | «Indirizzo pubblico e host ammessi» | `security-backend.md`, «Host header e URL assoluti» |
+| Upload di file | «Upload di file» | `security-backend.md`, «Upload e parsing di file» |
+| Limiti, paginazione e rate limiting | «Limiti e rate limiting» | `security-backend.md`, «Abuso di risorse» |
+| CSP della SPA statica | «CSP della SPA statica» | `security-backend.md`, «Protezione dell'API» |
+| Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security.md`, «Log di sicurezza e allerta» |
+| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security.md`, «Supply chain» |
+| Logging (provider, sink, formato, livelli) | «Logging» | `core.md` §5 |
+| Osservabilità | «Osservabilità» | `core.md` §5 |
+| Cache | «Cache» | `backend-infra.md` |
+| File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend.md` §2 e §5, moduli opzionali |
+| Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security.md` |
+| Lingua di README e CHANGELOG | «Lingua della documentazione» | `core.md` §5b |
+| Fine riga del repository | «Fine riga» | `git.md`, «Repository, fine riga e hook» |
+| GitHub CLI installata | «Eccezioni alle regole globali» | `git.md`, «Integrazione GitHub» |
+| Attribuzione di Claude nei commit | «Attribuzione Claude nei commit» | `git.md`, «Messaggi di commit» |
 
 ## 2. Quali moduli tenere in `.claude/rules/`
 Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelti si **spostano** da `.claude/rules/` a `.claude/rules-optional/` (non si caricano più, ma restano disponibili per aggiungerli in seguito), quelli opzionali scelti si **spostano** da `.claude/rules-optional/`. Nel progetto esistente i moduli scelti si **copiano** dal template in `.claude/rules/`: la copia la fa `/kit:copia-regole` (o `/kit:aggiorna-regole` per i progetti che hanno già le regole); se i moduli risultano già presenti e identici al template, Claude non li ricopia e prosegue con il resto della procedura.
@@ -70,9 +102,9 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 | `security.md` | se l'utente ha scelto la sicurezza |
 | `security-backend.md` | se l'utente ha scelto la sicurezza e il tipo include un backend (con i tre moduli backend) |
 | `security-frontend.md` | se l'utente ha scelto la sicurezza e il tipo include un frontend Angular |
-| `docker.md` | se l'utente ha scelto Docker |
+| `docker.md` | **non all'avvio**: si attiva solo se l'utente lo chiede esplicitamente (per esempio «crea un Dockerfile»; §4, "Aggiunta di un modulo"). Sta in `rules-optional/` |
 
-**Modalità solo Git:** restano soltanto `core.md` (che `git.md` richiede), `lavoro.md` e `git.md`; né i moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`), né `frontend.md`, né `feature-workflow.md`, né `security.md`, né `security-backend.md`, né `security-frontend.md`, né `docker.md`. Le sezioni di `core.md` che riguardano moduli non inclusi non si applicano. Il `CLAUDE.md` contiene solo le sezioni "Regole", "Progetto", "Git" ed "Eccezioni alle regole globali"; le altre (scelte architetturali, nomi e struttura, comandi, operatività) si aggiungono se in seguito si aggiungono i moduli. Ogni altro modulo si può aggiungere dopo (§4, "Aggiunta di un modulo"). Se la domanda 2 (sicurezza) o 3 (Docker) ha risposta sì, quei moduli restano comunque.
+**Modalità solo Git:** restano soltanto `core.md` (che `git.md` richiede), `lavoro.md` e `git.md`; né i moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`), né `frontend.md`, né `feature-workflow.md`, né `security.md`, né `security-backend.md`, né `security-frontend.md`, né `docker.md`. Le sezioni di `core.md` che riguardano moduli non inclusi non si applicano. Il `CLAUDE.md` contiene solo le sezioni "Regole", "Progetto", "Git" ed "Eccezioni alle regole globali"; le altre (scelte architetturali, nomi e struttura, comandi, operatività) si aggiungono se in seguito si aggiungono i moduli. Ogni altro modulo si può aggiungere dopo (§4, "Aggiunta di un modulo"). Se la domanda 2 (sicurezza) ha risposta sì, quel modulo resta comunque.
 
 I moduli non scelti sono fuori ambito: i rimandi che li citano (es. "vedi anche `security.md`") non si applicano. Se in seguito l'utente li vuole, si aggiungono con la stessa procedura. I tre moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`) si spostano, si copiano o si aggiungono sempre insieme.
 
@@ -134,8 +166,8 @@ Caso di un progetto esistente con frontend Blazor che l'utente vuole sostituire 
 ## 4. Dopo l'avvio
 - Le specificità del progetto vanno nel suo `CLAUDE.md`, sezione "Eccezioni alle regole globali" o nelle altre sezioni. I moduli in `.claude/rules/` restano identici all'originale (salvo l'intestazione concordata), così il confronto con il template è sempre possibile.
 - **Riallineamento a richiesta:** Claude confronta versione e contenuto dei moduli del progetto con quelli di `.claude/rules/` e `.claude/rules-optional/` del template (di cui l'utente ha indicato il percorso), mostra le differenze per modulo e **applica solo dopo l'ok esplicito**. Aggiorna poi la riga "Regole" del `CLAUDE.md`. Non tocca le sezioni specifiche del progetto.
-- **Aggiunta di un modulo:** si copia (o si sposta da `rules-optional/`) in `.claude/rules/` e si toglie il modulo dall'elenco dei rimossi o non attivati del `CLAUDE.md`; nessun import da aggiungere.
-- **Permessi di Claude Code (facoltativo):** `_template/settings.example.json` è un punto di partenza per `.claude/settings.json` del progetto: nega la lettura e la modifica di `.env`, chiavi e cartella `secrets/`, e consente senza richiesta i soli comandi di verifica (build, test, lint, `git status`/`diff`/`log`). Non viene copiato da solo: Claude lo propone, l'utente decide, e la sintassi dei permessi si verifica sulla documentazione della versione installata (`core.md` §6.13). I divieti su git restano al hook `guard-commands` del plugin `kit`.
+- **Aggiunta di un modulo:** si copia (o si sposta da `rules-optional/`) in `.claude/rules/` e si toglie il modulo dall'elenco dei rimossi o non attivati del `CLAUDE.md`; nessun import da aggiungere. **`docker.md`** si attiva solo su richiesta esplicita (per esempio «crea un Dockerfile»): Claude lo sposta o copia da `rules-optional/`, imposta il campo «Deploy» del `CLAUDE.md` e chiede i valori mancanti di «Operatività», una domanda per volta.
+- **Permessi di Claude Code (facoltativo):** `_template/settings.example.json` è un punto di partenza per `.claude/settings.json` del progetto: nega la lettura e la modifica di `.env` (nelle varianti elencate una per una, perché un pattern unico `.env.*` negherebbe anche `.env.example`, che Claude deve poter leggere e aggiornare), di chiavi e certificati (`*.pem`, `*.key`, `*.pfx`, `*.p12`, `id_rsa*`) e della cartella `secrets/`, e consente senza richiesta i soli comandi di verifica (build, test, lint, formattazione in sola verifica, audit, `docker compose config`, `git status`/`diff`/`log`). Il divieto di lettura vale per lo strumento `Read` e non ferma un `cat .env` da shell: per i segreti resta determinante tenerli fuori dal repository e dalla sessione. Aggiungi le varianti `.env.*` che il progetto usa davvero. Non viene copiato da solo: Claude lo propone, l'utente decide, e la sintassi dei permessi si verifica sulla documentazione della versione installata (`core.md` §6.13). I divieti su git restano al hook `guard-commands` del plugin `kit`.
 - **Lint e CI di riferimento (facoltativo, solo con frontend/backend corrispondente):** `_template/eslint.config.example.js` (da copiare come `eslint.config.js` del frontend) applica le regole di `frontend.md` che un linter controlla; `_template/ci/ci.yml` (da copiare in `.github/workflows/`) esegue build, test, lint e audit a ogni PR con le action fissate allo SHA. Sono esempi non provati su un progetto reale: Claude li propone, l'utente decide, e al primo uso si verificano nomi delle regole, versioni e SHA (`core.md` §6.13).
 - **Moduli opzionali del backend (`backend-email.md`, `backend-infra.md`):** all'avvio non si chiedono. Quando durante lo sviluppo emerge la necessità (invio email; messaggistica, cache applicativa o eventi), Claude lo segnala, **chiede conferma** e propone di aggiungere il modulo con la procedura sopra; fino ad allora le funzionalità corrispondenti non si implementano e le regole non si improvvisano (`backend.md` §5). In un progetto esistente che già le usa, il rilevamento del §3c fa proporre il modulo.
 

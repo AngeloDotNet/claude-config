@@ -1,17 +1,19 @@
 ---
-description: Crea i commit locali del lavoro in corso, come da git.md, in sequenza e senza conferme intermedie (il lancio della skill è il via libera). Non richiede la GitHub CLI. Mai su main o develop (crea direttamente il branch di lavoro), piano dei commit in piano-commit.md, si ferma con una domanda solo nei casi anomali. Non fa push. A fine lavoro propone la PR con pr-develop e, solo dopo il sì dell'utente, la esegue. Si lancia solo su richiesta.
-model: haiku
+description: Crea i commit locali del lavoro in corso, come da git.md, in sequenza e senza conferme intermedie, mai su main o develop e senza push; non richiede la GitHub CLI. A fine lavoro propone la PR con pr-develop e la esegue solo dopo il sì dell'utente. Si lancia solo su richiesta.
+model: sonnet
 disable-model-invocation: true
 ---
 
 # Commit in sequenza
 
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
+
 Rispondi in italiano. Lanciare questa skill è il via libera dell'utente a creare i commit del piano, senza altre conferme: branch, piano e singoli commit non richiedono un ok. Quando una domanda serve (casi sotto), una sola per messaggio e attendi la risposta. Messaggi di commit in inglese, Conventional Commits (`git.md`). Non fare mai push (quello della PR lo esegue `pr-develop`, solo dopo il sì del passo 10), `--amend`, `reset`, `--no-verify`, `git add -A` né `git add .`: aggiungi i file per nome.
 
 1. **Repository.** Esegui `git rev-parse --show-toplevel`. Se non è un repository, dillo e termina: non eseguire mai `git init`.
-2. **Stato.** In sola lettura: `git branch --show-current`, `git status --short`, `git diff --stat`, `git diff --cached --stat` e, se esiste, `piano-commit.md`. Se non ci sono modifiche e `piano-commit.md` non ha commit aperti, dillo e termina. Se ci sono conflitti non risolti, segnalalo e termina senza committare.
+2. **Stato.** In sola lettura: `git branch --show-current`, `git status --short`, `git diff --stat`, `git diff --cached --stat` e, se esiste, `piano-commit.md`. Se non ci sono modifiche e `piano-commit.md` non ha commit aperti, dillo e termina. Se ci sono conflitti non risolti, segnalalo e termina senza committare. Se ci sono file già in stage (`git diff --cached --stat` non vuoto) che non appartengono al primo commit del piano, finirebbero in quel commit: dopo aver fatto il piano (passo 5) poni una sola domanda, se toglierli dallo stage con `git restore --staged <file>` (non tocca il lavoro nella cartella) o includerli.
 3. **Branch.** Se il branch corrente è `main` o `develop` (o il nome del branch principale dichiarato nel `CLAUDE.md`), non committare lì: crea tu il branch di lavoro, senza chiedere conferma.
-   - Se `develop` non esiste, chiedi con una sola domanda se crearlo da `main` (branch locale) e attendi la risposta.
+   - Se `develop` non esiste in locale ma esiste `origin/develop`, non serve crearlo: parti da `origin/develop` (`git switch -c <nome> origin/develop`) e dillo. Se non esiste nemmeno sul remoto, chiedi con una sola domanda se crearlo da `main` (branch locale) e attendi la risposta.
    - Scegli tipo, nome e partenza: `feature/` o `bugfix/` partono da `develop`; `hotfix/` parte da `main`; `release/` parte da `develop`, solo se si prepara un rilascio. Il nome è `tipo/descrizione-breve` in minuscolo con trattini; con i ticket nei branch (voce del `CLAUDE.md`) l'ID entra nel nome.
    - Crea il branch con `git switch -c <nome> <partenza>`: le modifiche non committate vengono con te. Se la base corrente non coincide con quella scelta e il cambio rischia di dare conflitti, fermati e dillo.
    - Se sei già su un branch di lavoro, continua lì. Dì in una riga su quale branch committi.
@@ -23,11 +25,15 @@ Rispondi in italiano. Lanciare questa skill è il via libera dell'utente a crear
    Se un file ha modifiche destinate a commit diversi, `git add -p` non è disponibile: chiedi caso per caso se unire i commit oppure preparare una patch parziale da applicare con `git apply --cached`, mostrandola prima. Non scegliere da solo.
    Lo scope è il modulo o la cartella toccata; se il `CLAUDE.md` elenca gli scope ammessi, usa solo quelli.
 7. **Mostra il piano** e procedi subito, senza attendere approvazione.
+7b. **Build e test, per gruppo coerente** (`git.md` vuole ogni commit verde; qui si verifica ai punti chiave, non a ogni commit). Un gruppo coerente è un commit di produzione con i suoi test e la documentazione collegata. Comandi: la tabella «Comandi» del `CLAUDE.md` (per .NET anche `/kit:verifica`, per il frontend lint, test e build); se il progetto non ha build o test, dillo e salta.
+   - **Prima del primo commit:** esegui build e test sull'albero di lavoro (è lo stato finale di tutti i commit del piano). Rossi per cause del lavoro: non committare e chiedi come procedere (passo 8).
+   - **Dopo l'ultimo commit di ogni gruppo che non chiude il piano:** verifica lo stato committato in un `git worktree` temporaneo (`git worktree add --detach <cartella temporanea della sessione> HEAD`, build e test lì, poi `git worktree remove`), senza toccare l'albero di lavoro. Se non è praticabile (per esempio dipendenze pesanti da ripristinare), dillo nel riepilogo: quel commit intermedio non è stato verificato.
+   - I commit dentro lo stesso gruppo non ripetono la verifica. Riporta l'esito (comando e risultato) nel riepilogo del passo 9.
 8. **Un commit alla volta, in sequenza.** Per il commit `n/N`:
    - aggiungi i file per nome (`git add <file>…`);
    - controlla `git status --short`, `git diff --staged` e `git diff --cached --check`; se `gitleaks` è già installato, eseguilo sulle modifiche in stage (altrimenti dillo, senza installarlo); segnala file molto grandi o binari non attesi;
-   - se la build o i test sono rossi per cause del lavoro, non committare e chiedi come procedere. Un commit WIP (`chore(wip): …`) solo se l'utente lo chiede esplicitamente;
-   - scrivi il messaggio: oggetto in inglese, all'imperativo, minuscolo, senza punto finale, al massimo 72 caratteri; il corpo spiega il perché, cita per nome tipi, metodi e file toccati; nei `fix` indica la causa radice;
+   - se la verifica del passo 7b è rossa per cause del lavoro, non committare e chiedi come procedere (se la rossa è estranea al lavoro, vale `core.md` §4: riportala, non correggerla e committa solo ciò che hai verificato). Un commit WIP (`chore(wip): …`) solo se l'utente lo chiede esplicitamente;
+   - scrivi il messaggio in un file nella cartella temporanea della sessione e committa con `git commit -F <file>` (i messaggi su più righe passati con `-m` si rompono con le virgolette di PowerShell). Con `-F` il hook `guard-commands` non legge il messaggio e non ne controlla la forma: la verifica di `tipo(scope): descrizione` la fai tu prima di committare. Oggetto in inglese, all'imperativo, minuscolo, senza punto finale, al massimo 72 caratteri; il corpo spiega il perché, cita per nome tipi, metodi e file toccati; nei `fix` indica la causa radice;
    - se il `CLAUDE.md` chiede l'attribuzione di Claude nei commit, aggiungi il trailer in fondo dopo una riga vuota (`Co-Authored-By: <modello> <noreply@anthropic.com>`);
    - esegui il commit senza chiedere conferma, spunta la casella in `piano-commit.md` e mostra hash e oggetto, poi passa al successivo.
    - **Ti fermi con una domanda** solo se: un controllo fallisce, compare un possibile segreto, il tipo è ambiguo, un file ha modifiche per commit diversi, la build o i test sono rossi, o un hook fallisce (in tal caso correggi la causa e ricrea quel commit prima di passare al successivo).
