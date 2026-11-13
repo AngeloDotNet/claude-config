@@ -1,6 +1,6 @@
 ---
 description: Controlla il lavoro corrente contro la checklist di consegna (core.md §0b) e segnala le voci mancanti, prima di dichiarare chiuso un compito. Non scrive file. Si lancia solo su richiesta.
-disable-model-invocation: true
+model: sonnet
 ---
 
 # Consegna: controllo prima di chiudere

@@ -4,6 +4,37 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-12
 
+### Skill `aggiorna-regole`: moduli rimossi e allineamento del `CLAUDE.md`
+
+**Perché:** la skill non gestiva i moduli tolti dal template e lasciava il `CLAUDE.md` del progetto disallineato, rimandando a una richiesta manuale.
+**Cosa / Dove:** `plugins/kit/skills/aggiorna-regole/SKILL.md`: nuovo passo 6 (moduli non più nel template: elenco e un solo ok per cancellarli, con `.bak`), passo 7 riscritto (allinea sezione «Regole», «Versione delle regole copiate» e «Moduli rimossi o non attivati» del `CLAUDE.md`, con un solo ok e `CLAUDE.md.bak`; nel dubbio una domanda alla volta), riepilogo esteso. `docs/skill.md` e `README.md` allineati.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs` 126/126 verdi.
+
+### Skill: campo `model` e `disable-model-invocation` ridotto
+
+**Perché:** le skill di sola lettura e `pr-develop` non avevano motivo di restare a lancio solo manuale; il modello va scelto per skill, non lasciato a quello della sessione.
+**Cosa / Dove:** `plugins/kit/skills/*/SKILL.md`: `model: haiku` per `aggiorna-regole`, `avvia-progetto`, `copia-regole`, `commit-passo`, `colori-tema`, `verifica`, `buongiorno`, `pr-main`; `model: sonnet` per le altre 11. `disable-model-invocation` tolto da `pr-develop`, `buongiorno`, `colori-tema`, `consegna`, `gdpr-dati`, `localizzazione`, `qualita-test`, `review-regole`, `verifica`. `docs/skill.md` e `README.md` allineati.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs` 126/126 verdi.
+**Note:** l'override del modello vale solo per il turno in cui parte la skill; l'effetto sulle skill con `disable-model-invocation: true` lanciate con `/nome` non è confermato dalla documentazione; provato a mano il 2026-11-12, funziona.
+
+### Skill: meno conferme, pulizia dei branch e dei file
+
+**Perché:** le conferme ripetute rallentavano il flusso quando l'utente ha già lanciato la skill.
+**Cosa / Dove:** `commit-passo` crea branch e commit in sequenza senza ok intermedi e a fine lavoro propone `pr-develop`; `pr-develop` e `pr-main` mostrano un riepilogo invece di chiedere conferma; `pr-main` dopo il merge (chiesto ogni volta) cancella i branch di lavoro confermati e allinea `main` e `develop` con `git pull --ff-only`; `aggiorna-docs` e `buonasera` aggiornano README, CHANGELOG e wiki senza domande; `buonasera` elenca i file inutili (cancellazione solo se confermata) e ricorda `/compact`; `copia-regole` usa la cartella corrente se valida.
+**Verifica:** suite del plugin 126/126 verdi.
+
+### Hook: meno blocchi
+
+**Perché:** alcuni blocchi riguardavano la forma e non la sicurezza.
+**Cosa / Dove:** `guard-commands.mjs`: tolti il blocco di `git init` e i controlli su maiuscola, punto finale e 72 caratteri (resta `tipo(scope): descrizione`); `push --delete` consentito solo per `feature/`, `bugfix/`, `release/`, `hotfix/`. `check-write.mjs`: `attesa-test` e `nowarn` diventano avvisi (deroga `kit-allow` ancora valida), tolti da `guard-write.mjs`. Test aggiornati in `guards`, `github`, `patterns`, `practice`.
+**Verifica:** suite del plugin 126/126 verdi.
+
+### Regole: git.md 1.6, core.md 3.39
+
+**Perché:** allineare le regole scritte al nuovo comportamento di hook e skill.
+**Cosa / Dove:** `git.md` e `core.md` §5b/§5c: branch di lavoro creato senza conferma, lancio delle skill come via libera, aggiornamenti di documentazione e wiki senza conferma; `CLAUDE.md`, `README.md`, `docs/skill.md`, `_template/avvio-progetto.md`, `.claude/rules-optional/feature-workflow.md` aggiornati.
+**Verifica:** solo testo, nessuna build; suite del plugin 126/126 verdi.
+
 ### Rilascio del plugin kit 1.12.0
 
 **Perché:** il controllo dell'hook sulla creazione dei tag (PR #29) era in `develop` con la versione 1.11.0.

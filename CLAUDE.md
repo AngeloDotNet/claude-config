@@ -107,7 +107,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `l
 - **Soglie di performance diverse dal default:** [nessuna | ...]
 
 ## Git
-- **Modello branch (git flow):** git flow completo con `develop`, obbligatorio in ogni progetto (`feature`/`bugfix`/`release` da `develop`, `hotfix` da `main`; vedi `git.md`) — Claude conferma il branch con te a ogni lavoro; se `develop` manca, chiede se crearlo
+- **Modello branch (git flow):** git flow completo con `develop`, obbligatorio in ogni progetto (`feature`/`bugfix`/`release` da `develop`, `hotfix` da `main`; vedi `git.md`) — Claude crea da solo il branch di lavoro quando serve, senza chiederti conferma; se `develop` manca, chiede se crearlo
 - **Branch principale:** [main]
 - **Strategia di merge:** come da `git.md` (squash verso `develop`, merge commit per ogni PR che coinvolge `main`)
 - **Ticket nei branch/commit:** [no | sì, formato `ABC-123`]
@@ -118,7 +118,6 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `l
 - **Hook pre-commit:** [nessuno | husky + lint-staged | `.githooks/`] — attivazione a cura dell'utente
 - **Push, PR, tag, release ed esecuzione delle pipeline:** come da `git.md` («Integrazione GitHub»); PR e rilasci con `gh` solo se installata (riga in «Eccezioni alle regole globali»).
 - **Attribuzione Claude nei commit:** [no | trailer Co-Authored-By]
-- **Commit di fila, massimo per lotto:** [non abilitato | N] (chiesto da Claude solo quando si passa un numero a `/kit:commit-passo`, non presunto; vedi `git.md`, «Commit multipli»)
 
 ## Eccezioni alle regole globali
 <!-- Ogni deroga va motivata. Se vuota, vale tutto il resto. -->

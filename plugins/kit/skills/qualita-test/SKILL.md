@@ -1,7 +1,7 @@
 ---
 description: Revisiona i test di un progetto o di un diff cercando test che danno falsa sicurezza, test fragili e duplicati, e propone come scrivere test xUnit parametrici e leggibili. Non modifica file. Si lancia solo su richiesta.
+model: sonnet
 argument-hint: [cartella-o-file]
-disable-model-invocation: true
 ---
 
 # Qualità dei test

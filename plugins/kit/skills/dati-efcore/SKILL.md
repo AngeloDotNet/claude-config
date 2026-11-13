@@ -1,5 +1,6 @@
 ---
 description: Guida il lavoro con Entity Framework Core nel backend: letture senza tracking, migrazioni da non modificare a mano, applicazione delle migrazioni, ciclo di vita del DbContext e ottimizzazione delle query. Si lancia solo su richiesta.
+model: sonnet
 argument-hint: [cartella-o-progetto]
 disable-model-invocation: true
 ---

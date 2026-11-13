@@ -1,6 +1,6 @@
 ---
-description: Apre con gh una pull request dal branch di lavoro (feature/ o bugfix/) verso develop, come da git.md. Titolo Conventional Commits (diventa il commit di squash), descrizione secondo git.md, push e creazione solo dopo conferma. Non fa il merge. Si usa solo se la GitHub CLI è installata e autenticata. Si lancia solo su richiesta.
-disable-model-invocation: true
+description: Apre con gh una pull request dal branch di lavoro (feature/ o bugfix/) verso develop, come da git.md. Titolo Conventional Commits (diventa il commit di squash), descrizione secondo git.md, push e creazione senza conferma intermedia (il lancio della skill è il via libera). Non fa il merge. Si usa solo se la GitHub CLI è installata e autenticata. Si lancia solo su richiesta.
+model: sonnet
 ---
 
 # PR verso develop
@@ -16,6 +16,6 @@ Rispondi in italiano. Una sola domanda per messaggio e attendi la risposta. Tito
    - **titolo** in Conventional Commits (`tipo(scope): descrizione`, minuscolo, senza punto, al massimo 72 caratteri): diventa l'oggetto del commit di squash su `develop`;
    - **descrizione** con le sezioni di `git.md` («Pull Request»): cosa cambia e perché, come è stato testato, impatti (migrazioni, variabili d'ambiente, breaking change), `Closes #N` se c'è un'issue, e per la UI screenshot o note su temi e lingue verificati. Chiudi con la riga `🤖 Generated with [Claude Code](https://claude.com/claude-code)` se il `CLAUDE.md` chiede l'attribuzione di Claude.
    Se il tipo del titolo è ambiguo (più tipi nei commit del branch), chiedilo con una sola domanda.
-6. **Conferma.** Mostra branch, `develop` come destinazione, titolo, descrizione e comandi che eseguirai, e chiedi con una sola domanda: «Faccio push del branch e apro la PR?». Senza un sì non eseguire nulla.
-7. **Esecuzione.** Dopo il sì: `git push -u origin <branch>` (push normale, mai forzato); poi `gh pr create --base develop --head <branch> --title "<titolo>" --body-file <file temporaneo>` con la descrizione in un file nella cartella temporanea della sessione. Se `gh pr create` segnala che la PR esiste già, mostra l'indirizzo e non crearne un'altra. Il hook `guard-commands` blocca `gh pr` finché la riga del passo 2 non dice «sì»: non aggirarlo.
+6. **Riepilogo.** Mostra branch, `develop` come destinazione, titolo, descrizione e comandi che stai per eseguire, e procedi senza attendere conferma: lanciare la skill è il via libera dell'utente.
+7. **Esecuzione.** `git push -u origin <branch>` (push normale, mai forzato); poi `gh pr create --base develop --head <branch> --title "<titolo>" --body-file <file temporaneo>` con la descrizione in un file nella cartella temporanea della sessione. Se `gh pr create` segnala che la PR esiste già, mostra l'indirizzo e non crearne un'altra. Il hook `guard-commands` blocca `gh pr` finché la riga del passo 2 non dice «sì»: non aggirarlo.
 8. **Chiusura.** Mostra l'indirizzo della PR. Ricorda che il merge è con **squash**, a cura dell'utente, e che la CI deve essere verde. Non usare `gh` per altro (né stato, né CI, né altre PR).

@@ -99,6 +99,19 @@ test("tag: creazione da un branch diverso da main è bloccata", () => {
   });
 });
 
+test("commit su main o develop: bloccato, il messaggio dice di creare il branch senza chiedere conferma", () => {
+  for (const branch of ["main", "develop"]) {
+    repoOn(branch, (dir) => {
+      const r = guard('git commit -m "feat: add x"', dir);
+      assert.equal(r.code, 2, branch);
+      assert.match(r.err, /senza chiedere conferma|UNA SOLA domanda/);
+    });
+  }
+  repoOn("feature/x", (dir) => {
+    assert.equal(guard('git commit -m "feat: add x"', dir).code, 0);
+  });
+});
+
 // --- PR e rilasci: richiedono gh installata ---
 
 test("gh pr create: senza riga gh è bloccato (fail closed)", () => {
@@ -187,17 +200,34 @@ test("push --force e varianti: bloccati anche con gh sì", () => {
   });
 });
 
-test("cancellazione di branch remoti: bloccata anche con gh sì", () => {
+test("cancellazione di branch remoti: solo feature/, bugfix/, release/, hotfix/, mai main o develop", () => {
   project(ghLine("sì"), (dir) => {
-    assert.equal(guard("git push origin --delete feature/x", dir).code, 2);
-    assert.equal(guard("git push origin :feature/x", dir).code, 2);
+    for (const cmd of [
+      "git push origin --delete feature/x",
+      "git push origin :bugfix/y",
+      "git push -d origin release/1.0.0",
+      "git push --delete origin release/1.0.0 hotfix/1.0.1",
+    ]) {
+      assert.equal(guard(cmd, dir).code, 0, cmd);
+    }
+    for (const cmd of [
+      "git push origin --delete main",
+      "git push origin --delete develop",
+      "git push origin :develop",
+      "git push origin --delete feature/x main",
+      "git push origin --delete",
+      "git push origin --delete refs/heads/feature/x",
+      "git push origin --delete feature/x --force",
+      "git push origin +feature/x",
+    ]) {
+      assert.equal(guard(cmd, dir).code, 2, cmd);
+    }
   });
 });
 
-test("reset --hard, git init e --no-verify: bloccati anche con gh sì", () => {
+test("reset --hard e --no-verify: bloccati anche con gh sì", () => {
   project(ghLine("sì"), (dir) => {
     assert.equal(guard("git reset --hard HEAD~1", dir).code, 2);
-    assert.equal(guard("git init", dir).code, 2);
     assert.equal(guard("git push --no-verify", dir).code, 2);
   });
 });

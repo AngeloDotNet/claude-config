@@ -1,6 +1,6 @@
 ---
 description: Riprende il lavoro del giorno precedente. Rilegge PIANO.md e CHECKLIST.md, riassume dove si è arrivati, cosa fare e le priorità, e propone il primo passo da cui ripartire. Si lancia solo su richiesta, all'inizio della giornata di lavoro.
-disable-model-invocation: true
+model: haiku
 ---
 
 # Buongiorno: ripartenza
