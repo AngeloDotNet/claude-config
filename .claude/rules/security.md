@@ -1,13 +1,13 @@
 # Sicurezza (OWASP Top 10 / ASVS come riferimento)
 
-> Versione 2.3 — ultima revisione: 2026-11-13.
+> Versione 2.5 — ultima revisione: 2026-11-13.
 
 > Richiede `core.md`. Questo file contiene i principi di sicurezza sempre attivi. Le sezioni su autenticazione, protezione dell'API, abuso di risorse, vulnerabilità applicative e upload sono in `security-backend.md` (caricato sui file backend); la sezione Frontend è in `security-frontend.md` (caricato sui file Angular).
 > **Fonti e versioni di riferimento (verificate il 2026-11-04):** OWASP Top 10 2025 (A01 Broken Access Control … A10 Mishandling of Exceptional Conditions) e OWASP ASVS 5.0.0 (maggio 2025, capitoli V1–V17; mappa in «Mappa ASVS 5.0 e livelli»). Quando escono versioni nuove, si rivedono le regole prima di aggiornare questa riga.
 > **Livello ASVS:** il livello di OWASP ASVS cui il progetto tende (1, 2 o 3) si **chiede a ogni progetto**, senza default, e si registra nel `CLAUDE.md` (campo "Livello ASVS"). Le regole di questo file sono la base comune; un livello più alto può richiedere controlli in più, che Claude propone e non introduce di iniziativa.
 
 ## Mappa ASVS 5.0 e livelli
-Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2026-11-04 su `github.com/OWASP/ASVS/tree/v5.0.0/5.0/en`. Il livello di ogni singolo requisito (L1/L2/L3) non è stato letto requisito per requisito: la tabella dice dove cercare e cosa il kit aggiunge per livello, non sostituisce il testo dell'ASVS, che si consulta per il livello scelto. Le sezioni «Autenticazione e Autorizzazione», «Completamenti dell'autenticazione», «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
+Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2026-11-04 su `github.com/OWASP/ASVS/tree/v5.0.0/5.0/en`. Il livello di ogni singolo requisito (L1/L2/L3) non è stato letto requisito per requisito: la tabella dice dove cercare e cosa il kit aggiunge per livello, non sostituisce il testo dell'ASVS, che si consulta per il livello scelto. Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
 
 | Capitolo ASVS | Dove nelle regole |
 |---|---|
@@ -16,7 +16,7 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 | V3 Web Frontend Security | «Frontend», header e CSP in «Protezione dell'API» |
 | V4 API and Web Service | «Protezione dell'API», «Configurazione e superficie esposta» (webhook) |
 | V5 File Handling | «Upload e parsing di file» |
-| V6 Authentication | «Autenticazione e Autorizzazione», «Completamenti dell'autenticazione» |
+| V6 Authentication | «Autenticazione e Autorizzazione» (voce «Completamenti dell'autenticazione») |
 | V7 Session Management | cookie, sessioni e logout in «Autenticazione e Autorizzazione» |
 | V8 Authorization | endpoint protetti, anti-IDOR, `backend-app.md` §4.6 |
 | V9 Self-contained Tokens | JWT (punto 3b: validazione, algoritmi, claim) |
@@ -52,11 +52,11 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 - Data Protection di ASP.NET Core e hashing delle password: regole in `security-backend.md`, «Chiavi e password (.NET)».
 - Rotazione dei segreti: i segreti hanno una data di scadenza o rotazione dichiarata nel `CLAUDE.md` di progetto; un segreto compromesso o finito per errore nel repository si considera bruciato e va sostituito, non solo rimosso.
 - Nessun segreto nel repository: User Secrets in sviluppo; in produzione variabili d'ambiente valorizzate da `.env` fuori dal repository (mai servizi cloud a pagamento come Azure Key Vault o AWS Secrets Manager).
-- **Database e canali interni:** il database si raggiunge con connessione cifrata e certificato verificato (SQL Server `Encrypt=True` con `TrustServerCertificate=False`; PostgreSQL `SslMode=VerifyFull`); se il server usa un certificato proprio, la CA fidata si concorda per progetto (host gestito dall'utente). Utente applicativo senza DDL e utente separato per le migrazioni: vedi `backend-app.md` §4.4. Redis e RabbitMQ richiedono sempre autenticazione (segreti da variabili d'ambiente valorizzate da `.env`) e non espongono porte sull'host in produzione (`docker.md`); se il traffico esce dalla rete interna del compose, passa su TLS. Nessun servizio interno (database, cache, broker, pannelli di gestione) è raggiungibile da Internet.
+- **Database e canali interni:** il database si raggiunge con connessione cifrata e certificato verificato (SQL Server `Encrypt=True` con `TrustServerCertificate=False`; PostgreSQL `SslMode=VerifyFull`); se il server usa un certificato proprio, la CA fidata si concorda per progetto (host gestito dall'utente). Utente applicativo senza DDL e utente separato per le migrazioni: vedi `backend-app.md` §4.4. Redis e RabbitMQ richiedono sempre autenticazione (segreti da variabili d'ambiente valorizzate da `.env`) e non espongono porte sull'host in produzione (con Docker, `docker.md`); se il traffico esce dalla rete interna del compose, passa su TLS. Nessun servizio interno (database, cache, broker, pannelli di gestione) è raggiungibile da Internet.
 - Le password non sono mai in chiaro, né nei log.
 - Dati personali: minimizzazione, cifratura dei campi sensibili, retention e diritto all'oblio (GDPR).
 - Dati di test: mai dati reali di produzione in sviluppo o test; usa dati sintetici o anonimizzati.
-- Backup e ripristino: backup automatici del database con ripristino testato periodicamente. RPO/RTO e retention si dichiarano nel `CLAUDE.md` di progetto; gli artefatti di backup sono descritti in `docker.md`.
+- Backup e ripristino: backup automatici del database con ripristino testato periodicamente. RPO/RTO e retention si dichiarano nel `CLAUDE.md` di progetto; con Docker, gli artefatti di backup sono descritti in `docker.md`.
 - Log di sicurezza: registra login riusciti e falliti, lockout, cambi di ruolo/permessi, accessi negati (401/403) e modifiche a dati critici; il contenuto dei messaggi segue la regola «Log: injection e contenuto» (vedi «Vulnerabilità applicative ricorrenti»).
 - **Log di sicurezza e allerta** (OWASP Top 10 2025, A09 «Security Logging and Alerting Failures»; il livello degli alert è una scelta del kit):
   - **Eventi riconoscibili:** gli eventi di sicurezza hanno un nome stabile (es. `AuthLoginFailed`, `AuthLockout`, `AccessDenied`, `RoleChanged`, `RateLimited`, `RefreshTokenReuse`) e proprietà strutturate (utente, IP, risorsa, esito, `traceId`), così si filtrano e si contano senza interpretare il testo.
