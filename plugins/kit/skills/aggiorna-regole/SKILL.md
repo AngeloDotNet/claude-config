@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 # Aggiornamento delle regole di un progetto
 
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
+
 Rispondi in italiano. Una sola domanda per messaggio. Il template è la cartella indicata dalla variabile d'ambiente `KIT_CONFIG_TEMPLATE_DIR`.
 
 1. Se la variabile non è impostata o la cartella non contiene `.claude/rules/core.md`, dillo e fermati.

@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 # Avvio progetto
 
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
+
 Rispondi in italiano. Una sola domanda per messaggio, mai elenchi di domande.
 
 1. Leggi il file di avvio del template: `avvio-progetto.md`, nella cartella del template indicata dalla variabile d'ambiente `KIT_CONFIG_TEMPLATE_DIR` (in `_template/avvio-progetto.md`); è sempre la copia del template, la più aggiornata, non quella eventualmente copiata nel progetto da `/kit:copia-regole`. Se la variabile non è impostata o il file manca, dillo e fermati.

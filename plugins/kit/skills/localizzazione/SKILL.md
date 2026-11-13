@@ -2,9 +2,13 @@
 description: Controlla il layout di un progetto e propone come impostarlo perché regga testi tradotti più lunghi, l'orientamento RTL, l'ordine di lettura e lo zoom. Non modifica file. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [cartella-progetto]
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Layout e localizzazione
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio.
 

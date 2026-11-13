@@ -7,6 +7,8 @@ disable-model-invocation: true
 
 # Aggiornamento della documentazione
 
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
+
 Rispondi in italiano. Una sola domanda per messaggio.
 
 1. Individua la radice del repository del progetto: se è passata una cartella come argomento, esegui `git -C <cartella> rev-parse --show-toplevel`, altrimenti `git rev-parse --show-toplevel`. Se non è un repository git, dillo e termina senza scrivere nulla. Il progetto si identifica con questo percorso, con `/` al posto di `\`; se in `~/.claude/kit-progetti.json` esiste già una voce che differisce solo per maiuscole o minuscole (tipico del disco su Windows), riusa quella invece di crearne una seconda.

@@ -1,10 +1,14 @@
 ---
-description: Esegue il controllo di verifica di una soluzione .NET prima di dichiarare chiuso un lavoro: ripristino, formattazione, build in Release senza avvisi, test, pacchetti vulnerabili, modifiche al modello EF senza migrazione, compose valido e spazi bianchi. Riporta l'esito reale senza modificare file. Per il frontend vedi /kit:verifica-frontend. Si lancia solo su richiesta.
+description: Esegue il controllo di verifica di una soluzione .NET prima di dichiarare chiuso un lavoro: ripristino, formattazione, build in Release senza avvisi, using inutilizzati, test, pacchetti vulnerabili, modifiche al modello EF senza migrazione, compose valido e spazi bianchi. Riporta l'esito reale senza modificare file. Per il frontend vedi /kit:verifica-frontend. Si lancia solo su richiesta.
 model: haiku
 argument-hint: [cartella-soluzione]
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Verifica della soluzione .NET
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio.
 
@@ -14,6 +18,7 @@ Questa skill esegue i controlli e riporta l'esito. Non corregge nulla: se un con
 2. **Ripristino.** `dotnet restore <sln> --locked-mode` se il progetto ha i lock file (`packages.lock.json`), altrimenti `dotnet restore <sln>`. Se fallisce, riporta l'errore e fermati: gli altri controlli non hanno senso senza pacchetti.
 3. **Formattazione.** `dotnet format <sln> --verify-no-changes --no-restore`. Fallisce se il codice non rispetta formattazione e regole `.editorconfig` a severità `warning` o superiore (`backend.md` §2).
 4. **Build.** `dotnet build <sln> --no-restore --configuration Release -warnaserror`. Un avviso è un errore: `core.md` §4 richiede una build senza warning. Riporta ogni problema con il file e la riga.
+4b. **Using inutilizzati.** `dotnet format style <sln> --diagnostics IDE0005 --severity info --verify-no-changes --no-restore` (`backend.md`: MUST, dopo una build senza errori). Se il comando non esiste nella versione dell'SDK installata o `IDE0005` non è riportata, il controllo risulta «non verificato», non superato; verifica la sintassi sulla versione in uso (`core.md` §6.13).
 5. **Test.** `dotnet test <sln> --no-build --configuration Release`. Riporta il numero di test eseguiti, falliti e saltati. Un test saltato è segnalato, non ignorato (`core.md` §4).
 6. **Copertura (se disponibile).** Se il progetto di test ha `coverlet.collector`, esegui i test con `--collect:"XPlat Code Coverage"` e riporta la copertura. La soglia di `core.md` §4 (80% sul codice nuovo o modificato) non si calcola da questo dato globale: dillo, e segna la soglia «non verificata» salvo che l'utente indichi come misurarla.
 7. **Pacchetti vulnerabili.** `dotnet list <sln> package --vulnerable --include-transitive` (`core.md` §3). Se l'output contiene «has the following vulnerable packages», il controllo non è superato: riporta ogni pacchetto con la gravità data dallo strumento. Non aggiornare pacchetti da questa skill.

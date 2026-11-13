@@ -1,10 +1,12 @@
 ---
-description: Crea i commit locali del lavoro in corso, come da git.md, in sequenza e senza conferme intermedie (il lancio della skill è il via libera). Non richiede la GitHub CLI. Mai su main o develop (crea direttamente il branch di lavoro), piano dei commit in piano-commit.md, build e test verificati per gruppo coerente; chiede solo se develop manca, se un piano è da riprendere, se il tipo è ambiguo e nei casi anomali. Non fa push. A fine lavoro propone la PR con pr-develop e, solo dopo il sì dell'utente, la esegue. Si lancia solo su richiesta.
+description: Crea i commit locali del lavoro in corso, come da git.md, in sequenza e senza conferme intermedie, mai su main o develop e senza push; non richiede la GitHub CLI. A fine lavoro propone la PR con pr-develop e la esegue solo dopo il sì dell'utente. Si lancia solo su richiesta.
 model: sonnet
 disable-model-invocation: true
 ---
 
 # Commit in sequenza
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Lanciare questa skill è il via libera dell'utente a creare i commit del piano, senza altre conferme: branch, piano e singoli commit non richiedono un ok. Quando una domanda serve (casi sotto), una sola per messaggio e attendi la risposta. Messaggi di commit in inglese, Conventional Commits (`git.md`). Non fare mai push (quello della PR lo esegue `pr-develop`, solo dopo il sì del passo 10), `--amend`, `reset`, `--no-verify`, `git add -A` né `git add .`: aggiungi i file per nome.
 

@@ -2,9 +2,13 @@
 description: Revisiona e guida la configurazione dell'autenticazione e dell'autorizzazione di un'API ASP.NET Core (propone, non modifica file): schemi di autenticazione, policy, handler, autorizzazione sugli endpoint, scope e mappatura dei claim. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [cartella-o-progetto]
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Accessi alle API
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio.
 

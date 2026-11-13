@@ -1,10 +1,12 @@
 ---
-description: Salva lo stato dei lavori della giornata in PIANO.md e i nuovi problemi in CHECKLIST.md, aggiorna senza conferma README.md, CHANGELOG.md e la wiki del progetto (se presente), così il giorno dopo /kit:buongiorno sa da dove ripartire. Prima di chiudere cerca i file non più utili (cancella solo quelli che l'utente conferma) e ricorda `/compact`. Non salva la conversazione. Si lancia solo su richiesta, a fine giornata.
+description: Salva lo stato dei lavori della giornata in PIANO.md e i nuovi problemi in CHECKLIST.md, aggiorna senza conferma README.md, CHANGELOG.md e la wiki del progetto (se presente), così il giorno dopo /kit:buongiorno sa da dove ripartire. Prima di chiudere cerca i file non più utili (cancella solo quelli che l'utente conferma) e ricorda `/clear` o `/compact`. Non salva la conversazione. Si lancia solo su richiesta, a fine giornata.
 model: sonnet
 disable-model-invocation: true
 ---
 
 # Buonasera: salvataggio dello stato
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Non committare nulla (nemmeno la wiki).
 
@@ -24,5 +26,5 @@ Rispondi in italiano. Non committare nulla (nemmeno la wiki).
    - Lingua: la lingua dei documenti è quella del campo «Lingua della documentazione» del `CLAUDE.md` (`core.md` §5b). Se il campo manca o è un segnaposto, non indovinare: poni una sola domanda.
    - Se la voce `sito` manca, non fare domande: dillo nel riepilogo e suggerisci `/kit:aggiorna-docs`, che la chiede una volta.
 7. **File non più utili.** In sola lettura (`git status --short`, `git ls-files`, ricerca dei riferimenti con Grep) cerca file che non servono più, anche `.md`. Candidati tipici: piani conclusi (`PIANO.md` con tutte le caselle spuntate, `piano-commit.md` completato: questi si cancellano senza chiedere, `core.md` §6.15), file temporanei o di backup non tracciati (`*.bak`, `*.orig`, `*.tmp`, `*.log`), bozze e note `.md` senza riferimenti da altri file, file generati non ignorati. Non proporre mai: `CLAUDE.md`, `README.md`, `CHANGELOG.md`, `SECURITY.md`, `.env*`, `.claude/`, `docs/adr/`, lock file, `CHECKLIST.md`. Per gli altri candidati mostra un elenco con il motivo di ciascuno e chiedi con una sola domanda quali cancellare; cancella solo quelli confermati, uno per file (mai `rm -rf`), e non committare. Se non ci sono candidati, dillo in una riga.
-8. **Promemoria `/compact`.** Dopo la pulizia ricorda in una riga che è un buon momento per `/compact` (comando interno: non puoi eseguirlo né simularlo, `core.md` §6.19).
+8. **Promemoria `/clear` o `/compact`.** Dopo la pulizia ricorda in una riga il comando adatto, col criterio di `lavoro.md` («`/clear` o `/compact`»): `/clear` se lo stato di ripartenza sta già su file (caso tipico di questa skill, che lo ha appena salvato), `/compact` solo se il lavoro continua nella stessa sessione (comandi interni: non puoi eseguirli né simularli, `core.md` §6.19).
 9. In fondo alla risposta stampa il prompt da copiare nella sessione successiva, esattamente così: «Riprendi il lavoro: usa /kit:buongiorno». Se il `PIANO.md` non esiste più (piano concluso e cancellato, o mai creato), aggiungi una riga: `/kit:buongiorno` troverà solo `CHECKLIST.md` e le modifiche non committate.

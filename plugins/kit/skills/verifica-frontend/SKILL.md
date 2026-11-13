@@ -2,9 +2,13 @@
 description: Esegue il controllo di verifica di un frontend Angular prima di dichiarare chiuso un lavoro: installazione, lint, formattazione, test con copertura, build di produzione, audit npm e controlli su any, colori e traduzioni. Riporta l'esito reale senza modificare file. Per il backend .NET vedi /kit:verifica. Si lancia solo su richiesta.
 model: haiku
 argument-hint: [cartella-frontend]
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Verifica del frontend Angular
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio.
 

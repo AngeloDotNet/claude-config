@@ -2,9 +2,13 @@
 description: Controlla le voci di sicurezza della consegna sul lavoro corrente, solo se tocca autenticazione, autorizzazione, upload, URL esterni, query dinamiche o dati personali: threat model (ADR), test con input ostili, fail closed, abuso di risorse, log e alert, SECURITY.md e runbook; poi lancia /security-review e unisce i risultati. Non modifica file. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [percorso-o-branch]
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Sicurezza: controllo prima di consegnare
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio. Non modificare nessun file.
 

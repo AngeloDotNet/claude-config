@@ -1,11 +1,13 @@
 ---
-description: Apre con gh una pull request da develop (o da release/ e hotfix/) verso il branch principale (main o master), come da git.md. Controlla prima che main non abbia commit assenti da develop e propone il branch di sincronizzazione. Merge commit, mai squash. Push e creazione senza conferma intermedia (il lancio della skill è il via libera). Dopo il merge dell'utente, con la sua conferma ogni volta, elenca i branch locali e remoti cancellabili, cancella solo quelli che conferma e allinea main e develop locali con pull fast-forward. Si usa solo se la GitHub CLI è installata e autenticata. Si lancia solo su richiesta.
+description: Apre con gh una pull request da develop (o da release/ e hotfix/) verso il branch principale, come da git.md, con merge commit e senza conferma intermedia; dopo il merge, confermato dall'utente, pulisce i branch di lavoro e allinea main e develop. Richiede la GitHub CLI installata e autenticata. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [branch-sorgente]
 disable-model-invocation: true
 ---
 
 # PR verso il branch principale
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio e attendi la risposta. Titolo e descrizione in inglese. Non fare mai `push --force`, non fare il merge della PR, non cancellare branch (salvo al passo 10, solo quelli confermati dall'utente) e non creare tag o rilasci: sono richieste a parte.
 

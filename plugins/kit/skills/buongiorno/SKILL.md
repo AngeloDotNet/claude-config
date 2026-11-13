@@ -1,9 +1,13 @@
 ---
 description: Riprende il lavoro del giorno precedente. Rilegge PIANO.md e CHECKLIST.md, riassume dove si è arrivati, cosa fare e le priorità, e propone il primo passo da cui ripartire. Si lancia solo su richiesta, all'inizio della giornata di lavoro.
 model: haiku
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Buongiorno: ripartenza
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Non modificare nessun file. Rispondi in italiano.
 

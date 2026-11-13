@@ -2,9 +2,13 @@
 description: Revisiona e guida il lavoro con Entity Framework Core nel backend (propone, non modifica file): letture senza tracking, migrazioni da non modificare a mano, applicazione delle migrazioni, ciclo di vita del DbContext e ottimizzazione delle query. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [cartella-o-progetto]
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Dati con EF Core
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio.
 

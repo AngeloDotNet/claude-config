@@ -2,9 +2,13 @@
 description: Revisiona un progetto backend rispetto ai principi del GDPR: minimizzazione dei dati, conservazione (backup e log di audit compresi), log senza dati personali, errori senza dettagli sensibili, cifratura, consenso, diritti degli interessati e risposta a una violazione. Non è consulenza legale. Non modifica file. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [cartella-o-progetto]
+disable-model-invocation: true
+disallowed-tools: Edit Write NotebookEdit
 ---
 
 # Dati personali nel backend (GDPR)
+
+**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
 
 Rispondi in italiano. Una sola domanda per messaggio.
 
@@ -22,7 +26,7 @@ Questa skill revisiona gli aspetti tecnici del trattamento dei dati personali ne
 10. **Backup e log di audit.** I dati personali sono anche nei backup: retention e RPO/RTO sono dichiarati nel `CLAUDE.md` e la cancellazione richiesta da un interessato ha un modo dichiarato di propagarsi (scadenza del backup, o ripristino seguito da nuova cancellazione). I log di audit sono di sola aggiunta (nessun `UPDATE` o `DELETE` dall'utente applicativo), con retention dichiarata e senza dati personali non necessari (`security.md`, «Dati e Segreti», voce «Log di sicurezza e allerta»).
 11. **Consenso e preferenze.** Se c'è un frontend: il consenso (necessari, statistici, marketing) è salvato, revocabile in ogni momento e non carica script o risorse di terzi prima della scelta; tema, fuso orario e consenso stanno nel profilo o in una sede concordata (`frontend.md` §4.1 e §6).
 12. **Violazione dei dati.** Esiste il runbook `docs/runbook-sicurezza.md` con i passi per una violazione di dati personali, compreso l'avviso al titolare, che notifica al Garante entro 72 ore, e chi decide e chi esegue (`security.md`, «Scansione dinamica, segnalazioni e risposta agli incidenti»). Se manca, è un rilievo.
-13. **Segreti.** Nessun segreto nel codice, nel repository o nelle immagini: solo variabili d'ambiente valorizzate da `.env` (`docker.md`, «Configurazione e segreti»).
+13. **Segreti.** Nessun segreto nel codice, nel repository o nelle immagini: solo variabili d'ambiente valorizzate da `.env` (con Docker, `docker.md`, «Configurazione e segreti»).
 14. **Esito.** Chiudi con un elenco per area (dati, API, log, conservazione, segreti, diritti), con il punto trovato, il file e la riga, e la gravità (bloccante, importante, suggerimento: `lavoro.md`, «Gravità dei rilievi»). Ricorda che l'esito tecnico non sostituisce il parere del titolare o di un consulente legale.
 
-Riferimenti: `security.md` («Dati e Segreti», con le voci «Log di sicurezza e allerta» e «Dati di test»; «Scansione dinamica, segnalazioni e risposta agli incidenti»); `frontend.md` §6; `security-backend.md` («Vulnerabilità applicative ricorrenti»); `core.md` §5; `docker.md`; `backend.md` §7.
+Riferimenti: `security.md` («Dati e Segreti», con le voci «Log di sicurezza e allerta» e «Dati di test»; «Scansione dinamica, segnalazioni e risposta agli incidenti»); `frontend.md` §6; `security-backend.md` («Vulnerabilità applicative ricorrenti»; «Chiavi e password (.NET)», per il punto 7); `core.md` §5; `docker.md` (se attivo).
