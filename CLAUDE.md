@@ -84,11 +84,17 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `l
 | Avvio ambiente locale (Redis, RabbitMQ; il DB è preesistente) | `docker compose up -d` |
 | Build backend | `dotnet build` |
 | Test backend | `dotnet test` |
+| Formattazione backend | `dotnet format --verify-no-changes --no-restore` |
+| Audit pacchetti NuGet | `dotnet list package --vulnerable --include-transitive` |
 | Avvio backend | `dotnet run --project [src/Api]` |
-| Installazione frontend | `npm ci` |
+| Installazione frontend | `npm ci --ignore-scripts` |
 | Avvio frontend | `npm start` |
 | Lint frontend | `npm run lint` |
 | Test unitari frontend | `npm test` |
+| Test frontend con copertura | `npm run test:coverage` |
+| Build di produzione frontend | `npm run build` |
+| Formattazione frontend | `npx prettier --check .` |
+| Audit pacchetti npm | `npm audit --audit-level=high` |
 | Test E2E | `npx playwright test` |
 | Generazione client API | `[comando NSwag / OpenAPI Generator]` |
 | Nuova migrazione EF | `dotnet ef migrations add [Nome] --project [..] --startup-project [..]` |
