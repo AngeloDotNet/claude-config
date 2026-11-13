@@ -4,6 +4,145 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-13
 
+### Etichette MUST e PREFER chiuse in `backend.md` e `frontend.md`
+
+**Perché:** tre voci erano ambigue: «Principi SOLID» senza etichetta, «OpenAPI» e «Routing» con una parte PREFER dentro una voce MUST. «C# 14 / .NET 10» e «Componenti piccoli e focalizzati» non contengono parole di preferenza e restano MUST.
+**Cosa / Dove:** `backend.md` 1.10, §2: «Principi SOLID (MUST)»; «OpenAPI» diviso in una voce MUST (UI solo in Development, mai in produzione, token da inserire) e in «Scelta della UI (PREFER)» (Swagger UI, Scalar solo su richiesta). `frontend.md` 1.14, §2: «Routing» diviso in «Routing (MUST)» e «Guard e resolver (PREFER)».
+**Verifica:** test del plugin 129/129 verdi; `git diff --check` pulito; build non applicabile.
+**Note:** il criterio WCAG 2.5.8 e 2.4.11 citato da `accessibilita-ui` e non elencato in `frontend.md` §3 è rimandato a `CHECKLIST.md`. Nessun commit.
+
+### Wiki allineata alle modifiche del giorno
+
+**Perché:** la pagina `plugin.md` diceva «dopo la 1.12.0 (non ancora rilasciata)» per modifiche già rilasciate con la 1.13.0, e non descriveva le novità di oggi.
+**Cosa / Dove:** wiki `docs/claude-config/plugin.md`: la nota diventa «Con la versione 1.13.0», e una nuova nota «Dopo la 1.13.0 (non ancora rilasciata)» elenca ventuno comandi, `disable-model-invocation` e `disallowed-tools`, riga «Modello in uso», novità di `consegna`, fix delle redirezioni, `docker.md` opzionale e criterio `/clear` o `/compact`. `funzionamento.md`: etichette Regola, Motivo ed Eccezione in `backend.md` e `frontend.md`. `contenuto.md`: criterio `/clear` o `/compact` nella riga di `lavoro.md`.
+**Verifica:** build non applicabile; testi ricontrollati con `CHANGELOG.md` e con i file delle regole.
+**Note:** gli altri file della wiki risultano già allineati (`docker.md` opzionale, tabella skill a 21 righe). La wiki ha altre modifiche non committate che non sono mie. Nessun commit.
+
+### Criterio per scegliere tra `/clear` e `/compact`
+
+**Perché:** le regole ricordavano solo `/compact` a fine attività, anche quando lo stato di ripartenza è già su file e `/clear` è la scelta migliore.
+**Cosa / Dove:** `lavoro.md` 1.3: nuova voce «`/clear` o `/compact`» (PREFER) con il criterio. `core.md` 3.44, §6.19: il promemoria nomina entrambi i comandi e rimanda al criterio. `/kit:buonasera` (descrizione e passo 8), `docs/skill.md` e `README.md` allineati.
+**Verifica:** build non applicabile; test del plugin 129 passati, 0 falliti; `git diff --check` pulito.
+**Note:** wiki aggiornata nelle due righe di `/kit:buonasera` (`funzionamento.md` e `plugin.md`). Nessun commit.
+
+### Tabelle delle skill allineate (`docs/skill.md` e wiki)
+
+**Perché:** dopo le modifiche del giorno le tabelle delle skill non dicevano più il vero: `docs/skill.md` affermava che quattordici skill possono partire da sole, e le righe di `consegna`, `verifica` e `qualita-test` non citavano i controlli aggiunti.
+**Cosa / Dove:** `docs/skill.md`: premessa riscritta (tutte le skill tranne `/kit:pr-develop` hanno `disable-model-invocation`; le tredici di revisione hanno anche `disallowed-tools`) e righe di `consegna` (gruppo «non verificata» e blocco «Da lanciare»), `verifica` (`using` inutilizzati) e `qualita-test` (scorciatoie vietate, test frontend). Wiki `docs/claude-config/plugin.md`: stesse tre righe, più le righe mancanti di `/kit:verifica-frontend` e `/kit:sicurezza` (la tabella ne aveva 19 su 21) e la premessa («ventuno comandi», `/kit:pr-develop` unica skill lanciabile da Claude, comandi di revisione senza `Edit` e `Write`).
+**Verifica:** build non applicabile; ricontrollati i testi con il frontmatter delle skill.
+**Note:** nella pagina `plugin.md` restano invariate le note storiche sulle versioni 1.11.0 e 1.12.0 («diciannove comandi» per la 1.11.0), che descrivono quei rilasci. La wiki ha altre modifiche non committate di sessioni precedenti, che non sono mie. Nessun commit.
+
+### Output doppio di `UserPromptSubmit`: non riproducibile
+
+**Perché:** una voce della checklist annotava che l'output del hook `UserPromptSubmit` compariva due volte per prompt, con causa non verificata.
+**Cosa / Dove:** nessuna modifica ai file del plugin. Controllato `plugins/kit/hooks/hooks.json` (una sola voce per `UserPromptSubmit`), `~/.claude/settings.json` (plugin abilitato una volta) e, dall'utente, `/hooks` (una sola voce per l'evento).
+**Verifica:** nella parte successiva della sessione il messaggio è comparso una volta sola per prompt.
+**Note:** la causa dell'osservazione iniziale non è stata trovata; la voce si riapre se il doppio output ricompare.
+
+### Plugin ICU e percorsi `Read(./...)` verificati sulle fonti
+
+**Perché:** due punti del passaggio sull'accessibilità e sulla localizzazione erano scritti come «non verificati»: licenza e versione dei plugin ICU, e il formato dei percorsi `Read(./...)` nei deny di `settings.example.json`.
+**Cosa / Dove:** `frontend.md` 1.13, §4.2: aggiunti licenza (MIT, anche per `@messageformat/core`), versioni al 2026-11-13 e requisiti di Angular di `@jsverse/transloco-messageformat` e `ngx-translate-messageformat-compiler`, letti dal registro npm. `_template/settings.example.json` non modificato: i percorsi sono forme valide secondo la pagina dei permessi di Claude Code.
+**Verifica:** letture del registro npm e della pagina dei permessi; test del plugin 129/129 verdi.
+**Note:** la compatibilità con la versione di Angular del singolo progetto resta da controllare al primo uso.
+
+### `backend.md` e `frontend.md`: etichette MUST e PREFER uniformi nelle regole di §2
+
+**Perché:** nelle sezioni «Regole» di `backend.md` e `frontend.md` solo alcune voci dichiaravano se sono MUST o PREFER (`core.md` §0), e motivo ed eccezione erano dentro frasi lunghe. Chi legge non poteva capire a colpo d'occhio quanto una voce fosse vincolante.
+**Cosa / Dove:**
+- `backend.md` 1.9, §2: `(MUST)` o `(PREFER)` su ogni voce che ne era priva (quindici voci tra «Errori, configurazione e resilienza» e «Servizi di contorno», più otto nelle prime sezioni); righe **Eccezione** o **Motivo** estratte da «Struttura API», «Asincronismo», «`CancellationToken`», «Validazione», «Service e interfacce», «Cartella `Interfaces/`» e «Using globali».
+- `frontend.md` 1.12, §2: etichetta su 25 voci (24 `MUST`, 1 `PREFER`, «Client API»); righe **Eccezione** in «Zoneless», «`NgOptimizedImage`» e «Inferenza dove il tipo è evidente».
+- Criterio concordato: una voce imperativa senza parole di preferenza è `MUST`; `PREFER` solo dove il testo dice «preferisci» o «si preferisce». Il contenuto delle regole non è cambiato: confronto delle parole prima e dopo, per sezione, identico salvo la riformulazione di «Asincronismo» in `backend.md` (approvata) e le modifiche Docker già in corso.
+**Verifica:** test del plugin 129/129 verdi, `git diff --check` pulito; build non applicabile.
+**Note:** «Principi SOLID» (`backend.md`) è rimasta senza etichetta perché ambigua («è un criterio, non una cerimonia»). «C# 14 / .NET 10», «OpenAPI» e «Routing» contengono parti `PREFER` dentro una voce `MUST`; «Componenti piccoli e focalizzati» (`frontend.md`) è `MUST` per il criterio scelto ma si potrebbe leggere come `PREFER`. Il resto di `backend.md` e `frontend.md` fuori da §2 non è stato toccato.
+
+### `disallowed-tools` nelle skill di sola lettura
+
+**Perché:** 13 skill dichiarano di non modificare file, ma lo dicevano solo nel testo. Secondo la documentazione di Claude Code (pagina delle skill) `allowed-tools` pre-approva soltanto e non limita nulla, mentre `disallowed-tools` toglie gli strumenti dal pool finché la skill è attiva.
+**Cosa / Dove:** `disallowed-tools: Edit Write NotebookEdit` nel frontmatter di `accessi-api`, `accessibilita-ui`, `buongiorno`, `colori-tema`, `consegna`, `dati-efcore`, `gdpr-dati`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`, `verifica-frontend`, `verifica` (le stesse 13 di `disable-model-invocation`). Nessuna usa `Edit` o `Write` nel corpo.
+**Verifica:** controllato che nessun corpo citi `Write` o `Edit`; test del plugin 129/129 verdi.
+**Note:** non limita `Bash`: un comando di shell può ancora scrivere (per esempio con un redirect), e lì resta solo l'hook `guard-commands`. Non ho letto gli ultimi 19 mila caratteri della pagina, quindi l'effetto reale del campo in una sessione nuova non è provato. `allowed-tools` non è stato aggiunto.
+
+### `consegna`: le voci non verificabili hanno un gruppo a parte
+
+**Perché:** la skill non esegue nulla, quindi molte voci della checklist (build, test, audit) non si possono verificare; finivano mescolate tra «manca» e «ok» senza dire che nessuno le aveva controllate.
+**Cosa / Dove:** `plugins/kit/skills/consegna/SKILL.md`: nuovo esito «non verificata» (quattro gruppi: ok, manca, non verificata, non pertinente), con l'indicazione della skill che la verifica. Le skill da lanciare si ricavano dai file del diff (`*.cs` per `/kit:verifica`, `*.ts` e `*.html` per `/kit:verifica-frontend`, temi sensibili per `/kit:sicurezza`, `/code-review` sempre, `/kit:gdpr-dati` solo con dati personali) e la skill chiude con un blocco «Da lanciare» (passo 6), così l'utente non deve decidere quali servano. Resta a sola lettura: non lancia le altre, perché sono a lancio manuale.
+**Verifica:** build non applicabile; il testo è stato riletto, nessun test del plugin lo copre.
+
+### Descrizioni di `pr-main` e `commit-passo` accorciate
+
+**Perché:** la descrizione di una skill è nell'elenco di ogni sessione; quelle di `pr-main` (633 caratteri) e `commit-passo` (557) contenevano dettagli che stanno già nel corpo della skill.
+**Cosa / Dove:** `plugins/kit/skills/pr-main/SKILL.md` e `plugins/kit/skills/commit-passo/SKILL.md`: descrizione ridotta a scopo, condizioni d'uso e limiti essenziali; il corpo non è cambiato.
+**Verifica:** test del plugin 129/129 verdi (127 più i 2 nuovi).
+**Note:** i passi 0 e 3 identici tra `pr-develop` e `pr-main` restano duplicati (scelta dell'utente: ogni skill si legge da sola, e un file condiviso avrebbe un meccanismo di percorsi non verificato). Li protegge il nuovo test `plugins/kit/tests/skills-sync.test.mjs`, che fallisce se le due copie divergono; l'ho provato alterando una copia, poi ripristinata.
+
+### `gdpr-dati`: rimando a `backend.md` §7 sostituito
+
+**Perché:** `backend.md` §7 tratta le convenzioni del database (nomi, indici, seeding, vincoli) e non ha un punto di contatto con i passi della skill; la sezione pertinente all'hashing delle password (passo 7) è in `security-backend.md`.
+**Cosa / Dove:** `plugins/kit/skills/gdpr-dati/SKILL.md`, riga «Riferimenti»: tolto `backend.md` §7, aggiunto `security-backend.md` («Chiavi e password (.NET)») per il punto 7.
+**Verifica:** build non applicabile; ho controllato che la sezione «Chiavi e password (.NET)» esista in `security-backend.md` (riga 54), senza rileggerne il contenuto.
+
+### `docker.md`: le credenziali di RabbitMQ in `.env.example`
+
+**Perché:** l'elenco delle variabili di `.env.example` citava Redis, JWT e SMTP ma non RabbitMQ, che le stesse regole richiedono autenticato (`security.md`, «Database e canali interni»).
+**Cosa / Dove:** `.claude/rules-optional/docker.md` 1.6, voce «Configurazione e segreti»: aggiunte le credenziali di RabbitMQ, sia quelle iniziali del container sia quelle di connessione dell'app. Non ho scritto nomi di chiavi precisi, perché nelle regole non esiste una sezione di configurazione di RabbitMQ: la sezione la sceglie il progetto.
+**Verifica:** build non applicabile (solo markdown).
+
+### `git.md`: l'apertura non contraddice più «Integrazione GitHub»
+
+**Perché:** la riga in grassetto in testa diceva «solo commit locali», ma la sezione subito sotto consente push, tag, PR e rilasci; il testo più letto del modulo era in contrasto con il resto.
+**Cosa / Dove:** `.claude/rules/git.md` 1.9: l'ambito in apertura ora cita commit locali, più push, tag, PR e rilasci alle condizioni di «Integrazione GitHub». Il secondo difetto della voce (elenco fuso in «Sicurezza della cronologia») era già a posto.
+**Verifica:** build non applicabile (solo markdown).
+
+### `verifica` e `qualita-test`: controlli che mancavano
+
+**Perché:** due voci della review. `verifica` non controllava gli `using` inutilizzati, che `backend.md` impone (MUST); `qualita-test` copriva solo xUnit e non cercava le scorciatoie vietate da `core.md` §4 e `backend-app.md` §4.5.
+**Cosa / Dove:** `plugins/kit/skills/verifica/SKILL.md`: nuovo punto 4b con `dotnet format style --diagnostics IDE0005 --verify-no-changes` (la sintassi va verificata sull'SDK in uso: se manca, «non verificato»). `plugins/kit/skills/qualita-test/SKILL.md`: punto 3b per test saltati o isolati, EF Core InMemory, mock di `DbContext` non dichiarati e soglie abbassate; punto 3c per i test frontend (Vitest e Playwright, `frontend.md` §10); descrizione e riferimenti aggiornati.
+**Verifica:** test del plugin 127/127 verdi; il comando di `IDE0005` non l'ho eseguito su una soluzione .NET reale.
+
+### `disable-model-invocation` nelle skill di sola richiesta
+
+**Perché:** 14 skill non avevano il flag, quindi il modello poteva lanciarle da solo e comparivano nell'elenco di ogni sessione, anche se le loro descrizioni dicono «solo su richiesta».
+**Cosa / Dove:** `disable-model-invocation: true` nel frontmatter di 13 skill di `plugins/kit/skills/`: `accessi-api`, `accessibilita-ui`, `buongiorno`, `colori-tema`, `consegna`, `dati-efcore`, `gdpr-dati`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`, `verifica-frontend`, `verifica`. Esclusa `pr-develop`, che `commit-passo` (passo 10) e `git.md` fanno lanciare a Claude dopo il sì dell'utente.
+**Verifica:** test del plugin 127/127 verdi, diff controllato (una riga aggiunta per skill); build non applicabile.
+**Note:** l'effetto sull'elenco delle skill di una nuova sessione non è ancora verificato.
+
+### `docker.md` diventa un modulo opzionale, solo su richiesta esplicita
+
+**Perché:** il kit trattava Docker come presupposto di ogni progetto (domanda all'avvio, «deploy sempre con Dockerfile e docker-compose»); un progetto che non si distribuisce con Docker ereditava comunque regole e vincoli che non lo riguardano.
+**Cosa / Dove:**
+- `.claude/rules/docker.md` spostato in `.claude/rules-optional/` (versione 1.5, nota in testa); si attiva solo se l'utente lo chiede esplicitamente (per esempio «crea un Dockerfile»), con la procedura di `avvio-progetto.md` §4.
+- Rimandi resi condizionali («con Docker», «se attivo») in `core.md` 3.43 (§5a riscritto), `security.md`, `security-backend.md` 1.5, `backend.md` 1.8, `backend-app.md` 1.5, `frontend.md` 1.11, `backend-infra.md`.
+- Template: `CLAUDE.md` (elenco dei moduli, riga «Deploy» `[non Docker | Dockerfile + docker-compose, solo se richiesto]`) e `_template/avvio-progetto.md` (domanda 3 non più usata, i numeri delle altre invariati; tabella dei moduli e §4).
+- Plugin `kit`: `copia-regole` non chiede più Docker e copia sempre `docker.md` in `rules-optional/`; `gdpr-dati` con rimandi condizionati. Invariati gli avvisi di `check-write.mjs` su Dockerfile e compose.
+- Documentazione: `README.md` e le pagine `docs/claude-config/` della wiki (`intro`, `contenuto`, `funzionamento`, `manutenzione`, `uso`).
+**Verifica:** build non applicabile (solo markdown e skill); test del plugin 127/127 verdi, `git diff --check` pulito.
+**Note:** i progetti che hanno già `docker.md` in `rules/` non vengono toccati. La wiki ha altre modifiche non committate di sessioni precedenti, che non ho toccato; non è stato committato nulla.
+
+### `lavoro.md`: i subagent diventano opzionali
+
+**Perché:** la regola raccomandava (PREFER) di delegare le ricerche ampie a un subagent, mentre la scelta dell'utente è di non usarli di iniziativa.
+**Cosa / Dove:** `lavoro.md` 1.2, voce «Ricerche ampie a un subagent»: ora opzionale, solo su richiesta dell'utente o se il `CLAUDE.md` del progetto li prevede; altrimenti `Grep` e `Read` mirati. Nessun altro file cita i subagent (controllato con Grep).
+**Verifica:** build non applicabile (solo markdown).
+
+### Mappa ASVS: «Completamenti dell'autenticazione» è una voce, non una sezione
+
+**Perché:** `security.md` elencava «Completamenti dell'autenticazione» tra le sezioni di `security-backend.md`, ma in quel file è una voce dell'elenco dentro «Autenticazione e Autorizzazione» (riga 45); un rimando per titolo non l'avrebbe trovata.
+**Cosa / Dove:** `security.md` 2.5, due punti: l'introduzione della mappa e la riga V6 della tabella ora dicono «Autenticazione e Autorizzazione» con la voce «Completamenti dell'autenticazione». La skill `accessi-api` già la chiamava voce.
+**Verifica:** build non applicabile (solo markdown); `git diff --check` pulito; titoli di `security-backend.md` controllati con Grep.
+
+### Hook `guard-commands`: le redirezioni non sono argomenti di git
+
+**Perché:** `git push origin --delete release/1.13.0 2>&1` veniva bloccato («cancellazione di un branch remoto non ammesso»), mentre la stessa riga senza `2>&1` passava. Colpiva anche la pulizia dei branch remoti di `/kit:pr-main` (passo 10c).
+**Cosa / Dove:** `plugins/kit/scripts/guard-commands.mjs`: il carattere `&` chiude il segmento, quindi `2>&1` lasciava nel comando il token `2>`, che finiva tra gli argomenti posizionali e faceva fallire il controllo dei branch. Nuova `stripRedirections()`, applicata a tutti i sottocomandi git (stesso difetto per `> file` e `2>/dev/null` anche su `add`, `commit` e `tag`): ignora i token di redirezione non quotati e, se l'operatore è da solo, anche il suo bersaglio.
+**Verifica:** test di regressione in `plugins/kit/tests/github.test.mjs` (cinque comandi consentiti, sei bloccati, tra cui `--delete main 2>&1`, `--force ... 2>&1` e `git add -A 2>&1`); prima del fix falliva, dopo i test del plugin sono 127/127 verdi. Build non applicabile.
+
+### Riga «Modello in uso» in ogni skill
+
+**Perché:** il campo `model` del frontmatter vale solo per il turno della skill e l'interfaccia continua a mostrare il modello della sessione (documentazione di Claude Code, pagina delle skill), quindi l'override non si vedeva.
+**Cosa / Dove:** in tutte le 21 `plugins/kit/skills/*/SKILL.md`, subito dopo il titolo, una riga che chiede di scrivere come prima riga della risposta «Modello in uso: <nome>». Il modello lo dichiara leggendolo dal proprio contesto: non è una verifica indipendente.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi; diff controllato (2 righe aggiunte per file).
+
 ### Dettagli Angular e permessi verificati sulle fonti (review di skill e regole, punto 4.5)
 
 **Perché:** il piano segnava sette affermazioni tecniche (V) da controllare prima di correggerle; nessuna era stata riletta sulla fonte.
