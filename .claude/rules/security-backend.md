@@ -5,7 +5,7 @@ paths:
 
 # Sicurezza backend (API, autenticazione, abuso, upload)
 
-> Versione 1.1 — ultima revisione: 2026-11-10.
+> Versione 1.2 — ultima revisione: 2026-11-13.
 
 > Richiede `core.md` e `security.md`. Contiene le sezioni di sicurezza che valgono per progetti con backend: autenticazione e autorizzazione, protezione dell'API, abuso di risorse, vulnerabilità applicative, upload. I principi comuni (mappa ASVS, crittografia, dati e segreti, log, fail closed, supply chain) sono in `security.md`.
 
@@ -52,7 +52,7 @@ paths:
   - **Client macchina (servizi, integrazioni):** credenziali proprie e non quelle di un utente (client credentials con IdP, oppure chiavi API generate con `RandomNumberGenerator` e salvate solo come hash), con permessi minimi, scadenza e revoca; mai la stessa credenziale per più client; confronti a tempo costante.
 
 ## Protezione dell'API
-- CORS con whitelist esplicita; mai `AllowAnyOrigin` insieme alle credenziali. Se l'origine consentita varia con la richiesta, la risposta include `Vary: Origin` (altrimenti una cache può servire a un sito l'header pensato per un altro).
+- CORS con whitelist esplicita, letta dalla configurazione (non scritta nel codice), anche di metodi e header ammessi (non `AllowAnyMethod`/`AllowAnyHeader` per comodità); `SetPreflightMaxAge` impostato per ridurre le richieste di preflight; mai `AllowAnyOrigin` insieme alle credenziali. Se l'origine consentita varia con la richiesta, la risposta include `Vary: Origin` (altrimenti una cache può servire a un sito l'header pensato per un altro).
 - Rate limiting (`AddRateLimiter`), più stretto su login e reset password; dettagli in «Abuso di risorse».
 - Security headers: CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors`.
 - CSP senza `unsafe-inline` né `unsafe-eval`: usa nonce generato per richiesta. Un nonce per richiesta richiede che `index.html` sia servito in modo dinamico (backend o proxy che lo inserisce); se l'SPA è servita come file statici (es. immagine unica con `config.json` a runtime, vedi `frontend.md`), il default è la CSP basata su hash generata alla build (`autoCsp` di Angular, che calcola gli hash degli script inline; funzione da verificare nella versione di Angular installata, perché ha avuto lo stato di sperimentale) e inviata come header dal server o dal proxy dell'utente. Il nonce per richiesta o una deroga si usano solo se il progetto lo richiede, e Claude lo annota nel `CLAUDE.md` (sezione "Note per Claude") senza ripetere la domanda a ogni progetto.
