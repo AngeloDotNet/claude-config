@@ -7,7 +7,7 @@ model: haiku
 
 Non modificare nessun file. Rispondi in italiano.
 
-1. Rileggi `CLAUDE.md` e i file in `.claude/rules/` (regola di inizio sessione, `core.md` §6.16), poi leggi `PIANO.md` e `CHECKLIST.md` nella radice del repository in cui sei. Se `PIANO.md` manca, dillo e chiedi una sola domanda: c'è un altro file di ripartenza, oppure si parte da zero?
+1. Rileggi `CLAUDE.md` (regola di inizio sessione, `core.md` §6.16), poi leggi `PIANO.md` e `CHECKLIST.md` nella radice del repository in cui sei. Le regole di `.claude/rules/` sono già caricate da Claude Code e non si rileggono, salvo che il hook del plugin segnali che sono cambiate (`lavoro.md`, «Contesto e token»). Se `PIANO.md` manca, dillo e chiedi una sola domanda: c'è un altro file di ripartenza, oppure si parte da zero?
 2. Controlla lo stato di git in sola lettura: branch corrente (`git branch --show-current`) e modifiche non committate (`git status --short`). Se ci sono modifiche non committate, segnalale.
 3. Controlla in `~/.claude/kit-progetti.json` (sulla macchina dell'utente) la voce di questo progetto, chiave `priorita`. Se è `true`, ordina i passi aperti per etichetta di priorità `[P1]`, `[P2]`, `[P3]` (come indicata in `PIANO.md`; a parità, l'ordine dei passi). Se è assente o `false`, usa l'ordine dei passi. Se con `priorita: true` un passo aperto non ha l'etichetta, segnalalo e non lo ordina.
 4. Riassumi in 3-4 righe: ultimo passo completato, passo in corso, prossimo passo, decisioni ancora aperte.

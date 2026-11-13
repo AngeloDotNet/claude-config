@@ -1,8 +1,7 @@
 ---
-description: Guida il lavoro con Entity Framework Core nel backend: letture senza tracking, migrazioni da non modificare a mano, applicazione delle migrazioni, ciclo di vita del DbContext e ottimizzazione delle query. Si lancia solo su richiesta.
+description: Revisiona e guida il lavoro con Entity Framework Core nel backend (propone, non modifica file): letture senza tracking, migrazioni da non modificare a mano, applicazione delle migrazioni, ciclo di vita del DbContext e ottimizzazione delle query. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [cartella-o-progetto]
-disable-model-invocation: true
 ---
 
 # Dati con EF Core
@@ -25,7 +24,10 @@ Questa skill applica le regole di `backend-app.md` §4.4 (database ed EF Core) e
    - paginazione con keyset quando la tabella cresce, invece dell'offset;
    - indici: solo dove una query concreta li usa;
    - query compilate solo per quelle eseguite di frequente.
-9. **Trappole comuni.** Controlla N+1, query dentro i cicli, tracking con più contesti, uso incoerente di async e chiamate sincrone su operazioni di I/O.
-10. **Esito.** Chiudi con l'elenco dei punti trovati, per gravità, con file e riga. Le modifiche al codice si propongono e si applicano con una richiesta separata.
+9. **Concorrenza.** Le entità modificabili hanno un concurrency token (`rowversion` su SQL Server, `xmin` come `uint` con `IsRowVersion()` su PostgreSQL). Un conflitto (`DbUpdateConcurrencyException`) o una violazione di indice unique diventa 409 con chiave di traduzione, mai 500; con `If-Match` non soddisfatto, 412 (`backend-app.md` §4.1 e §4.2). Il controllo «esiste già?» non sostituisce il vincolo unique.
+10. **Filtri globali.** Soft delete e multi-tenancy, se previsti, sono global query filter decisi una volta per progetto. Ogni `IgnoreQueryFilters` è un'eccezione motivata e rivista; ogni query su dati di un utente è filtrata per proprietario o tenant nel servizio (`backend-app.md` §4.4 e §4.6).
+11. **Mapping e configurazione.** Denaro e quantità esatte sono `decimal` con precisione e scala esplicite nel mapping, mai `double` o `float` (`backend.md` §2). `EnsureCreated` non si usa. `EnableSensitiveDataLogging` e `EnableDetailedErrors` solo in Development: scrivono nei log i valori dei parametri (`backend-app.md` §4.4). Le migrazioni usano la connessione `ConnectionStrings:Migrations`, diversa da quella dell'applicazione, che non ha permessi DDL.
+12. **Trappole comuni.** Tracking con più contesti, uso incoerente di async, `.Result` o `.Wait()` su operazioni di I/O. N+1 e query dentro i cicli sono già al punto 8: non ripeterli.
+13. **Esito.** Chiudi con l'elenco dei punti trovati, per gravità (bloccante, importante, suggerimento: `lavoro.md`, «Gravità dei rilievi»), con file e riga. Le modifiche al codice si propongono e si applicano con una richiesta separata.
 
-Riferimenti: `backend-app.md` §4.4 e §8; `backend-architecture.md` §2c; `core.md` §4.
+Riferimenti: `backend-app.md` §4.1, §4.2, §4.4 e §4.6; `backend.md` §8 (performance); `backend-architecture.md` §2c; `core.md` §4.

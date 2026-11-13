@@ -1,5 +1,5 @@
 ---
-description: Controlla o imposta il layout di un progetto perché regga testi tradotti più lunghi, l'orientamento RTL, l'ordine di lettura e lo zoom. Non modifica file. Si lancia solo su richiesta.
+description: Controlla il layout di un progetto e propone come impostarlo perché regga testi tradotti più lunghi, l'orientamento RTL, l'ordine di lettura e lo zoom. Non modifica file. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [cartella-progetto]
 ---

@@ -1,8 +1,7 @@
 ---
-description: Revisiona e corregge l'accessibilità di un'interfaccia web rispetto a WCAG 2.2: tastiera, focus, nomi accessibili, form e errori, annunci dinamici, contrasto e movimento. Riporta i problemi per gravità. Si lancia solo su richiesta.
+description: Revisiona l'accessibilità di un'interfaccia web rispetto a WCAG 2.2 e propone le correzioni, senza modificare file: tastiera, focus, nomi accessibili, form e errori, annunci dinamici, contrasto e movimento. Riporta i problemi per gravità. Si lancia solo su richiesta.
 model: sonnet
 argument-hint: [cartella-o-componente]
-disable-model-invocation: true
 ---
 
 # Accessibilità dell'interfaccia
@@ -23,7 +22,7 @@ Questa skill applica i requisiti di `frontend.md` §3 (WCAG 2.2 AA) con la proce
 10. **Movimento e tempo.** Le animazioni rispettano la preferenza di movimento ridotto (2.3.3). Nessun contenuto necessario scade da solo (2.2.1).
 11. **Immagini e struttura.** Le immagini hanno un testo alternativo per lo scopo (1.1.1). Titoli e punti di riferimento descrivono la struttura della pagina (1.3.1, 2.4.1).
 12. **Zoom.** Il contenuto regge lo zoom e il ridimensionamento del testo (1.4.4, 1.4.10). La skill `localizzazione` tratta il layout con testi più lunghi.
-13. **Priorità.** Ogni problema ha una gravità: critico (blocca l'uso), grave (ostacola l'uso), moderato (degrada l'esperienza). I critici si correggono per primi.
-14. **Esito.** Chiudi con l'elenco dei problemi per gravità, con file e riga, il criterio WCAG collegato e la correzione proposta. Le modifiche si applicano con una richiesta separata, e la verifica manuale con tastiera e lettore di schermo resta da fare.
+13. **Priorità.** Ogni problema ha una gravità della scala di `lavoro.md` («Gravità dei rilievi»), applicata così: bloccante (impedisce l'uso, per esempio una funzione non raggiungibile da tastiera), importante (lo ostacola), suggerimento (degrada l'esperienza senza ostacolare). I bloccanti si correggono per primi.
+14. **Esito.** Chiudi con l'elenco dei problemi per gravità (bloccante, importante, suggerimento), con file e riga, il criterio WCAG collegato e la correzione proposta. Le modifiche si applicano con una richiesta separata, e la verifica manuale con tastiera e lettore di schermo resta da fare.
 
 Riferimenti: `frontend.md` §3 e §10; WCAG 2.2; ARIA Authoring Practices Guide.
