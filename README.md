@@ -2,7 +2,7 @@
 
 Repository di partenza per i nuovi progetti sviluppati con [Claude Code](https://claude.com/claude-code).
 
-Contiene le regole di sviluppo (stack .NET + Angular, git flow, sicurezza, Docker) già organizzate nel formato che Claude Code carica da solo, più un `CLAUDE.md` da compilare per il progetto.
+Contiene le regole di sviluppo (stack .NET + Angular, git flow, sicurezza, Docker come modulo opzionale) già organizzate nel formato che Claude Code carica da solo, più un `CLAUDE.md` da compilare per il progetto.
 
 Le regole sono in italiano; codice, identificatori e messaggi di commit che ne derivano sono in inglese.
 
@@ -40,10 +40,10 @@ I controlli del plugin stanno in sei script. I controlli su scrittura sono raggr
 
 ## Comandi del plugin
 
-Il plugin aggiunge diciannove comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
+Il plugin aggiunge ventuno comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
-- `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`, aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/compact`.
+- `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`, aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/clear` o `/compact`.
 - `/kit:avvia-progetto`: avvia un progetto nuovo con le domande di avvio, e compila il `CLAUDE.md`.
 - `/kit:copia-regole`: copia le regole in un progetto che non le ha (usa la cartella corrente quando è valida, altrimenti chiede il percorso).
 - `/kit:aggiorna-regole`: aggiorna le regole di un progetto (file diversi, moduli rimossi dal template e righe del `CLAUDE.md` legate alle regole), con conferma e `.bak`.
@@ -54,12 +54,14 @@ Il plugin aggiunge diciannove comandi, che si lanciano solo su richiesta. Sono d
 - `/kit:pr-develop`: apre con `gh` la PR dal branch di lavoro verso `develop`, con push e creazione senza altra conferma; si può lanciare anche da `/kit:commit-passo`, che a fine commit lo propone con una domanda; il merge (squash) resta all'utente.
 - `/kit:pr-main`: apre con `gh` la PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, dopo il controllo di `main` avanti rispetto a `develop`; il merge (merge commit) resta all'utente. Dopo il merge, quando lo confermi, elenca i branch di lavoro cancellabili (locali e remoti), cancella solo quelli che confermi e allinea `main` e `develop` con `git pull --ff-only`, segnalando se serve la sincronizzazione di `main` in `develop`.
 - `/kit:aggiorna-docs`: aggiorna README, CHANGELOG e, se esiste, il sito di documentazione, senza chiedere conferma; crea il README se manca e scrive la voce di rilascio su richiesta.
-- `/kit:verifica`: esegue i controlli di una soluzione .NET (ripristino, build, test, pacchetti vulnerabili, modello EF, spazi bianchi) e riporta l'esito, senza modificare file.
+- `/kit:verifica`: esegue i controlli di una soluzione .NET (ripristino, formattazione, build senza avvisi, test, pacchetti vulnerabili, modello EF, compose, spazi bianchi) e riporta l'esito, senza modificare file.
+- `/kit:sicurezza`: controlla le voci di sicurezza della consegna sul lavoro corrente (threat model, test con input ostili, fail closed, abuso di risorse, log e alert, `SECURITY.md`), lancia `/security-review` e unisce i risultati, senza modificare file.
+- `/kit:verifica-frontend`: esegue i controlli di un frontend Angular (installazione, lint, formattazione, test con copertura, build di produzione, audit npm, `any`, colori fissi, traduzioni) e riporta l'esito, senza modificare file.
 - `/kit:qualita-test`: revisiona i test (falsa sicurezza, fragilità, duplicati) e propone test xUnit parametrici e leggibili.
 - `/kit:dati-efcore`: guida il lavoro con EF Core (letture senza tracking, migrazioni, `DbContext`, ottimizzazione delle query).
 - `/kit:accessi-api`: guida autenticazione e autorizzazione di un'API ASP.NET Core (schemi, policy, handler, scope, claim).
 - `/kit:gdpr-dati`: revisiona il backend rispetto ai principi GDPR (minimizzazione, conservazione, log, diritti). Non è consulenza legale.
-- `/kit:accessibilita-ui`: revisiona e corregge l'accessibilità dell'interfaccia rispetto a WCAG 2.2.
+- `/kit:accessibilita-ui`: revisiona l'accessibilità dell'interfaccia rispetto a WCAG 2.2 e propone le correzioni, senza modificare file.
 - `/kit:colori-tema`: costruisce o verifica la palette per i temi chiaro e scuro, con il contrasto misurato.
 - `/kit:localizzazione`: verifica il layout per testi tradotti più lunghi, RTL, ordine di lettura e zoom.
 

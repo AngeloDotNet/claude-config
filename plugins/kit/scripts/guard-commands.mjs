@@ -265,7 +265,25 @@ function analyzeGitTag(rest, dir) {
   return null;
 }
 
-function analyzeGit(args, cwd) {
+/**
+ * Drops shell redirections (`2>`, `>file`, `2>>log`, `<in`): they are not arguments of the command. `2>&1`
+ * reaches us as the token `2>` (the `&` ends the segment), and `> file` as an operator followed by its target.
+ */
+function stripRedirections(tokens) {
+  const out = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (t.quoted || !/^\d*[<>]/.test(t.text)) {
+      out.push(t);
+    } else if (/^\d*(>>?|<)$/.test(t.text) && tokens[i + 1]) {
+      i++;
+    }
+  }
+  return out;
+}
+
+function analyzeGit(allArgs, cwd) {
+  const args = stripRedirections(allArgs);
   let dir = cwd;
   let k = 0;
   while (k < args.length && isFlag(args[k])) {
