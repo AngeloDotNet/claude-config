@@ -1,5 +1,6 @@
 ---
 description: Copia le regole del template in un progetto che non le ha ancora, con i moduli scelti in conversazione; con la modalità solo Git copia soltanto core.md, lavoro.md e git.md. Si lancia solo su richiesta.
+model: haiku
 argument-hint: [cartella-progetto]
 disable-model-invocation: true
 ---
@@ -9,7 +10,7 @@ disable-model-invocation: true
 Rispondi in italiano. Una sola domanda per messaggio. Il template è la cartella indicata dalla variabile d'ambiente `KIT_CONFIG_TEMPLATE_DIR`.
 
 1. Se la variabile non è impostata o la cartella non contiene `.claude/rules/core.md`, dillo e fermati.
-2. Chiedi il percorso del progetto (se non è stato passato come argomento). Verifica che la cartella esista e non coincida con il template.
+2. **Progetto di destinazione.** Se è stato passato un argomento, è quello (con precedenza su tutto). Altrimenti usa la cartella corrente se è valida: non coincide con il template (`KIT_CONFIG_TEMPLATE_DIR`), non ha ancora `.claude/rules/` ed è un repository git (`git rev-parse --show-toplevel`); in tal caso scrivi in una riga «Copio le regole in `<cartella>`» e prosegui senza chiedere. Se la cartella corrente non è valida (per esempio è il template), chiedi il percorso con una sola domanda. In ogni caso verifica che la cartella esista e non coincida con il template.
 3. Se il progetto ha già `.claude/rules/`, fermati e suggerisci `/kit:aggiorna-regole`.
 4. Chiedi se il progetto è **solo Git** (solo branch e commit: nessun backend, frontend, Docker o sicurezza previsti).
    - **Sì, solo Git:** copia `core.md`, `lavoro.md` e `git.md` in `.claude/rules/`. Non chiedere i moduli facoltativi (punto 5) né `NuGet.config` e `.editorconfig` (punto 6). Chiedi solo `.gitignore` e `.gitattributes`, uno per volta, se mancano.

@@ -1,5 +1,6 @@
 ---
 description: Avvia un progetto nuovo. Fa in sequenza le domande di avvio del template, una per messaggio, e compila il CLAUDE.md del progetto con le risposte. Si lancia solo su richiesta, in una cartella di progetto vuota o appena creata.
+model: haiku
 argument-hint: [nome-progetto]
 disable-model-invocation: true
 ---

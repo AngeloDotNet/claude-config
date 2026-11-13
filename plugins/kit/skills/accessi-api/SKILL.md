@@ -1,5 +1,6 @@
 ---
 description: Guida la configurazione dell'autenticazione e dell'autorizzazione di un'API ASP.NET Core: schemi di autenticazione, policy, handler, autorizzazione sugli endpoint, scope e mappatura dei claim. Si lancia solo su richiesta.
+model: sonnet
 argument-hint: [cartella-o-progetto]
 disable-model-invocation: true
 ---
