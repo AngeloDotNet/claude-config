@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-13
 
+### Rilascio 1.14.0 chiuso: tag, release GitHub e wiki
+
+**Perché:** dopo il merge delle PR 40 e 41 il ciclo andava chiuso, e la wiki parlava ancora di modifiche «non ancora rilasciate».
+**Cosa / Dove:** tag annotato `1.14.0` sul merge commit `34cf3e9` di `main`, pubblicato; release GitHub `1.14.0` con le note della sezione `### Rilascio 1.14.0`; `main` portato in `develop` con la PR 41 (merge commit `d8bfd66`); branch di lavoro cancellati. Wiki `docs/claude-config/plugin.md`: «Dopo la 1.13.0 (non ancora rilasciata)» diventa «Con la versione 1.14.0».
+**Verifica:** test del plugin 129/129 verdi prima dei commit; build non applicabile; testo della wiki riletto.
+**Note:** la modifica a `plugin.md` della wiki non è committata, insieme al paragrafo 1.12.0 già escluso e alle altre modifiche della wiki non mie. Nessun commit in questo passo.
+
 ### Rilascio 1.14.0
 
 **Aggiunto:** le skill `/kit:verifica-frontend` e `/kit:sicurezza`; ogni skill apre la risposta con la riga «Modello in uso», che mostra l'effetto del campo `model`.
