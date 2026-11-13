@@ -4,6 +4,48 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-13
 
+### Dettagli Angular e permessi verificati sulle fonti (review di skill e regole, punto 4.5)
+
+**Perché:** il piano segnava sette affermazioni tecniche (V) da controllare prima di correggerle; nessuna era stata riletta sulla fonte.
+**Cosa / Dove:**
+- **Zoneless** (`frontend.md` 1.10): da Angular 21 è il default e non serve alcun provider; con Angular 20 serve `provideZonelessChangeDetection()`. Fonte: guida zoneless di angular.dev. La regola «obbligatorio nei nuovi progetti» resta.
+- **`mutate()`** (`frontend.md`): rimosso dall'API pubblica dei signal in Angular 17 (release 17.0.0 e PR #51821 di angular/angular). Il divieto resta, con il motivo.
+- **`ngClass`/`ngStyle`** (`frontend.md`, `check-write.mjs`): da divieto a PREFER, perché la pagina `NgClass` di angular.dev lo dà come stabile, non deprecato, e raccomanda i binding diretti solo «per i casi semplici». Il messaggio dell'avviso del plugin dice ora «si preferiscono».
+- **ICU MessageFormat** (`frontend.md`): non è nativo del runtime; serve un compilatore (`@jsverse/transloco-messageformat` per Transloco, `ngx-translate-messageformat-compiler` per ngx-translate). Licenze e versioni non verificate.
+- **Trusted Types** (`security-frontend.md` 1.2): la guida elenca anche `angular#bundler` (chunk lazy) e `angular#unsafe-upgrade` (ibridi AngularJS); l'header raccomandato resta `trusted-types angular`. Regola: prova in Report-Only e aggiunta di `angular#bundler` solo se i report lo richiedono.
+- **`autoCsp`** (`security-backend.md` 1.4): opzione `security.autoCsp`; non è più dato come sperimentale nella guida (v22); copre solo gli script (`style-src` a parte) e non vale con il rendering lato server.
+- **Sintassi dei permessi:** `Bash(cmd:*)` è equivalente a `Bash(cmd *)` (documentazione di Claude Code), quindi `_template/settings.example.json` è corretto e non si cambia. Il formato dei percorsi di `Read(./...)` nei deny non è stato riletto.
+**Verifica:** build non applicabile (solo markdown e un messaggio di avviso), test del plugin 126/126 verdi. Le guide di angular.dev lette sono quelle della versione 22 (build 22.2.6); le altre fonti per ICU sono pagine di terzi.
+**Note:** non ho verificato le versioni dei plugin ICU né la compatibilità con la versione di Angular installata nei progetti (regola `core.md` §6.13: da fare al primo uso).
+
+### Tabella delle decisioni «chiesto, non presunto» (review di skill e regole, punto 4.4)
+
+**Perché:** le scelte da non presumere sono sparse tra `CLAUDE.md` (una trentina di campi) e sette moduli; non c'era un punto per trovare da dove nasce ciascuna domanda.
+**Cosa / Dove:** `_template/avvio-progetto.md`: nuova §1b con una tabella di 26 righe (decisione, campo del `CLAUDE.md`, regola che la motiva); la fonte resta il campo e la regola, la tabella serve a trovarli. `core.md` 3.42, §6.5: rimando alla §1b.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi; i nomi dei campi controllati con Grep su `CLAUDE.md`.
+**Note:** `avvio-progetto.md` si copia nei progetti (`copia-regole`), quindi la tabella arriva con i nuovi progetti; i progetti già avviati la ricevono con `aggiorna-regole`.
+
+### `frontend.md` §13–§16 fuse in §2 e `backend.md` §2 in sottosezioni (review di skill e regole, punto 4.3)
+
+**Perché:** §13–§16 erano aggiunte in coda che ripetevano §2 («signal per lo stato» in 4 punti, `any` in §2 e §16, rimandi incrociati); `backend.md` §2 aveva circa 40 voci di seguito.
+**Cosa / Dove:** `frontend.md` 1.9: le regole uniche di §13–§16 stanno ora in §2, sottosezione «Template, componenti, Angular e TypeScript»; eliminati i duplicati (standalone, lazy loading, `strict`, `any`, secondo elenco dei signal, `computed()` e Reactive Forms uniti a «Stato» e «Form»). Le sezioni dopo §12 non esistono più. `backend.md` 1.7: sei sottosezioni `###` in §2 (struttura e linguaggio; validazione, versioni e OpenAPI; codice e organizzazione; errori, configurazione e resilienza; tipi, dati, pacchetti e job; servizi di contorno), voci invariate. Rimandi aggiornati in `plugins/kit/scripts/check-write.mjs` (messaggi degli avvisi: `frontend.md §2, Template e componenti`) e in `_template/eslint.config.example.js`.
+**Verifica:** build non applicabile (solo markdown e un testo di messaggio), test del plugin 126/126 verdi; Grep: nessun altro rimando a §13–§16 del frontend.
+**Note:** le dimensioni di `frontend.md` restano quasi le stesse (il testo unico era poco ripetuto); il beneficio è di struttura. Restano non fatti il formato Regola/Motivo/Eccezione e l'uniformità MUST/PREFER nelle voci di §2.
+
+### `core.md` §6.15 diviso in 15a–15d (review di skill e regole, punto 4.2)
+
+**Perché:** il punto 15 è un blocco di circa 5 KB con quattro regole diverse (piano, piano già scritto, modifiche piccole, esecuzione a passi), difficile da citare con precisione.
+**Cosa / Dove:** `core.md` 3.41, §6 punto 15: le quattro parti hanno ora le etichette 15a (piano a inizio attività), 15b (piano già scritto), 15c (modifiche piccole), 15d (esecuzione a passi). Il numero 15 non cambia, quindi i circa 18 rimandi a «§6.15» in skill, hook e moduli restano validi. Precisati i rimandi interni: criteri di una modifica piccola → 15c (checklist §0b), spunta dopo la verifica → 15a, cancellazione dei piani `.md` → 15c (§6.11). Testo delle regole invariato.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi.
+**Note:** non ho spezzato il punto in voci numerate separate (§6.16 in poi sarebbe slittato e avrebbe rotto i rimandi a 16–23); i rimandi esterni ai sotto-punti si possono precisare in seguito.
+
+### Caricamento fisso alleggerito con tagli interni (review di skill e regole, punto 4.1)
+
+**Perché:** `core.md`, `git.md`, `security.md` e `lavoro.md` si caricano a ogni sessione (circa 90 KB); parte del testo era solo .NET o ripeteva la skill `commit-passo`. Scelta dell'utente: solo tagli interni, nessun modulo nuovo.
+**Cosa / Dove:** `security.md` 2.3: i punti «Data Protection» e «hashing delle password» passano in `security-backend.md` 1.3, nuova sezione «Chiavi e password (.NET)» (testo identico), con rimandi aggiornati nella mappa ASVS (V11) e nella riga «Data Protection» di `backend.md`. `git.md` 1.8: «Commit multipli» ridotta da 6 a 5 punti (la parte sul flusso della skill rimanda alla skill), «Esempi» ridotti a un esempio più una riga su `fix` e rilascio. Nessuna regola eliminata.
+**Verifica:** build non applicabile (solo markdown), test del plugin 126/126 verdi. Caricamento fisso da 89,7 KB a 86,9 KB (circa 2,8 KB in meno): meno dei 5-6 KB stimati, perché la «Crittografia» non si è potuta spostare (citata da `.editorconfig`, `check-write.mjs`, `gdpr-dati`, `core.md` e `backend.md`). Il carico dei file `.cs` cresce di 1,5 KB (nuova sezione in `security-backend.md`).
+**Note:** `core.md` §5/§5b e i blocchi «Mobile» e «Mappa ASVS» restano dove sono (scelta dell'utente).
+
 ### `.editorconfig` allineato a `backend.md` (review di skill e regole, punto 1.1)
 
 **Perché:** la review ha trovato sei impostazioni in contrasto con le regole: `Program.cs` senza top-level statements, campi privati `_camelCase`, `var` solo se il tipo è evidente, expression body obbligatorio per metodi, proprietà e operatori, namespace uguale alla cartella.
