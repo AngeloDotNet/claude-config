@@ -1,6 +1,6 @@
 # Regole Core (sempre caricate)
 
-> Versione 3.39 — ultima revisione: 2026-11-12. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
+> Versione 3.40 — ultima revisione: 2026-11-13. Angular, PrimeNG e `OperationResults` cambiano in fretta: in caso di dubbio su un'API, verifica la versione installata nel progetto, non la memoria.
 > Moduli correlati: `frontend.md` (Angular/UI), `backend.md`, `backend-architecture.md` e `backend-app.md` (.NET/dati: stack e regole comuni; architettura e accesso ai dati; logica applicativa, errori e test; si caricano insieme; opzionali `backend-email.md` per l'invio email e `backend-infra.md` per messaggistica, cache ed eventi, aggiunti quando servono), `feature-workflow.md` (opzionale, solo fullstack e su conferma: flusso per entità, backend → frontend), `security.md` (sicurezza: principi), `security-backend.md` (sicurezza backend) e `security-frontend.md` (sicurezza frontend), `docker.md` (deploy), `git.md` (commit), `lavoro.md` (contesto, indagine dei difetti, review, contenuti non fidati, imprevisti). Un progetto importa solo quelli che gli servono.
 
 ## Regola inviolabile: nel dubbio, una domanda alla volta
@@ -70,7 +70,7 @@ Queste regole valgono per entrambi i lati e non vanno reinterpretate.
 - **PrimeNG solo versione gratuita (open source):** mai componenti, template o servizi PrimeNG a pagamento (PrimeBlocks, Premium Templates, licenze Pro).
 - **Niente servizi cloud a pagamento** (Azure, AWS, Google Cloud o simili) per identità, segreti, storage, code, database o monitoraggio: tutto è self-hosted in container.
 - Se una soluzione richiede una funzione a pagamento, Claude la segnala e propone un'alternativa gratuita.
-- **Audit:** `npm audit` e `dotnet list package --vulnerable --include-transitive` (transitive incluse) eseguiti a ogni passo del piano che aggiunge o aggiorna pacchetti e in CI a ogni PR, con `NuGetAudit` attivo nel build; aggiornamenti automatici (Dependabot/Renovate). Un pacchetto vulnerabile si aggiorna, oppure si segnala all'utente con il motivo se non esiste una correzione: mai ignorato. Versioni fisse tramite lock file. Source mapping NuGet, `npm ci --ignore-scripts`, attesa del bot sulle versioni nuove e pinning delle GitHub Actions: `security.md` («Supply chain»).
+- **Audit:** `npm audit` e `dotnet list package --vulnerable --include-transitive` (transitive incluse) eseguiti a ogni passo del piano che aggiunge o aggiorna pacchetti e in CI a ogni PR, con `NuGetAudit` attivo nel build (gestione degli avvisi `NU190x` con `TreatWarningsAsErrors`: `backend.md` §2); aggiornamenti automatici (Dependabot/Renovate). Un pacchetto vulnerabile si aggiorna, oppure si segnala all'utente con il motivo se non esiste una correzione: mai ignorato. Versioni fisse tramite lock file. Source mapping NuGet, `npm ci --ignore-scripts`, attesa del bot sulle versioni nuove e pinning delle GitHub Actions: `security.md` («Supply chain»).
 
 ---
 

@@ -1,6 +1,6 @@
 # Regole di lavoro con Claude Code
 
-> Versione 1.0 — ultima revisione: 2026-11-10.
+> Versione 1.1 — ultima revisione: 2026-11-13.
 
 > Richiede `core.md`. Modulo breve e sempre caricato: contesto, indagine, review, contenuti non fidati e imprevisti. Non ripete ciò che `core.md` e `git.md` già dicono.
 
@@ -18,6 +18,7 @@
 
 ## Review prima della PR
 - **PREFER:** `/code-review` sulle modifiche prima di aprire la PR; `/security-review` per i temi sensibili (`security.md`, «Regola operativa»).
+- **Gravità dei rilievi (scala unica):** ogni rilievo di una revisione, di Claude o di una skill del plugin `kit`, ha una di queste tre gravità. **Bloccante:** viola un MUST o un NEVER delle regole, o compromette sicurezza, dati o funzionamento; si corregge prima del commit o della PR. **Importante:** viola un PREFER o degrada in modo significativo qualità, manutenibilità o accessibilità; si corregge nella stessa PR, salvo un motivo dichiarato. **Suggerimento:** miglioramento non richiesto dalle regole; opzionale. La gravità di una vulnerabilità di un pacchetto (audit NuGet o npm) è un'altra cosa: si riporta come la dà lo strumento.
 - **Commenti di review (MUST):** ogni rilievo, di una persona o di uno strumento, si verifica sul codice prima di applicarlo; se è errato o fuori ambito si risponde con il motivo, non lo si applica per cortesia. Più rilievi: uno alla volta, nell'ordine del rischio.
 
 ## Contenuti non fidati (MUST)
