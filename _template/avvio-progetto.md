@@ -55,6 +55,38 @@ La modalità **solo Git** ha senso solo con stato "progetto esistente": se l'ute
 Non sono una domanda e non si possono escludere: `core.md`, `lavoro.md` e `git.md` (le regole Git sono sempre previste).
 Se l'utente risponde in modo vago, Claude richiede la scelta: non decide al suo posto.
 
+## 1b. Decisioni «chiesto, non presunto» durante il lavoro
+Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal progetto precedente: quando il lavoro le rende rilevanti e il campo del `CLAUDE.md` è ancora un segnaposto, Claude le chiede **una per volta** (con opzioni, pro e contro e una raccomandazione) e scrive la risposta nel campo indicato. Se il campo è già compilato non le richiede. Il campo del `CLAUDE.md` e la regola che la motiva sono la fonte; questa tabella serve solo a trovarli.
+
+| Decisione | Campo del `CLAUDE.md` | Regola |
+|---|---|---|
+| Architettura backend (Vertical Slice o Clean) | «Architettura backend» | `core.md` §6.4, `backend-architecture.md` |
+| Modello del dominio, repository, Specification | «Modello del dominio», «Repository», «Specification pattern» | `backend-architecture.md` §2b e §2c |
+| ORM (EF Core o Dapper) | «ORM» | `backend.md` §1 |
+| Motore del database e versione | «Database» | `backend.md` §1 |
+| Database e mock EF nei test | «Database nei test», «Mock EF nei test unitari» | `core.md` §4, `backend-app.md` §4.5 |
+| Utenti del database e connessione cifrata | «Utenti del database» | `backend-app.md` §4.4 |
+| Esposizione del documento OpenAPI | «Esposizione del documento OpenAPI» | `backend.md` §2 |
+| Tecnologia frontend e sviluppo mobile | «Tecnologia frontend», «Sviluppo mobile» | questo file, §1 |
+| Micro frontend | «Micro frontend» | `frontend.md` §12 |
+| Autenticazione e autorizzazione (se serve, JWT, granularità, sessione SPA) | «Sicurezza backend», «Token JWT», «Granularità», «Sessione SPA» | `security-backend.md`, «Autenticazione e Autorizzazione» |
+| Livello ASVS | «Livello ASVS» | `security.md` |
+| Indirizzo pubblico e host ammessi | «Indirizzo pubblico e host ammessi» | `security-backend.md`, «Host header e URL assoluti» |
+| Upload di file | «Upload di file» | `security-backend.md`, «Upload e parsing di file» |
+| Limiti, paginazione e rate limiting | «Limiti e rate limiting» | `security-backend.md`, «Abuso di risorse» |
+| CSP della SPA statica | «CSP della SPA statica» | `security-backend.md`, «Protezione dell'API» |
+| Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security.md`, «Log di sicurezza e allerta» |
+| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security.md`, «Supply chain» |
+| Logging (provider, sink, formato, livelli) | «Logging» | `core.md` §5 |
+| Osservabilità | «Osservabilità» | `core.md` §5 |
+| Cache | «Cache» | `backend-infra.md` |
+| File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend.md` §2 e §5, moduli opzionali |
+| Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md`, `security.md` |
+| Lingua di README e CHANGELOG | «Lingua della documentazione» | `core.md` §5b |
+| Fine riga del repository | «Fine riga» | `git.md`, «Repository, fine riga e hook» |
+| GitHub CLI installata | «Eccezioni alle regole globali» | `git.md`, «Integrazione GitHub» |
+| Attribuzione di Claude nei commit | «Attribuzione Claude nei commit» | `git.md`, «Messaggi di commit» |
+
 ## 2. Quali moduli tenere in `.claude/rules/`
 Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelti si **spostano** da `.claude/rules/` a `.claude/rules-optional/` (non si caricano più, ma restano disponibili per aggiungerli in seguito), quelli opzionali scelti si **spostano** da `.claude/rules-optional/`. Nel progetto esistente i moduli scelti si **copiano** dal template in `.claude/rules/`: la copia la fa `/kit:copia-regole` (o `/kit:aggiorna-regole` per i progetti che hanno già le regole); se i moduli risultano già presenti e identici al template, Claude non li ricopia e prosegue con il resto della procedura.
 
