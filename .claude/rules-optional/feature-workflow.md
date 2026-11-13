@@ -60,7 +60,7 @@ Ordine interno, ciascun passo che builda e passa i test:
 4. Aggiornamento della **checklist di consegna** (`core.md` §0b) e controllo finale: nessun segreto, nessun file generato non voluto, `git status` pulito dai file estranei.
 
 ## 6. Sequenza dei commit
-Segue `git.md` (serie di commit piccoli, ciascuno che builda e passa i test, test in commit `test(scope)` separati). Con più commit si usa il flusso "piano e passo-passo" di `git.md`: elenco dei commit, uno alla volta, conferma dopo ciascuno. Ordine tipico:
+Segue `git.md` (serie di commit piccoli, ciascuno che builda e passa i test, test in commit `test(scope)` separati). Con più commit si usa il flusso "piano e passo-passo" di `git.md`: elenco dei commit, uno alla volta, conferma dopo ciascuno (con `/kit:commit-passo` il lancio è il via libera e i commit partono in sequenza). Ordine tipico:
 1. `feat(scope)`: entità, configurazione EF e migrazione (+ servizio, se piccolo);
 2. `feat(scope)`: DTO, validatori, endpoint e il servizio (se non già nel commit 1);
 3. `test(scope)`: test backend (unit, integrazione nel progetto `IntegrationTests`, isolamento);
