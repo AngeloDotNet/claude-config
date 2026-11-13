@@ -1,7 +1,7 @@
 ---
 description: Esegue il controllo di verifica di una soluzione .NET prima di dichiarare chiuso un lavoro: ripristino, build in Release, test, pacchetti vulnerabili, modifiche al modello EF senza migrazione e spazi bianchi. Riporta l'esito reale senza modificare file. Si lancia solo su richiesta.
+model: haiku
 argument-hint: [cartella-soluzione]
-disable-model-invocation: true
 ---
 
 # Verifica della soluzione .NET

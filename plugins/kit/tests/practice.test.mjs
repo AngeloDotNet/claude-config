@@ -48,6 +48,23 @@ test("soppressione: pragma senza motivo segnalato, con kit-allow no", () => {
   );
 });
 
+test("attesa-test: Task.Delay e Thread.Sleep segnalati nei test, non nel codice di produzione", () => {
+  assert.match(warn("tests/OrderTests.cs", "await Task.Delay(1000);"), /attesa-test/);
+  assert.match(warn("tests/OrderTests.cs", "Thread.Sleep(500);"), /attesa-test/);
+  assert.doesNotMatch(warn("src/Orders/OrderService.cs", "await Task.Delay(retryAfter, ct);"), /attesa-test/);
+});
+
+test("attesa-test: deroga kit-allow sulla riga sopra toglie l'avviso", () => {
+  const text = "// kit-allow: attesa-test — il test attende un evento del sistema esterno, verificato sotto\nawait Task.Delay(50);";
+  assert.equal(warn("tests/OrderTests.cs", text), "");
+});
+
+test("nowarn: NoWarn di progetto segnalato in .csproj e .props, nel codice C# no", () => {
+  assert.match(warn("api/Api.csproj", "<NoWarn>CS1591</NoWarn>"), /nowarn/);
+  assert.match(warn("Directory.Build.props", "<NoWarn>CS8618</NoWarn>"), /nowarn/);
+  assert.equal(warn("api/Program.cs", "// NoWarn non è un pattern di questo file"), "");
+});
+
 test("anonimo: AllowAnonymous segnalato, deroga con motivo passa", () => {
   assert.match(warn("Endpoints.cs", "[AllowAnonymous]\npublic IResult Health() => Results.Ok();"), /anonimo/);
   assert.equal(

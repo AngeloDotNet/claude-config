@@ -1,7 +1,7 @@
 ---
 description: Revisiona un progetto backend rispetto ai principi del GDPR: minimizzazione dei dati, conservazione, log senza dati personali, errori senza dettagli sensibili, cifratura e diritti degli interessati. Non è consulenza legale. Non modifica file. Si lancia solo su richiesta.
+model: sonnet
 argument-hint: [cartella-o-progetto]
-disable-model-invocation: true
 ---
 
 # Dati personali nel backend (GDPR)

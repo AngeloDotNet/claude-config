@@ -99,7 +99,7 @@ Se il progetto esiste già e ha un repository git con cronologia non gestita da 
 3. **Una domanda per volta, caso per caso:** per ogni differenza Claude chiede se adeguare il progetto alle regole oppure registrare una deroga nella sezione "Eccezioni alle regole globali" del `CLAUDE.md` di quel progetto, con il motivo (la deroga non vale per altri progetti). Non decide da solo e non presume.
 4. **Mai riscrivere la cronologia esistente** (nessun `rebase`, `reset`, `amend`, rinomina di branch) per adeguarla alle regole: le regole valgono per i **nuovi** commit e branch, dal punto concordato in poi.
 5. Compila la sezione "Git" del `CLAUDE.md` con le risposte (branch principale, strategia di merge, ecc.; il modello branch è fisso: git flow completo con `develop`).
-6. Prima del primo commit (compreso `chore(rules)`) conferma il branch con l'utente, come da `git.md`: non si committa su `main`/`develop` senza deroga esplicita.
+6. Prima del primo commit (compreso `chore(rules)`) crea il branch di lavoro senza chiedere conferma, come da `git.md`: non si committa su `main`/`develop` senza deroga esplicita.
 
 ## 3c. Progetto esistente: scelte già presenti nel codice
 Per un progetto esistente Claude non pone da zero le domande "chiesto, non presunto" del template e non presume nulla: **rileva, mostra e chiede**.

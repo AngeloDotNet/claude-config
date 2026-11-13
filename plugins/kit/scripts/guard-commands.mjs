@@ -2,14 +2,17 @@
 // Hook PreToolUse su Bash e PowerShell: blocca (exit 2, motivo su stderr) i comandi che
 // le regole vietano a Claude (core.md §6.11, git.md). Il blocco è assoluto: se serve
 // davvero, il comando lo esegue l'utente (prefisso "!") oppure si disattiva l'hook.
-// Sempre bloccati: git push --force (e varianti), cancellazione di branch remoti, git init,
+// Sempre bloccati: git push --force (e varianti), cancellazione di branch remoti che non siano di lavoro
+// (consentita solo per feature/, bugfix/, release/, hotfix/: mai main, develop o altro; la conferma dell'utente
+// non è verificabile dall'hook ed è una regola scritta, vedi pr-main passo 10),
 // git reset --hard, git clean -f,
 // git commit con branch corrente main/develop (il messaggio dice a Claude di proporre un
 // branch di lavoro da develop con una sola domanda, o di chiedere se creare develop se
 // manca), qualunque --no-verify, rm -rf (e gli
 // equivalenti PowerShell, es. Remove-Item -Recurse -Force), git add -A / --all / . (e i file sensibili: .env,
 // secrets.json, chiavi e certificati), git commit con messaggio non Conventional Commits
-// (git.md: tipo(scope): descrizione, oggetto ≤ 72 caratteri; letto da -m o da heredoc).
+// (git.md: tipo(scope): descrizione con tipo ammesso; letto da -m o da heredoc). Maiuscola, punto finale e
+// lunghezza dell'oggetto restano regole scritte, non controllate dall'hook; git init non è bloccato (regola scritta).
 // git tag (creazione): solo con nome X.Y.Z (senza v) e dal branch main (git.md, «Rilascio»); il via
 // dell'utente non è verificabile dall'hook ed è una regola scritta. Sempre consentiti: git push (normale),
 // elenco e cancellazione dei tag. gh pr create/merge e gh release
@@ -35,6 +38,8 @@ const SHELLS = new Set(["bash", "sh", "zsh", "dash", "pwsh", "powershell", "cmd"
 const REMOVERS = new Set(["rm", "rmdir", "remove-item", "ri", "del", "erase", "rd"]);
 // File che non devono entrare nel repository (git.md, «Cosa non entra mai»). .env.example è consentito.
 const SENSITIVE_PATH = /(^|[\\/])(\.env(\.(?!example$)[\w.-]+)?|secrets\.json)$|\.(pfx|p12|key|pem|jks)$/i;
+// Branch remoti che si possono cancellare con git push --delete (git.md, «Branch»).
+const WORK_BRANCH = /^(feature|bugfix|release|hotfix)\/\w[\w./-]*$/;
 const COMMIT_TYPES = "feat|fix|refactor|perf|test|docs|build|ci|chore|revert";
 
 const baseName = (text) => text.split(/[\\/]/).pop().replace(/\.exe$/i, "");
@@ -217,9 +222,6 @@ function analyzeCommitMessage(rest) {
   let problem = null;
   const m = new RegExp(`^(${COMMIT_TYPES})(\\([a-z0-9][a-z0-9._/-]*\\))?!?: (\\S.*)$`).exec(subject);
   if (!m) problem = `"${subject}" non segue tipo(scope): descrizione`;
-  else if (subject.length > 72) problem = `oggetto di ${subject.length} caratteri (massimo 72)`;
-  else if (!/^[a-z]/.test(m[3])) problem = "la descrizione deve iniziare con una lettera minuscola";
-  else if (m[3].endsWith(".")) problem = "la descrizione non deve terminare con un punto";
   if (!problem) return null;
   blockHint =
     "Riscrivi il messaggio in inglese, Conventional Commits (git.md): tipo(scope): descrizione, minuscolo, senza punto finale, " +
@@ -288,11 +290,16 @@ function analyzeGit(args, cwd) {
       if (forced) return "git push forzato (riscrive la storia remota)";
       const deletes =
         rest.some((t) => !t.quoted && (t.text === "--delete" || shortHas(t, "d"))) || positional.some((t) => t.text.startsWith(":"));
-      if (deletes) return "cancellazione di un branch remoto (git push --delete o :branch)";
+      if (deletes) {
+        const refs = positional.slice(1).map((t) => t.text.replace(/^:/, ""));
+        if (refs.length > 0 && refs.every((r) => WORK_BRANCH.test(r))) return null;
+        blockHint =
+          "Si cancellano solo branch remoti di lavoro (feature/, bugfix/, release/, hotfix/), mai main o develop, e solo dopo la " +
+          "conferma dell'utente (pr-main, passo 10).";
+        return "cancellazione di un branch remoto non ammesso (git push --delete o :branch)";
+      }
       return null;
     }
-    case "init":
-      return "git init";
     case "reset":
       return rest.some((t) => !t.quoted && t.text === "--hard") ? "git reset --hard" : null;
     case "clean":
@@ -307,11 +314,11 @@ function analyzeGit(args, cwd) {
       const branch = currentBranch(dir);
       if (PROTECTED_BRANCHES.has(branch)) {
         blockHint = developExists(dir)
-          ? "Non committare qui. Proponi all'utente, con UNA SOLA domanda, un branch di lavoro nel formato tipo/descrizione-breve " +
-            "(feature/, bugfix/ o release/ da develop; hotfix/ da main) e crealo in locale solo dopo la sua conferma."
+          ? "Non committare qui. Crea tu il branch di lavoro, senza chiedere conferma, nel formato tipo/descrizione-breve " +
+            "(feature/, bugfix/ o release/ da develop; hotfix/ da main), con git switch -c, e committa lì."
           : 'Il branch "develop" non esiste ed è obbligatorio (git flow completo, git.md). Non partire da main. Chiedi all\'utente, ' +
-            "con UNA SOLA domanda, se puoi crearlo da main (branch locale); dopo la risposta proponi il branch di lavoro " +
-            "(per esempio feature/nome-breve) a partire da develop e crealo solo dopo la sua conferma.";
+            "con UNA SOLA domanda, se puoi crearlo da main (branch locale); dopo la risposta crea tu il branch di lavoro " +
+            "(per esempio feature/nome-breve) a partire da develop, senza altre conferme.";
         return `git commit sul branch "${branch}" (git.md: mai commit diretti su main/develop)`;
       }
       return analyzeCommitMessage(rest);
