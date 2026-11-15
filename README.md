@@ -49,7 +49,7 @@ I controlli del plugin stanno in sei script. I controlli su scrittura sono raggr
 
 ## Comandi del plugin
 
-Il plugin aggiunge ventuno comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
+Il plugin aggiunge ventidue comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
 - `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`, aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/clear` o `/compact`.
@@ -73,6 +73,7 @@ Il plugin aggiunge ventuno comandi, che si lanciano solo su richiesta. Sono disp
 - `/kit:accessibilita-ui`: revisiona l'accessibilità dell'interfaccia rispetto a WCAG 2.2 e propone le correzioni, senza modificare file.
 - `/kit:colori-tema`: costruisce o verifica la palette per i temi chiaro e scuro, con il contrasto misurato.
 - `/kit:localizzazione`: verifica il layout per testi tradotti più lunghi, RTL, ordine di lettura e zoom.
+- `/kit:modelli`: mostra quali modelli sono stati usati nella sessione e per cosa (sessione, skill, subagent), leggendo il registro della sessione; sola lettura. Lo stesso log compare da solo, una volta per sessione, al primo cambio di modello.
 
 Tabella riepilogativa con gli argomenti di ogni comando: [`docs/skill.md`](docs/skill.md). Dettagli nella pagina [Plugin](http://wiki.aepserver.it/claude-config/plugin).
 

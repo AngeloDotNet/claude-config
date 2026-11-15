@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-14
 
+### Log dei modelli usati nella sessione
+
+**Perché:** una sessione può usare più modelli (skill con `model`, subagent) e la riga «Modello in uso» non era affidabile; serve un log di chi ha fatto cosa basato sul registro della sessione.
+**Cosa / Dove:** nuovo `plugins/kit/scripts/lib/modelli.mjs` (lettura del registro `.jsonl`: `message.model`, `isSidechain`, `attributionSkill`; sequenza, totali, ricerca per id di sessione con id validato); nuovo `scripts/modelli.mjs` (comando); `session-close.mjs` mostra la sequenza una sola volta per sessione al primo cambio di modello; nuova skill `/kit:modelli` (`model: haiku`, sola lettura). Nuovo `tests/modelli.test.mjs` (12 casi, registri sintetici). Documentazione: `README.md`, `docs/skill.md` (ventidue comandi, quattordici di sola lettura, `modelli` tra le `haiku`), `plugin.json`, `marketplace.json`, wiki `plugin.md` (sezione «Log dei modelli usati nella sessione» e riga della tabella, «non ancora rilasciato»).
+**Verifica:** `node --test "plugins/kit/tests/*.test.mjs"`: 148/148 verdi (136 prima); `git diff --check` pulito; build non applicabile; provato sul registro reale di questa sessione e di quella della wiki.
+**Note:** previsto per il rilascio 1.16.0 (nessun bump). La sequenza spezza anche sui cambi di origine (sessione, skill, subagent) a parità di modello: scelta confermata dall'utente (D6), perché il log serve a dire chi ha fatto cosa.
+
 ### Rimossa la riga «Modello in uso» dalle skill
 
 **Perché:** la riga faceva scrivere al modello il proprio nome «come dichiarato nel tuo contesto», cioè il modello di sessione; con `model: haiku` la risposta di `/kit:verifica` risultava generata da `claude-haiku-5-5` (registro della sessione, 13:16 UTC) ma la riga diceva «Sonnet 5.5». Diagnostica fuorviante, `model` funziona.
