@@ -4,12 +4,18 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-15
 
+### Rilascio 1.15.0
+
+**Aggiunto:** promemoria automatico sulla versione del plugin: una volta per sessione e per progetto, se il plugin installato è più vecchio di quello nel template, Claude suggerisce i comandi di aggiornamento (`/plugin marketplace update`, `/plugin update`, `/reload-plugins`). Il README descrive i quattro passi da fare dopo ogni rilascio.
+**Corretto:** rimossa la riga «Modello in uso» dalle 21 skill: diceva il modello di sessione, non quello della skill, quindi era fuorviante. Il campo `model` funziona.
+
 ### Avviso sul cambio di modello citato in session-close
 
 **Perché:** la descrizione di `session-close` nel README non diceva che lo script mostra anche l'avviso sul cambio di modello.
 **Cosa / Dove:** `README.md`, elenco degli script: `session-close` cita l'avviso, una sola volta per sessione.
 **Verifica:** solo documentazione, build non applicabile; `node --test "plugins/kit/tests/*.test.mjs"`: 148/148 verdi.
 **Note:** il titolo `## 2026-11-15` coincide con quello della voce di rilascio 1.15.0 presente su `main`: al sync di `main` in `develop` potrebbe servire risolvere un conflitto su questa parte del file.
+
 
 ## 2026-11-14
 
