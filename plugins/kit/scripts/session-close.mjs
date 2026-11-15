@@ -9,6 +9,8 @@
 // - check-close (core.md §5b, §0b, frontend.md §10): sulle modifiche non ancora committate ricorda
 //   codice modificato senza CHANGELOG.md, modello EF cambiato senza migrazione, chiavi it.json /
 //   en.json diverse. Usa `git status`; attivo solo nei progetti con il kit.
+// - model-log (lib/modelli.mjs): una volta per sessione, al primo cambio di modello letto dal registro
+//   (`transcript_path`), mostra la sequenza dei modelli; il dettaglio è nel comando /kit:modelli.
 // Ogni controllo è isolato. Fail-open: qualunque errore -> nessun output.
 //
 // Registrato in hooks/hooks.json del plugin `kit`. Richiede Node.js; git nel PATH per check-close.
@@ -18,6 +20,24 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { projectUsesKit } from "./lib/text.mjs";
 import { readConfig, siteReminder } from "./lib/sito.mjs";
+import { hasModelChange, modelLog, readModelRows } from "./lib/modelli.mjs";
+import { loadState, projectKey, saveState } from "./lib/rules.mjs";
+
+// --- model-log (una volta per sessione, al primo cambio di modello) ---
+
+/** Avviso sul cambio di modello, o null: un solo modello, avviso già dato in questa sessione, registro illeggibile. */
+function modelChangeNote(input, cwd) {
+  const sessionId = typeof input?.session_id === "string" ? input.session_id : "";
+  if (!sessionId) return null;
+  const rows = readModelRows(input?.transcript_path);
+  if (!hasModelChange(rows)) return null;
+  const state = loadState();
+  const markerKey = `${projectKey(cwd)}#models`;
+  if (state[markerKey] === sessionId) return null;
+  state[markerKey] = sessionId;
+  saveState(state);
+  return `Cambio di modello nella sessione.\n${modelLog(rows)}\nDettagli con /kit:modelli.`;
+}
 
 // --- plan-reminder ---
 
@@ -121,6 +141,8 @@ process.stdin.on("end", () => {
     if (close.length) messages.push(`Promemoria prima di chiudere: ${close.join("; ")}.`);
     const site = attempt(() => siteReminder(cwd, readConfig()), null);
     if (site) messages.push(site);
+    const models = attempt(() => modelChangeNote(input, cwd), null);
+    if (models) messages.push(models);
     if (messages.length) process.stdout.write(JSON.stringify({ systemMessage: messages.join("\n") }) + "\n");
   } catch {
     process.exit(0);

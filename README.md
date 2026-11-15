@@ -45,11 +45,11 @@ claude plugin install kit@claude-config
 
 Con `KIT_CONFIG_TEMPLATE_DIR` impostata, il plugin lo ricorda da solo: una volta per sessione e per progetto, se la versione installata è più vecchia di quella nel template, Claude suggerisce questi comandi. Funziona solo dal primo aggiornamento che contiene il controllo, quindi il primo si fa a mano.
 
-I controlli del plugin stanno in sei script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica, regole cambiate, versione del plugin più vecchia di quella nel template, una volta per sessione, e, finché non si risponde, la domanda sulla wiki del progetto) e `session-close` (promemoria a fine di ogni risposta: piano, chiusura e sito di documentazione). I controlli sono tredici in tutto. Non c'è più un hook che inserisce il piano a inizio sessione: la rilettura di `CLAUDE.md`, delle regole e di `PIANO.md` è la regola di `core.md` §6.16, che Claude applica a ogni sessione. Il comando `/kit:buongiorno` la ripete su richiesta, con il riepilogo del lavoro.
+I controlli del plugin stanno in sei script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica, regole cambiate, versione del plugin più vecchia di quella nel template, una volta per sessione, e, finché non si risponde, la domanda sulla wiki del progetto) e `session-close` (promemoria a fine di ogni risposta: piano, chiusura e sito di documentazione, più l'avviso sul cambio di modello, una volta per sessione). I controlli sono tredici in tutto. Non c'è più un hook che inserisce il piano a inizio sessione: la rilettura di `CLAUDE.md`, delle regole e di `PIANO.md` è la regola di `core.md` §6.16, che Claude applica a ogni sessione. Il comando `/kit:buongiorno` la ripete su richiesta, con il riepilogo del lavoro.
 
 ## Comandi del plugin
 
-Il plugin aggiunge ventuno comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
+Il plugin aggiunge ventidue comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dal piano e dalla checklist, e propone il primo passo.
 - `/kit:buonasera`: salva lo stato dei lavori in `PIANO.md` e i problemi in `CHECKLIST.md`, aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/clear` o `/compact`.
@@ -73,6 +73,7 @@ Il plugin aggiunge ventuno comandi, che si lanciano solo su richiesta. Sono disp
 - `/kit:accessibilita-ui`: revisiona l'accessibilità dell'interfaccia rispetto a WCAG 2.2 e propone le correzioni, senza modificare file.
 - `/kit:colori-tema`: costruisce o verifica la palette per i temi chiaro e scuro, con il contrasto misurato.
 - `/kit:localizzazione`: verifica il layout per testi tradotti più lunghi, RTL, ordine di lettura e zoom.
+- `/kit:modelli`: mostra quali modelli sono stati usati nella sessione e per cosa (sessione, skill, subagent), leggendo il registro della sessione; sola lettura. Lo stesso log compare da solo, una volta per sessione, al primo cambio di modello.
 
 Tabella riepilogativa con gli argomenti di ogni comando: [`docs/skill.md`](docs/skill.md). Dettagli nella pagina [Plugin](http://wiki.aepserver.it/claude-config/plugin).
 
