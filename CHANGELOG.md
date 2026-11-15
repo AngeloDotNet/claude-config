@@ -2,6 +2,15 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-15
+
+### Avviso sul cambio di modello citato in session-close
+
+**Perché:** la descrizione di `session-close` nel README non diceva che lo script mostra anche l'avviso sul cambio di modello.
+**Cosa / Dove:** `README.md`, elenco degli script: `session-close` cita l'avviso, una sola volta per sessione.
+**Verifica:** solo documentazione, build non applicabile; `node --test "plugins/kit/tests/*.test.mjs"`: 148/148 verdi.
+**Note:** il titolo `## 2026-11-15` coincide con quello della voce di rilascio 1.15.0 presente su `main`: al sync di `main` in `develop` potrebbe servire risolvere un conflitto su questa parte del file.
+
 ## 2026-11-14
 
 ### Log dei modelli usati nella sessione
