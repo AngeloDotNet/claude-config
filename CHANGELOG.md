@@ -4,12 +4,31 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-15
 
+### Rilascio 1.16.0
+
+**Aggiunto:** log dei modelli usati nella sessione: il comando `/kit:modelli` (sola lettura) mostra quali modelli hanno risposto e per cosa (sessione, skill, subagent), leggendo il registro della sessione. `session-close` mostra la sequenza una sola volta per sessione, al primo cambio di modello.
+
 ### Rilascio 1.15.0
 
 **Aggiunto:** promemoria automatico sulla versione del plugin: una volta per sessione e per progetto, se il plugin installato è più vecchio di quello nel template, Claude suggerisce i comandi di aggiornamento (`/plugin marketplace update`, `/plugin update`, `/reload-plugins`). Il README descrive i quattro passi da fare dopo ogni rilascio.
 **Corretto:** rimossa la riga «Modello in uso» dalle 21 skill: diceva il modello di sessione, non quello della skill, quindi era fuorviante. Il campo `model` funziona.
 
+### Avviso sul cambio di modello citato in session-close
+
+**Perché:** la descrizione di `session-close` nel README non diceva che lo script mostra anche l'avviso sul cambio di modello.
+**Cosa / Dove:** `README.md`, elenco degli script: `session-close` cita l'avviso, una sola volta per sessione.
+**Verifica:** solo documentazione, build non applicabile; `node --test "plugins/kit/tests/*.test.mjs"`: 148/148 verdi.
+**Note:** il titolo `## 2026-11-15` coincide con quello della voce di rilascio 1.15.0 presente su `main`: al sync di `main` in `develop` potrebbe servire risolvere un conflitto su questa parte del file.
+
+
 ## 2026-11-14
+
+### Log dei modelli usati nella sessione
+
+**Perché:** una sessione può usare più modelli (skill con `model`, subagent) e la riga «Modello in uso» non era affidabile; serve un log di chi ha fatto cosa basato sul registro della sessione.
+**Cosa / Dove:** nuovo `plugins/kit/scripts/lib/modelli.mjs` (lettura del registro `.jsonl`: `message.model`, `isSidechain`, `attributionSkill`; sequenza, totali, ricerca per id di sessione con id validato); nuovo `scripts/modelli.mjs` (comando); `session-close.mjs` mostra la sequenza una sola volta per sessione al primo cambio di modello; nuova skill `/kit:modelli` (`model: haiku`, sola lettura). Nuovo `tests/modelli.test.mjs` (12 casi, registri sintetici). Documentazione: `README.md`, `docs/skill.md` (ventidue comandi, quattordici di sola lettura, `modelli` tra le `haiku`), `plugin.json`, `marketplace.json`, wiki `plugin.md` (sezione «Log dei modelli usati nella sessione» e riga della tabella, «non ancora rilasciato»).
+**Verifica:** `node --test "plugins/kit/tests/*.test.mjs"`: 148/148 verdi (136 prima); `git diff --check` pulito; build non applicabile; provato sul registro reale di questa sessione e di quella della wiki.
+**Note:** previsto per il rilascio 1.16.0 (nessun bump). La sequenza spezza anche sui cambi di origine (sessione, skill, subagent) a parità di modello: scelta confermata dall'utente (D6), perché il log serve a dire chi ha fatto cosa.
 
 ### Rimossa la riga «Modello in uso» dalle skill
 
