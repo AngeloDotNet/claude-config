@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-14
 
+### Rimossa la riga «Modello in uso» dalle skill
+
+**Perché:** la riga faceva scrivere al modello il proprio nome «come dichiarato nel tuo contesto», cioè il modello di sessione; con `model: haiku` la risposta di `/kit:verifica` risultava generata da `claude-haiku-5-5` (registro della sessione, 13:16 UTC) ma la riga diceva «Sonnet 5.5». Diagnostica fuorviante, `model` funziona.
+**Cosa / Dove:** rimosso il paragrafo (e la riga vuota seguente) dalle 21 `plugins/kit/skills/*/SKILL.md` (42 righe tolte); wiki `docs/claude-config/plugin.md`, paragrafo della 1.14.0, con nota «non ancora rilasciato». Le voci storiche di questo file restano com'erano.
+**Verifica:** `node --test "plugins/kit/tests/*.test.mjs"`: 136/136 verdi; `git diff --check` pulito; build non applicabile.
+**Note:** nessun bump (rilascio 1.15.0 con il promemoria sulla versione; un eventuale log dei modelli andrà in 1.16.0, decisioni D2 del piano). Il modello realmente usato si legge in `~/.claude/projects/<progetto>/<sessione>.jsonl`, campo `message.model`.
+
 ### Promemoria automatico sulla versione del plugin
 
 **Perché:** il plugin installato era rimasto alla 1.10.0 senza che nulla lo segnalasse; serve un avviso come quello su `/clear` e `/compact`.

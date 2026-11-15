@@ -6,8 +6,6 @@ disable-model-invocation: true
 
 # Commit in sequenza
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Lanciare questa skill è il via libera dell'utente a creare i commit del piano, senza altre conferme: branch, piano e singoli commit non richiedono un ok. Quando una domanda serve (casi sotto), una sola per messaggio e attendi la risposta. Messaggi di commit in inglese, Conventional Commits (`git.md`). Non fare mai push (quello della PR lo esegue `pr-develop`, solo dopo il sì del passo 10), `--amend`, `reset`, `--no-verify`, `git add -A` né `git add .`: aggiungi i file per nome.
 
 1. **Repository.** Esegui `git rev-parse --show-toplevel`. Se non è un repository, dillo e termina: non eseguire mai `git init`.

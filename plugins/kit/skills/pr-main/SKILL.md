@@ -7,8 +7,6 @@ disable-model-invocation: true
 
 # PR verso il branch principale
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio e attendi la risposta. Titolo e descrizione in inglese. Non fare mai `push --force`, non fare il merge della PR, non cancellare branch (salvo al passo 10, solo quelli confermati dall'utente) e non creare tag o rilasci: sono richieste a parte.
 
 0. **Prerequisito: GitHub CLI installata e autenticata.** Prima di tutto, in sola lettura: `gh --version` e `gh auth status`. Se `gh` non è installata o non è autenticata, **termina subito** senza eseguire altro: di' all'utente quale dei due manca e cosa fare (installare la GitHub CLI; `gh auth login` da lanciare lui con `! gh auth login`, perché è interattivo). Questa skill non si usa senza `gh`. Non usare `gh` per altro che questa verifica e l'operazione richiesta.

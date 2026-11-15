@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Verifica della soluzione .NET
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill esegue i controlli e riporta l'esito. Non corregge nulla: se un controllo fallisce, lo riporta con il dettaglio. Il ripristino dei pacchetti scrive nelle cartelle di build (`bin`, `obj`), ma non modifica il codice. I comandi sotto sono il default: se la tabella «Comandi» del `CLAUDE.md` ne indica di diversi, usa quelli. `<sln>` è il file della soluzione trovato al passo 1.

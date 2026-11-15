@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Verifica del frontend Angular
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill esegue i controlli di chiusura di `frontend.md` §10 e di `core.md` §0b e §4 e riporta l'esito. Non corregge nulla: se un controllo fallisce, lo riporta con il dettaglio. L'installazione scrive in `node_modules`, ma non modifica il codice. I nomi degli script sono il default: se la tabella «Comandi» del `CLAUDE.md` ne indica di diversi, usa quelli; uno script che non esiste in `package.json` rende il controllo «non verificato», non superato.

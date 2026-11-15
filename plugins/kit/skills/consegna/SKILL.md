@@ -7,8 +7,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Consegna: controllo prima di chiudere
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Non modificare nessun file.
 
 1. Leggi la checklist di consegna in `.claude/rules/core.md`, sezione «0b. Checklist di consegna». Se il file manca, dillo e fermati.
