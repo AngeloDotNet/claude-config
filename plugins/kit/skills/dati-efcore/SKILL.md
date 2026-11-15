@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Dati con EF Core
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill applica le regole di `backend-app.md` §4.4 (database ed EF Core) e `backend-architecture.md` §2c (accesso ai dati). Le regole sono vincoli: qui si trovano le procedure e i casi.

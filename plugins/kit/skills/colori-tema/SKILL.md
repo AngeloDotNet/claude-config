@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Colori del tema
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill costruisce o verifica la palette del progetto. Il vincolo obbligatorio (niente colori fissi nei componenti, token CSS, multi-tema) sta in `frontend.md` §3 e §4.1: qui si applica la procedura.

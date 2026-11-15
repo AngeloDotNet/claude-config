@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Qualità dei test
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill revisiona i test e segnala i problemi, con una gravità per ciascuno (bloccante, importante, suggerimento: `lavoro.md`, «Gravità dei rilievi»). Le regole di base (livelli di test, dati indipendenti, nessun `skip`) stanno in `core.md` §4 e `backend-app.md` §4.5: qui si applica la procedura di revisione.

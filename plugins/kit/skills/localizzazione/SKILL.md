@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Layout e localizzazione
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill verifica o imposta il layout perché tenga con le lingue supportate dal progetto (in `CLAUDE.md`, voce «Lingue supportate»). La localizzazione (chiavi di traduzione, lingua di default) e le date stanno in `frontend.md` §4.2 e §4.3: qui si applica la procedura di layout.

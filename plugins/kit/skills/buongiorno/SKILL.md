@@ -7,8 +7,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Buongiorno: ripartenza
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Non modificare nessun file. Rispondi in italiano.
 
 1. Rileggi `CLAUDE.md` (regola di inizio sessione, `core.md` §6.16), poi leggi `PIANO.md` e `CHECKLIST.md` nella radice del repository in cui sei. Le regole di `.claude/rules/` sono già caricate da Claude Code e non si rileggono, salvo che il hook del plugin segnali che sono cambiate (`lavoro.md`, «Contesto e token»). Se `PIANO.md` manca, dillo e chiedi una sola domanda: c'è un altro file di ripartenza, oppure si parte da zero?

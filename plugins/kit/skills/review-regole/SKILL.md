@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Revisione del codice secondo le regole del progetto
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Non modificare nessun file.
 
 1. Leggi il `CLAUDE.md` della radice (per le scelte specifiche del progetto). Se `.claude/rules/` manca, dillo e fermati.

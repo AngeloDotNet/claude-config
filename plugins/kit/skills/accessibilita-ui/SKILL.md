@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Accessibilità dell'interfaccia
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill applica i requisiti di `frontend.md` §3 (WCAG 2.2 AA) con la procedura di revisione. Ogni problema si collega a un criterio WCAG 2.2 o a una pratica dell'ARIA Authoring Practices Guide.

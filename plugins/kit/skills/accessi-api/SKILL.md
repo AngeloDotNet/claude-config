@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Accessi alle API
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill applica i vincoli di `security-backend.md` (autenticazione e autorizzazione, protezione dell'API) con le procedure di configurazione. Se il progetto non ha ancora scelto tra ASP.NET Core Identity e un identity provider self-hosted come Keycloak, chiedi quale usare prima di configurare: la scelta sta nel `CLAUDE.md`. Verifica prima che nel `CLAUDE.md` siano registrate le decisioni obbligatorie di `security-backend.md` (il progetto richiede autenticazione, ciclo di vita dei JWT se previsti, granularità: solo autenticazione, ruoli, policy o permessi, extra come MFA o registrazione): quelle mancanti sono un rilievo e si chiedono una per volta, non si presumono.
