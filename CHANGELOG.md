@@ -4,6 +4,10 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-15
 
+### Rilascio 1.16.0
+
+**Aggiunto:** log dei modelli usati nella sessione: il comando `/kit:modelli` (sola lettura) mostra quali modelli hanno risposto e per cosa (sessione, skill, subagent), leggendo il registro della sessione. `session-close` mostra la sequenza una sola volta per sessione, al primo cambio di modello.
+
 ### Rilascio 1.15.0
 
 **Aggiunto:** promemoria automatico sulla versione del plugin: una volta per sessione e per progetto, se il plugin installato è più vecchio di quello nel template, Claude suggerisce i comandi di aggiornamento (`/plugin marketplace update`, `/plugin update`, `/reload-plugins`). Il README descrive i quattro passi da fare dopo ogni rilascio.
