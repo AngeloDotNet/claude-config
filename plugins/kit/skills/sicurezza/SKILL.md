@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Sicurezza: controllo prima di consegnare
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio. Non modificare nessun file.
 
 Questa skill applica `security.md` («Regola operativa», «Progettazione sicura e fail closed», «Test di sicurezza automatici»), `security-backend.md`, `security-frontend.md` e le voci di sicurezza di `core.md` §0b. Verifica che le misure ci siano e siano testate; non scrive codice di sicurezza e non sostituisce un penetration test.

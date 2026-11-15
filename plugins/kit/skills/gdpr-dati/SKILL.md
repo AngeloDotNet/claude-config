@@ -8,8 +8,6 @@ disallowed-tools: Edit Write NotebookEdit
 
 # Dati personali nel backend (GDPR)
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Una sola domanda per messaggio.
 
 Questa skill revisiona gli aspetti tecnici del trattamento dei dati personali nel backend. Non è consulenza legale: le basi giuridiche, la valutazione d'impatto e gli obblighi verso gli interessati si decidono con il titolare del trattamento. Le regole di base stanno in `security.md` («Dati e Segreti») e `core.md` §5.

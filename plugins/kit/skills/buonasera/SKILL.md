@@ -6,8 +6,6 @@ disable-model-invocation: true
 
 # Buonasera: salvataggio dello stato
 
-**Prima di tutto**, come prima riga della risposta, scrivi «Modello in uso: <nome del modello come dichiarato nel tuo contesto>» (serve a vedere l'effetto del campo `model`).
-
 Rispondi in italiano. Non committare nulla (nemmeno la wiki).
 
 1. Leggi `PIANO.md` e `CHECKLIST.md` nella radice del repository e `git status --short`. Tre casi:
