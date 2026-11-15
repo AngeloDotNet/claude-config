@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-14
 
+### Promemoria automatico sulla versione del plugin
+
+**Perché:** il plugin installato era rimasto alla 1.10.0 senza che nulla lo segnalasse; serve un avviso come quello su `/clear` e `/compact`.
+**Cosa / Dove:** nuovo `plugins/kit/scripts/lib/plugin-version.mjs` (versione in esecuzione da `CLAUDE_PLUGIN_ROOT` o dalla posizione dello script, contro `plugins/kit/.claude-plugin/plugin.json` del template); `prompt-start.mjs` lo chiama una volta per sessione e per progetto, in ogni progetto, anche senza regole; senza `KIT_CONFIG_TEMPLATE_DIR` o con file illeggibili resta in silenzio. Nuovo `tests/plugin-version.test.mjs` (7 casi). Descrizioni aggiornate in `plugin.json` e `README.md`.
+**Verifica:** `node --test "plugins/kit/tests/*.test.mjs"`: 136/136 verdi (129 prima); build non applicabile.
+**Note:** nessun bump di versione (si decide al rilascio, `git.md`). Il primo aggiornamento del plugin resta manuale. Wiki (`E:/Disco_E/Progetti/wiki`): `docs/claude-config/plugin.md` aggiornato con la riga di `prompt-start` e la sezione «Versione del plugin: promemoria di aggiornamento», marcata «non ancora rilasciato»; non committato, le altre modifiche non committate della wiki non sono state toccate.
+
 ### Promemoria di aggiornamento del plugin nel README
 
 **Perché:** il plugin installato era rimasto alla 1.10.0 mentre il repository era alla 1.14.0, quindi il campo `model` delle skill e `aggiorna-regole` aggiornato non avevano effetto; nulla ricordava di aggiornare il plugin dopo un rilascio.

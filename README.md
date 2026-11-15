@@ -43,7 +43,9 @@ claude plugin install kit@claude-config
 3. `/reload-plugins` (o riavvia la sessione)
 4. `/plugin` per verificare che la versione sia quella del rilascio.
 
-I controlli del plugin stanno in sei script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica, regole cambiate e, finché non si risponde, la domanda sulla wiki del progetto) e `session-close` (promemoria a fine di ogni risposta: piano, chiusura e sito di documentazione). I controlli sono tredici in tutto. Non c'è più un hook che inserisce il piano a inizio sessione: la rilettura di `CLAUDE.md`, delle regole e di `PIANO.md` è la regola di `core.md` §6.16, che Claude applica a ogni sessione. Il comando `/kit:buongiorno` la ripete su richiesta, con il riepilogo del lavoro.
+Con `KIT_CONFIG_TEMPLATE_DIR` impostata, il plugin lo ricorda da solo: una volta per sessione e per progetto, se la versione installata è più vecchia di quella nel template, Claude suggerisce questi comandi. Funziona solo dal primo aggiornamento che contiene il controllo, quindi il primo si fa a mano.
+
+I controlli del plugin stanno in sei script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica, regole cambiate, versione del plugin più vecchia di quella nel template, una volta per sessione, e, finché non si risponde, la domanda sulla wiki del progetto) e `session-close` (promemoria a fine di ogni risposta: piano, chiusura e sito di documentazione). I controlli sono tredici in tutto. Non c'è più un hook che inserisce il piano a inizio sessione: la rilettura di `CLAUDE.md`, delle regole e di `PIANO.md` è la regola di `core.md` §6.16, che Claude applica a ogni sessione. Il comando `/kit:buongiorno` la ripete su richiesta, con il riepilogo del lavoro.
 
 ## Comandi del plugin
 
