@@ -2,6 +2,13 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-15
+
+### Rilascio 1.15.0
+
+**Aggiunto:** promemoria automatico sulla versione del plugin: una volta per sessione e per progetto, se il plugin installato è più vecchio di quello nel template, Claude suggerisce i comandi di aggiornamento (`/plugin marketplace update`, `/plugin update`, `/reload-plugins`). Il README descrive i quattro passi da fare dopo ogni rilascio.
+**Corretto:** rimossa la riga «Modello in uso» dalle 21 skill: diceva il modello di sessione, non quello della skill, quindi era fuorviante. Il campo `model` funziona.
+
 ## 2026-11-14
 
 ### Rimossa la riga «Modello in uso» dalle skill
