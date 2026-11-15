@@ -132,7 +132,9 @@ describe("rules-watch: regole cambiate durante la sessione", () => {
     const empty = path.join(base, "empty");
     mkdirSync(empty);
     assert.equal(run("prompt-start.mjs", { cwd: empty, home, template: path.join(base, "non-esiste") }), "");
-    const result = spawnSync(process.execPath, [path.join(scripts, "prompt-start.mjs")], { input: "non json", encoding: "utf8", cwd: empty, env: { ...process.env, USERPROFILE: home, HOME: home } });
+    const env = { ...process.env, USERPROFILE: home, HOME: home };
+    delete env.KIT_CONFIG_TEMPLATE_DIR; // isolato dalla macchina: il promemoria sulla versione dipende da lui
+    const result = spawnSync(process.execPath, [path.join(scripts, "prompt-start.mjs")], { input: "non json", encoding: "utf8", cwd: empty, env });
     assert.equal(result.status, 0);
     assert.equal(withoutReminder(result.stdout), "");
   });
