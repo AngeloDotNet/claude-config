@@ -2,6 +2,14 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-14
+
+### Promemoria di aggiornamento del plugin nel README
+
+**Perché:** il plugin installato era rimasto alla 1.10.0 mentre il repository era alla 1.14.0, quindi il campo `model` delle skill e `aggiorna-regole` aggiornato non avevano effetto; nulla ricordava di aggiornare il plugin dopo un rilascio.
+**Cosa / Dove:** `README.md`, sezione «Come si usa, in breve»: paragrafo con i quattro passi (`/plugin marketplace update`, `/plugin update`, `/reload-plugins`, verifica con `/plugin`).
+**Verifica:** solo documentazione, build e test non applicabili; testo riletto.
+
 ## 2026-11-13
 
 ### Rilascio 1.14.0 chiuso: tag, release GitHub e wiki

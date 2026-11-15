@@ -36,6 +36,13 @@ claude plugin marketplace add AngeloDotNet/claude-config
 claude plugin install kit@claude-config
 ```
 
+**Dopo ogni rilascio il plugin non si aggiorna da solo**: ogni macchina resta sulla versione installata finché non la aggiorni, e le skill nuove o modificate (per esempio il campo `model`) non hanno effetto. Da una sessione Claude Code qualsiasi (sono comandi slash, non di shell), con la cartella del marketplace su `develop` o `main` se è registrato come `directory`:
+
+1. `/plugin marketplace update claude-config`
+2. `/plugin update kit@claude-config`
+3. `/reload-plugins` (o riavvia la sessione)
+4. `/plugin` per verificare che la versione sia quella del rilascio.
+
 I controlli del plugin stanno in sei script. I controlli su scrittura sono raggruppati: `guard-write` (segreti e pattern vietati, prima della scrittura), `check-write` (piano, qualità e pratica, dopo la scrittura). Gli altri sono `guard-commands`, `limit-one-question`, `prompt-start` (regola della domanda unica, regole cambiate e, finché non si risponde, la domanda sulla wiki del progetto) e `session-close` (promemoria a fine di ogni risposta: piano, chiusura e sito di documentazione). I controlli sono tredici in tutto. Non c'è più un hook che inserisce il piano a inizio sessione: la rilettura di `CLAUDE.md`, delle regole e di `PIANO.md` è la regola di `core.md` §6.16, che Claude applica a ogni sessione. Il comando `/kit:buongiorno` la ripete su richiesta, con il riepilogo del lavoro.
 
 ## Comandi del plugin
