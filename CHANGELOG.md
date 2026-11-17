@@ -2,6 +2,20 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-17
+
+### Unit test per livello in Clean Architecture
+
+**Perché:** un unico progetto di unit test non impone le dipendenze tra i livelli: un test che referenzia l'`Infrastructure` dal `Domain` compila lo stesso. Un progetto per livello rende la regola verificabile dalla compilazione. Il progetto `PersonalIdp` lo ha adottato per primo, e la scelta va ora nel template, così ogni progetto non deve ricordarla.
+
+**Cosa:** `core.md` §4 (3.44 → 3.45): struttura `[Solution].UnitTests.<Livello>` in Clean, `[Solution].UnitTests.Architecture` per i test di architettura, `[Solution].UnitTests.Shared` per fake e builder condivisi solo se servono a più livelli, unico `[Solution].UnitTests` in Vertical Slice. `backend-app.md` §4.5 (1.5 → 1.6): riferimento alla nuova struttura. `backend-architecture.md` §2b (1.0 → 1.1): i test di architettura vanno nel progetto `.Architecture` invece che nel progetto di unit test generico.
+
+**Dove:** `.claude/rules/core.md`, `.claude/rules/backend-app.md`, `.claude/rules/backend-architecture.md`.
+
+**Verifica:** documento di regole, nessuna build. Riferimenti incrociati riletti (§4, §4.5 e §2b).
+
+**Note:** il `CLAUDE.md` di ogni progetto che importa queste regole va aggiornato con la nuova versione di `core.md` (`/kit:aggiorna-regole`). Il nome `[Solution].UnitTests.Architecture` è una scelta di questo passo, da confermare.
+
 ## 2026-11-15
 
 ### Rilascio 1.16.0
