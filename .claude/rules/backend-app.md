@@ -5,7 +5,7 @@ paths:
 
 # Regole Backend: logica applicativa e infrastruttura
 
-> Versione 1.5 — ultima revisione: 2026-11-13.
+> Versione 1.6 — ultima revisione: 2026-11-17.
 
 > Richiede `core.md` e `backend.md`. Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §4: errori e risposte API (4.1), concorrenza (4.2), paginazione (4.3), database ed EF Core (4.4), integration test (4.5), utente corrente e proprietà (4.6); la numerazione dei paragrafi è quella storica di `backend.md`.
 
@@ -53,7 +53,7 @@ paths:
 
 ### 4.5 Integration test e database di prova
 - **Niente Testcontainers né tecnologie simili:** gli integration test non avviano container né orchestrano risorse da codice; usano l'istanza di database di prova descritta sotto.
-- **Progetto dedicato:** `[Solution].IntegrationTests` (xUnit), separato dagli unit test; referenzia l'`Api` e usa `WebApplicationFactory<Program>` (vedi §2, `Program` accessibile).
+- **Progetto dedicato:** `[Solution].IntegrationTests` (xUnit), separato dai progetti di unit test (`[Solution].UnitTests.<Livello>`, `core.md` §4); referenzia l'`Api` e usa `WebApplicationFactory<Program>` (vedi §2, `Program` accessibile).
 - **Database reale di prova:** stesso motore del progetto, su un'istanza locale già esistente (o server di prova indicato dall'utente). La connection string arriva da User Secrets o dalla variabile `ConnectionStrings__Test`, mai dal repository né da `appsettings.json` con valori reali. Mai il database di sviluppo né di produzione.
 - **Isolamento:** a ogni esecuzione dei test si crea un database con nome univoco (es. suffisso `Guid`), si applicano le migrazioni e a fine esecuzione lo si elimina (anche in caso di fallimento: fixture di collezione/assembly con `IAsyncLifetime`). I test dentro la stessa esecuzione non condividono dati: ognuno crea i propri (builder/fixture, id e tenant univoci) e non dipende dall'ordine.
 - **Privilegi:** l'utente usato dai test può creare ed eliminare database; è distinto dall'utente applicativo (privilegi minimi, §4.4) e non è mai usato fuori dai test.
