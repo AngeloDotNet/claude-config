@@ -5,7 +5,7 @@ paths:
 
 # Regole Backend: architettura e accesso ai dati
 
-> Versione 1.0 — ultima revisione: 2026-11-09.
+> Versione 1.1 — ultima revisione: 2026-11-17.
 
 > Richiede `core.md` e `backend.md` (stack, regole comuni, errori e convenzioni). Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §2a Vertical Slice, §2b Clean Architecture, §2c accesso ai dati e pattern; la numerazione dei paragrafi è quella storica di `backend.md`.
 
@@ -44,7 +44,7 @@ Quattro progetti, con questi nomi (il prefisso della solution sta nel `CLAUDE.md
   | Endpoint, `Program.cs`, middleware, OpenAPI, sicurezza HTTP | `Api` |
 - **Struttura interna:** in `Application` e in `Api` le cartelle sono per area funzionale (es. `Products/`), non per tipo tecnico a livello radice, con le uniche eccezioni di `Interfaces/`, `Validators/`, `Options/`, `Requests/` e `Responses/` (§2, regole omonime), presenti alla radice di ogni progetto che definisce tipi di quella categoria; in `Domain` e `Infrastructure` per tipo (`Entities/`, `Configurations/`).
 - **Test:** unit test su validatori, mapping e logica dei servizi che non tocca il database, con le altre dipendenze sostituite; i servizi che interrogano `IApplicationDbContext` si provano contro un database reale nel progetto di integration test (§4.5; SQLite solo se concordato secondo `core.md` §4; mai EF Core InMemory; il mock di `DbContext` e `DbSet` è ammesso solo per la logica che non tocca il `DbContext`, come da §4.5); integration test con `WebApplicationFactory` sull'`Api`, anch'essi nel progetto dedicato.
-- **Test di architettura (obbligatori in Clean):** nel progetto degli unit test, test che fanno fallire la build quando la regola delle dipendenze è violata: `Domain` non referenzia nulla di `Application`, `Infrastructure` e `Api`; `Application` non referenzia `Infrastructure` né `Api` e non usa i provider (`SqlServer`, `Npgsql`) né `Microsoft.AspNetCore`; `Domain` non usa EF Core. Si valutano strumenti gratuiti con licenza permissiva (es. `NetArchTest.Rules`, MIT, o `ArchUnitNET`, Apache-2.0): prima dell'uso Claude verifica licenza, versione e compatibilità con .NET 10 (`core.md` §3) e li dichiara come nuova dipendenza. In Vertical Slice sono facoltativi (es. nessuna slice referenzia un'altra), su conferma.
+- **Test di architettura (obbligatori in Clean):** nel progetto `[Solution].UnitTests.Architecture` (`core.md` §4), che referenzia tutti i livelli, test che fanno fallire la build quando la regola delle dipendenze è violata: `Domain` non referenzia nulla di `Application`, `Infrastructure` e `Api`; `Application` non referenzia `Infrastructure` né `Api` e non usa i provider (`SqlServer`, `Npgsql`) né `Microsoft.AspNetCore`; `Domain` non usa EF Core. Si valutano strumenti gratuiti con licenza permissiva (es. `NetArchTest.Rules`, MIT, o `ArchUnitNET`, Apache-2.0): prima dell'uso Claude verifica licenza, versione e compatibilità con .NET 10 (`core.md` §3) e li dichiara come nuova dipendenza. In Vertical Slice sono facoltativi (es. nessuna slice referenzia un'altra), su conferma.
 
 ### 2c. Accesso ai dati e pattern (VSA e Clean)
 Vale per entrambe le architetture. Principio: **il `DbContext` di EF Core è già repository e Unit of Work**; ogni astrazione in più deve avere un motivo dichiarato, non essere cerimonia.
