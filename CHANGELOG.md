@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Profilo salvato da `copia-regole`
+**Perché:** la risposta sul profilo restava nel riepilogo e il campo «Profilo» del `CLAUDE.md` non veniva scritto quando il progetto non passava da `avvia-progetto` (issue #73).
+**Cosa:** `copia-regole` scrive il campo «Profilo» del `CLAUDE.md` con il profilo scelto (nel caso «No»); se il campo è già dichiarato non lo cambia. Se il `CLAUDE.md` esiste, si tocca solo quella riga.
+**Dove:** `plugins/kit/skills/copia-regole/SKILL.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`. La skill non è stata rilanciata su una cartella di prova dopo la modifica.
+
 ### Skill accorpate: da 22 a 12
 **Perché:** molte skill di revisione ripetevano regole e `/code-review` o `/security-review`; ventidue comandi erano troppi da ricordare.
 **Cosa:** le nove revisioni tematiche (`accessi-api`, `dati-efcore`, `gdpr-dati`, `accessibilita-ui`, `colori-tema`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`) diventano `/kit:revisione <tema>` con una procedura per tema in `revisione/temi/`; `verifica-frontend` entra in `verifica` (`frontend.md`); `aggiorna-docs` entra in `buonasera` (`documentazione.md`). `modelli` resta invariato: ha un registro che `session-close` usa.
