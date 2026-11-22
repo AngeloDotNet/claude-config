@@ -2,6 +2,34 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-22
+
+### Piani e problemi in issue, `gh` esteso
+
+**Perché:** `PIANO.md` e `CHECKLIST.md` vivevano nel repository e si disallineavano dal lavoro reale. Ogni progetto ha un repository remoto su GitHub, quindi il piano è una issue padre con le sub-issue come passi, e i problemi sono issue. `gh` può ora fare il lavoro corrente (issue, sub-issue, commit, PR, tag, rilasci, branch) senza chiedere per ogni operazione, con il confine della gestione del repository, che resta all'utente.
+
+**Cosa:** `git.md` v2.0 (ambito di `gh`, cancellazione dei branch dopo verifica `MERGED`, un commit alla volta senza ok). `core.md` v3.46 (§0b, §5c, §6.15, §6.16, §6.20, §6.22: piano e problemi in issue). Hook: rimossi `check-plan` e `plan-reminder`; `guard-commands` gate per `gh issue`, blocco di `gh pr merge`, `gh repo` in scrittura, `gh secret`, `gh variable`, `gh ruleset` e `gh api` in scrittura su impostazioni. Skill: `buongiorno`, `buonasera`, `commit-passo`, `pr-main`, `avvia-progetto`, `consegna`, `copia-regole`, `pr-develop`. Eliminato `_template/CHECKLIST.md`.
+
+**Dove:** `.claude/rules/git.md`, `.claude/rules/core.md`, `.claude/rules/lavoro.md`, `.claude/rules/frontend.md`, `.claude/rules/backend-architecture.md`, `.claude/rules-optional/feature-workflow.md`, `_template/avvio-progetto.md`, `CLAUDE.md`, `plugins/kit/scripts/` (`check-write`, `session-close`, `prompt-start`, `guard-commands`), `plugins/kit/skills/`, `plugins/kit/tests/`, `plugins/kit/.claude-plugin/plugin.json`, `README.md`, `docs/skill.md`.
+
+**Verifica:** nessuna build (regole e script del plugin). `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi.
+
+**Note:** la versione del plugin non è stata alzata: sarà una decisione separata. I progetti già avviati con `PIANO.md` lo migrano in issue quando `buonasera` lo chiede. `gh pr merge` è ora bloccato sempre, perché il merge resta all'utente.
+
+## 2026-11-22
+
+### Mappa obbligo → profilo minimo (ADR 0001)
+
+**Perché:** le regole sono pensate per un progetto grande e applicate uguali a uno script interno, con circa 105 KB caricati in ogni sessione. Serve dichiarare il profilo del progetto e applicare solo gli obblighi che servono.
+
+**Cosa:** nuovo `docs/adr/0001-profili.md` con i tre profili (mini, standard, strutturato), la regola «il profilo fissa il minimo, la funzionalità fa scattare l'obbligo» e la tabella obbligo → profilo minimo. Stato: proposta, in attesa della decisione sulla deroga alla regola inviolabile.
+
+**Dove:** `docs/adr/0001-profili.md` (nuovo). Nessuna regola modificata in questo passo.
+
+**Verifica:** documento, nessuna build. `node --test plugins/kit/tests/*.test.mjs`: 148/148 verdi.
+
+**Note:** il passo 3 del piano spezzerà `core.md` e userà questa tabella. Il campo `Profilo:` nel `CLAUDE.md` non è ancora stato aggiunto.
+
 ## 2026-11-17
 
 ### Unit test per livello in Clean Architecture
