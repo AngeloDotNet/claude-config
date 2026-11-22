@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Rilascio 2.0.0
+**Aggiunto:** profili `mini`, `standard` e `strutturato` dichiarati nel `CLAUDE.md`, con i default del profilo `mini`; `/kit:revisione <tema>`; moduli `workflow.md`, `qualita.md`, `git-avanzato.md`, `security-avanzata.md`; piani e problemi in issue GitHub (issue padre e sub-issue) al posto di `PIANO.md` e `CHECKLIST.md`.
+**Modificato:** `core.md` (v3.53) più leggero, con i moduli caricati solo quando servono; `gh` autorizzato per issue, sub-issue, PR e rilasci, con il via dell'utente per PR, push, tag e rilasci; `avvio-progetto`, `copia-regole` e `aggiorna-regole` chiedono e rispettano il profilo.
+**Corretto:** la cancellazione dei branch di lavoro avviene solo dopo la verifica dello stato `MERGED` della PR.
+**Sicurezza:** nessuna modifica alle regole di sicurezza; `security.md` diviso in `security.md` e `security-avanzata.md`, senza testo perso.
+**Breaking change:** rimossi o rinominati `/kit:sicurezza`, `/kit:gdpr-dati`, `/kit:verifica-frontend`, `/kit:aggiorna-docs`, `/kit:accessi-api`, `/kit:dati-efcore`, `/kit:accessibilita-ui`, `/kit:colori-tema`, `/kit:localizzazione`, `/kit:qualita-test`, `/kit:review-regole`. Usare `/kit:revisione <tema>` e `/kit:verifica`.
+
 ### Skill accorpate: da 22 a 12
 **Perché:** molte skill di revisione ripetevano regole e `/code-review` o `/security-review`; ventidue comandi erano troppi da ricordare.
 **Cosa:** le nove revisioni tematiche (`accessi-api`, `dati-efcore`, `gdpr-dati`, `accessibilita-ui`, `colori-tema`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`) diventano `/kit:revisione <tema>` con una procedura per tema in `revisione/temi/`; `verifica-frontend` entra in `verifica` (`frontend.md`); `aggiorna-docs` entra in `buonasera` (`documentazione.md`). `modelli` resta invariato: ha un registro che `session-close` usa.
