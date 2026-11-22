@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Profili nelle procedure di avvio, copia e aggiornamento
+**Perché:** le procedure non conoscevano ancora il profilo né i quattro moduli nuovi (`workflow.md`, `qualita.md`, `git-avanzato.md`, `security-avanzata.md`); la modalità solo Git perdeva le regole del piano e delle PR a cui `git.md` rimanda.
+**Cosa:** domanda 10 (profilo) in `avvio-progetto.md` §1, con il suo effetto sui moduli; tabella dei moduli e nota solo Git aggiornate; `copia-regole` chiede il profilo nel caso «No» e copia `git-avanzato.md` e `workflow.md` in solo Git; `aggiorna-regole` propone i moduli nuovi e controlla il posto nel profilo `mini`, senza spostare nulla senza ok.
+**Dove:** `_template/avvio-progetto.md`, `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 146/146. Le skill non sono state lanciate su un progetto di prova.
+**Note:** in solo Git si copiano anche `workflow.md` e `git-avanzato.md` (scelta del kit, reversibile).
+
 ### Default del profilo `mini` nel `CLAUDE.md`
 **Perché:** il profilo `mini` deve evitare decine di domande di avvio; l'utente ha approvato i default per le voci reversibili.
 **Cosa:** riga «Default del profilo `mini`» in «Progetto» del `CLAUDE.md`; eccezione alla regola «chiedi» in `core.md` §6.5 (v3.52).
