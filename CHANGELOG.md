@@ -4,6 +4,18 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Checklist e test in `qualita.md`
+
+**Perché:** nel profilo `mini` (script, tool interno, prototipo) `core.md` caricava ancora circa 29 KB, con la checklist di consegna e le regole di test, che per uno script senza test pesano poco.
+
+**Cosa:** nuovo `.claude/rules/qualita.md` con §0b (checklist di consegna) e §4 (test e qualità) di `core.md`, con la stessa numerazione. `core.md` v3.49 mantiene un puntatore. Il profilo `mini` sposta `qualita.md` in `rules-optional/`, insieme a `workflow.md`. `CLAUDE.md` e `copia-regole` aggiornati.
+
+**Dove:** `.claude/rules/qualita.md` (nuovo), `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga di §0b e §4 persa: confronto riga per riga. Misura: `core.md` da 29,1 a 22,1 KB.
+
+**Note:** i messaggi dei hook che citano «core.md §4» o «§0b» restano validi grazie al puntatore. `core.md` profilo `mini` ora pesa circa 22 KB, contro il bersaglio di 15 KB: le sezioni rimaste da valutare sono §3, §1–§2 e §5b (documentazione).
+
 ### Workflow esteso in `workflow.md`
 
 **Perché:** §6 di `core.md` pesava 12,5 KB, e circa 6 KB riguardano scelte di codice e di architettura che non servono a ogni passo. Si separa il minimo (regola inviolabile, verifica, git, piano, sessione, fine attività, problemi) dal resto.
