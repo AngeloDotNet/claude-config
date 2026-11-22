@@ -4,6 +4,9 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Rilascio 2.0.1
+**Corretto:** `copia-regole` scrive nel `CLAUDE.md` il profilo scelto nel campo «Profilo» (issue #73, PR #75 e #77).
+
 ### Profilo salvato da `copia-regole`
 **Perché:** la risposta sul profilo restava nel riepilogo e il campo «Profilo» del `CLAUDE.md` non veniva scritto quando il progetto non passava da `avvia-progetto` (issue #73).
 **Cosa:** `copia-regole` scrive il campo «Profilo» del `CLAUDE.md` con il profilo scelto (nel caso «No»); se il campo è già dichiarato non lo cambia. Se il `CLAUDE.md` esiste, si tocca solo quella riga.
