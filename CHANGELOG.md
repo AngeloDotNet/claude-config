@@ -4,6 +4,11 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Profilo salvato da `copia-regole`
+**Perché:** la risposta sul profilo restava nel riepilogo e il campo «Profilo» del `CLAUDE.md` non veniva scritto quando il progetto non passava da `avvia-progetto` (issue #73).
+**Cosa:** `copia-regole` scrive il campo «Profilo» del `CLAUDE.md` con il profilo scelto (nel caso «No»); se il campo è già dichiarato non lo cambia. Se il `CLAUDE.md` esiste, si tocca solo quella riga.
+**Dove:** `plugins/kit/skills/copia-regole/SKILL.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`. La skill non è stata rilanciata su una cartella di prova dopo la modifica.
 ### Rilascio 2.0.0
 **Aggiunto:** profili `mini`, `standard` e `strutturato` dichiarati nel `CLAUDE.md`, con i default del profilo `mini`; `/kit:revisione <tema>`; moduli `workflow.md`, `qualita.md`, `git-avanzato.md`, `security-avanzata.md`; piani e problemi in issue GitHub (issue padre e sub-issue) al posto di `PIANO.md` e `CHECKLIST.md`.
 **Modificato:** `core.md` (v3.53) più leggero, con i moduli caricati solo quando servono; `gh` autorizzato per issue, sub-issue, PR e rilasci, con il via dell'utente per PR, push, tag e rilasci; `avvio-progetto`, `copia-regole` e `aggiorna-regole` chiedono e rispettano il profilo.
