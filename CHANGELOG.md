@@ -112,8 +112,6 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 **Note:** la versione del plugin non è stata alzata: sarà una decisione separata. I progetti già avviati con `PIANO.md` lo migrano in issue quando `buonasera` lo chiede. `gh pr merge` è ora bloccato sempre, perché il merge resta all'utente.
 
-## 2026-11-22
-
 ### Mappa obbligo → profilo minimo (ADR 0001)
 
 **Perché:** le regole sono pensate per un progetto grande e applicate uguali a uno script interno, con circa 105 KB caricati in ogni sessione. Serve dichiarare il profilo del progetto e applicare solo gli obblighi che servono.
