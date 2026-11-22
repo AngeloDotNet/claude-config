@@ -4,6 +4,18 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Sicurezza avanzata in `security-avanzata.md`
+
+**Perché:** `security.md` (21 KB) si caricava in ogni sessione. Per uno script o un tool interno bastano i principi che valgono sempre (segreti, log senza dati personali, security review quando serve); ASVS, progettazione, crittografia, mobile, supply chain, DAST e test automatici servono ai progetti standard e strutturati.
+
+**Cosa:** nuovo `.claude/rules/security-avanzata.md` con le sezioni «Mappa ASVS 5.0 e livelli», «Progettazione sicura e fail closed», «Crittografia», «Mobile (sezione minima)», «Supply chain», «Scansione dinamica, segnalazioni e risposta agli incidenti» e «Test di sicurezza automatici», con gli stessi titoli. `security.md` v2.6 tiene «Dati e Segreti» e «Regola operativa». `core.md` v3.51 e `CLAUDE.md` elencano il nuovo modulo; profilo `mini`: `security-avanzata.md` in `rules-optional/`.
+
+**Dove:** `.claude/rules/security-avanzata.md` (nuovo), `.claude/rules/security.md`, `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga persa: confronto riga per riga con la versione precedente. Misura: `security.md` da 21,5 a 5,9 KB; `security-avanzata.md` 16,4 KB.
+
+**Note:** `CLAUDE.md` template (16,5 KB) è il prossimo peso fisso del profilo `mini`: i campi «chiesto, non presunto» vanno ridotti con i default per profilo (passo 3, dopo questo lavoro).
+
 ### Pull request, rilascio e skill in `git-avanzato.md`
 
 **Perché:** `git.md` (26 KB) si caricava in ogni sessione, anche per uno script che non apre PR né rilasci. Le sezioni su pull request, rilascio, skill del plugin ed esempio servono solo ai progetti con remoto e flusso di rilascio (standard e strutturato).
