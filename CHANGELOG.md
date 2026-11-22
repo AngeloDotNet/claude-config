@@ -4,6 +4,18 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Workflow esteso in `workflow.md`
+
+**Perché:** §6 di `core.md` pesava 12,5 KB, e circa 6 KB riguardano scelte di codice e di architettura che non servono a ogni passo. Si separa il minimo (regola inviolabile, verifica, git, piano, sessione, fine attività, problemi) dal resto.
+
+**Cosa:** nuovo `.claude/rules/workflow.md` con i punti 1–4, 6, 10, 12, 13, 17, 18, 20, 23 e la parte 15b (piano già scritto), con la stessa numerazione di §6, così i riferimenti «§6.N» restano validi. `core.md` v3.48 mantiene la regola inviolabile e i punti 5, 7, 8, 9, 11, 14, 15a, 15c, 15d, 16, 19, 21, 22, con un puntatore al workflow. `CLAUDE.md`: campo «Profilo» (default `strutturato`; `mini` sposta `workflow.md` in `rules-optional/`). `copia-regole` applica la regola del profilo.
+
+**Dove:** `.claude/rules/workflow.md` (nuovo), `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga di §6 persa: confronto riga per riga con la versione precedente. Misura: `core.md` da 34,1 a 29,1 KB; `workflow.md` 5,6 KB.
+
+**Note:** nel profilo `mini` `core.md` pesa ancora circa 29 KB, sopra il bersaglio di 15 KB del piano. Le sezioni da spostare sono §0b (3,3 KB), §4 (3,9 KB), §3 (2,2 KB) e §1–§2: da valutare nel passo successivo. `aggiorna-regole` non sa ancora di `workflow.md` (passo 4).
+
 ### Logging e osservabilità in un modulo a parte
 
 **Perché:** `core.md` si carica in ogni sessione, anche per uno script senza backend; il logging, lo shutdown e lo stack di osservabilità servono solo ai progetti con backend o Docker.
