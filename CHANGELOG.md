@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Skill accorpate: da 22 a 12
+**Perché:** molte skill di revisione ripetevano regole e `/code-review` o `/security-review`; ventidue comandi erano troppi da ricordare.
+**Cosa:** le nove revisioni tematiche (`accessi-api`, `dati-efcore`, `gdpr-dati`, `accessibilita-ui`, `colori-tema`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`) diventano `/kit:revisione <tema>` con una procedura per tema in `revisione/temi/`; `verifica-frontend` entra in `verifica` (`frontend.md`); `aggiorna-docs` entra in `buonasera` (`documentazione.md`). `modelli` resta invariato: ha un registro che `session-close` usa.
+**Dove:** `plugins/kit/skills/`, `docs/skill.md`, `README.md`, `plugins/kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.claude/rules/core.md` (v3.53: il rimando alla wiki non cita più `aggiorna-docs`).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 146/146. Le skill non sono state lanciate su un progetto di prova.
+**Note:** `/kit:sicurezza`, `/kit:gdpr-dati` e simili ora sono `/kit:revisione <tema>`; `/kit:verifica-frontend` è `/kit:verifica` su un frontend Angular.
+
 ### Profili nelle procedure di avvio, copia e aggiornamento
 **Perché:** le procedure non conoscevano ancora il profilo né i quattro moduli nuovi (`workflow.md`, `qualita.md`, `git-avanzato.md`, `security-avanzata.md`); la modalità solo Git perdeva le regole del piano e delle PR a cui `git.md` rimanda.
 **Cosa:** domanda 10 (profilo) in `avvio-progetto.md` §1, con il suo effetto sui moduli; tabella dei moduli e nota solo Git aggiornate; `copia-regole` chiede il profilo nel caso «No» e copia `git-avanzato.md` e `workflow.md` in solo Git; `aggiorna-regole` propone i moduli nuovi e controlla il posto nel profilo `mini`, senza spostare nulla senza ok.

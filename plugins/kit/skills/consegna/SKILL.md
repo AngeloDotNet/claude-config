@@ -15,9 +15,9 @@ Rispondi in italiano. Non modificare nessun file.
 4. Presenta il risultato in quattro gruppi: ok, manca, non verificata, non pertinente. Per ogni voce «manca» indica una riga di cosa fare; per ogni voce «non verificata» indica la skill del passo 5 che la verifica; l'elenco dei comandi da lanciare è al passo 6.
 5. Questa skill non esegue nulla. Se una voce non si può verificare senza eseguire qualcosa (per esempio build o test), mettila in «non verificata»: non segnarla come ok. La skill che la verifica eseguendola si ricava dai file del diff e di `git status`:
    - file `*.cs`, `*.csproj`, `*.props` o `*.sln`: `/kit:verifica` (backend .NET);
-   - file `*.ts`, `*.html`, `*.css`, `*.scss`, `angular.json` o `package.json`: `/kit:verifica-frontend` (Angular);
-   - il lavoro tocca autenticazione, autorizzazione, upload, URL esterni, query dinamiche o dati personali: `/kit:sicurezza`;
+   - file `*.ts`, `*.html`, `*.css`, `*.scss`, `angular.json` o `package.json`: `/kit:verifica` sul frontend Angular (`frontend.md`);
+   - il lavoro tocca autenticazione, autorizzazione, upload, URL esterni, query dinamiche o dati personali: `/kit:revisione sicurezza`;
    - `/code-review` sempre, per i difetti;
-   - dati personali: anche `/kit:gdpr-dati`, solo se il lavoro li riguarda davvero.
+   - dati personali: anche `/kit:revisione gdpr-dati`, solo se il lavoro li riguarda davvero.
 6. **Da lanciare.** Chiudi con un blocco «Da lanciare» che elenca, nell'ordine in cui conviene eseguirle, le sole skill del passo 5 che servono a questo lavoro, ognuna con una riga sul perché (per esempio «`/kit:verifica`: il diff tocca `*.cs`»). Se non serve nessuna, scrivilo. Non lanciarle tu: sono a lancio manuale dell'utente.
 7. Non dichiarare chiuso il compito: il giudizio finale resta all'utente.

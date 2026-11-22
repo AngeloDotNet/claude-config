@@ -1,10 +1,3 @@
----
-description: Costruisce o verifica la palette di un progetto con token semantici per i temi chiaro e scuro, e controlla il contrasto sui valori resi. Non modifica file. Si lancia solo su richiesta.
-model: sonnet
-argument-hint: [cartella-progetto]
-disable-model-invocation: true
-disallowed-tools: Edit Write NotebookEdit
----
 
 # Colori del tema
 

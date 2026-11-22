@@ -1,5 +1,5 @@
 ---
-description: Esegue il controllo di verifica di una soluzione .NET prima di dichiarare chiuso un lavoro: ripristino, formattazione, build in Release senza avvisi, using inutilizzati, test, pacchetti vulnerabili, modifiche al modello EF senza migrazione, compose valido e spazi bianchi. Riporta l'esito reale senza modificare file. Per il frontend vedi /kit:verifica-frontend. Si lancia solo su richiesta.
+description: Esegue il controllo di verifica di una soluzione .NET prima di dichiarare chiuso un lavoro: ripristino, formattazione, build in Release senza avvisi, using inutilizzati, test, pacchetti vulnerabili, modifiche al modello EF senza migrazione, compose valido e spazi bianchi. Riporta l'esito reale senza modificare file. Per un frontend Angular segue la procedura di frontend.md. Si lancia solo su richiesta.
 model: haiku
 argument-hint: [cartella-soluzione]
 disable-model-invocation: true
@@ -9,6 +9,8 @@ disallowed-tools: Edit Write NotebookEdit
 # Verifica della soluzione .NET
 
 Rispondi in italiano. Una sola domanda per messaggio.
+
+Se la cartella indicata è un frontend Angular (ha `package.json` e `angular.json`), non usare questa procedura: leggi `frontend.md` in questa cartella e segui quella.
 
 Questa skill esegue i controlli e riporta l'esito. Non corregge nulla: se un controllo fallisce, lo riporta con il dettaglio. Il ripristino dei pacchetti scrive nelle cartelle di build (`bin`, `obj`), ma non modifica il codice. I comandi sotto sono il default: se la tabella «Comandi» del `CLAUDE.md` ne indica di diversi, usa quelli. `<sln>` è il file della soluzione trovato al passo 1.
 
