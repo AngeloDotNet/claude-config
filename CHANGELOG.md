@@ -4,6 +4,14 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Rilascio 1.17.0
+
+**Modificato:** piani e problemi in issue GitHub al posto di `PIANO.md` e `CHECKLIST.md`; `gh` esteso a issue, sub-issue e commit autonomi, con PR, push, tag e rilasci al via dell'utente; gestione del repository vietata a Claude; cancellazione dei branch di lavoro solo dopo verifica della PR `MERGED`.
+
+**Aggiunto:** ADR 0001 con la mappa obbligo → profilo minimo.
+
+**Corretto:** nessuna correzione in questo rilascio.
+
 ### Piani e problemi in issue, `gh` esteso
 
 **Perché:** `PIANO.md` e `CHECKLIST.md` vivevano nel repository e si disallineavano dal lavoro reale. Ogni progetto ha un repository remoto su GitHub, quindi il piano è una issue padre con le sub-issue come passi, e i problemi sono issue. `gh` può ora fare il lavoro corrente (issue, sub-issue, commit, PR, tag, rilasci, branch) senza chiedere per ogni operazione, con il confine della gestione del repository, che resta all'utente.
