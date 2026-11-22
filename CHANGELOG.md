@@ -9,6 +9,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Cosa:** `copia-regole` scrive il campo «Profilo» del `CLAUDE.md` con il profilo scelto (nel caso «No»); se il campo è già dichiarato non lo cambia. Se il `CLAUDE.md` esiste, si tocca solo quella riga.
 **Dove:** `plugins/kit/skills/copia-regole/SKILL.md`.
 **Verifica:** `node --test plugins/kit/tests/*.test.mjs`. La skill non è stata rilanciata su una cartella di prova dopo la modifica.
+### Rilascio 2.0.0
+**Aggiunto:** profili `mini`, `standard` e `strutturato` dichiarati nel `CLAUDE.md`, con i default del profilo `mini`; `/kit:revisione <tema>`; moduli `workflow.md`, `qualita.md`, `git-avanzato.md`, `security-avanzata.md`; piani e problemi in issue GitHub (issue padre e sub-issue) al posto di `PIANO.md` e `CHECKLIST.md`.
+**Modificato:** `core.md` (v3.53) più leggero, con i moduli caricati solo quando servono; `gh` autorizzato per issue, sub-issue, PR e rilasci, con il via dell'utente per PR, push, tag e rilasci; `avvio-progetto`, `copia-regole` e `aggiorna-regole` chiedono e rispettano il profilo.
+**Corretto:** la cancellazione dei branch di lavoro avviene solo dopo la verifica dello stato `MERGED` della PR.
+**Sicurezza:** nessuna modifica alle regole di sicurezza; `security.md` diviso in `security.md` e `security-avanzata.md`, senza testo perso.
+**Breaking change:** rimossi o rinominati `/kit:sicurezza`, `/kit:gdpr-dati`, `/kit:verifica-frontend`, `/kit:aggiorna-docs`, `/kit:accessi-api`, `/kit:dati-efcore`, `/kit:accessibilita-ui`, `/kit:colori-tema`, `/kit:localizzazione`, `/kit:qualita-test`, `/kit:review-regole`. Usare `/kit:revisione <tema>` e `/kit:verifica`.
 
 ### Skill accorpate: da 22 a 12
 **Perché:** molte skill di revisione ripetevano regole e `/code-review` o `/security-review`; ventidue comandi erano troppi da ricordare.
@@ -110,8 +116,6 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Verifica:** nessuna build (regole e script del plugin). `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi.
 
 **Note:** la versione del plugin non è stata alzata: sarà una decisione separata. I progetti già avviati con `PIANO.md` lo migrano in issue quando `buonasera` lo chiede. `gh pr merge` è ora bloccato sempre, perché il merge resta all'utente.
-
-## 2026-11-22
 
 ### Mappa obbligo → profilo minimo (ADR 0001)
 
