@@ -10,7 +10,7 @@ disallowed-tools: Edit Write NotebookEdit
 Rispondi in italiano. Non modificare nessun file.
 
 1. Leggi la checklist di consegna in `.claude/rules/core.md`, sezione «0b. Checklist di consegna». Se il file manca, dillo e fermati.
-2. Raccogli il lavoro corrente in sola lettura: `git status --short`, `git diff --stat` e `git diff --cached --stat`, il branch corrente, `PIANO.md` se esiste, e l'esito dei test se sono stati eseguiti nella sessione.
+2. Raccogli il lavoro corrente in sola lettura: `git status --short`, `git diff --stat` e `git diff --cached --stat`, il branch corrente, le issue aperte della serie (con `gh`, se la riga gh del `CLAUDE.md` dice «sì»), e l'esito dei test se sono stati eseguiti nella sessione.
 3. Per ogni voce della checklist decidi: «ok» (verificata sul lavoro), «manca» (non fatta), «non verificata» (si può dire solo eseguendo qualcosa) o «non pertinente» (il progetto o il lavoro non la riguardano). Le voci «non pertinente» non si commentano una per una: si elencano solo nel gruppo del passo 4.
 4. Presenta il risultato in quattro gruppi: ok, manca, non verificata, non pertinente. Per ogni voce «manca» indica una riga di cosa fare; per ogni voce «non verificata» indica la skill del passo 5 che la verifica; l'elenco dei comandi da lanciare è al passo 6.
 5. Questa skill non esegue nulla. Se una voce non si può verificare senza eseguire qualcosa (per esempio build o test), mettila in «non verificata»: non segnarla come ok. La skill che la verifica eseguendola si ricava dai file del diff e di `git status`:
