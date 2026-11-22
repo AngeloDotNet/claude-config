@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Default del profilo `mini` nel `CLAUDE.md`
+**Perché:** il profilo `mini` deve evitare decine di domande di avvio; l'utente ha approvato i default per le voci reversibili.
+**Cosa:** riga «Default del profilo `mini`» in «Progetto» del `CLAUDE.md`; eccezione alla regola «chiedi» in `core.md` §6.5 (v3.52).
+**Dove:** `CLAUDE.md`, `.claude/rules/core.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 146/146.
+**Note:** il profilo `mini` pesa circa 67 KB di file sempre caricati; il limite di 15 KB del piano è stato abbandonato per decisione dell'utente.
+
 ### Sicurezza avanzata in `security-avanzata.md`
 
 **Perché:** `security.md` (21 KB) si caricava in ogni sessione. Per uno script o un tool interno bastano i principi che valgono sempre (segreti, log senza dati personali, security review quando serve); ASVS, progettazione, crittografia, mobile, supply chain, DAST e test automatici servono ai progetti standard e strutturati.
