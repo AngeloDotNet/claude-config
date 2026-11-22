@@ -15,12 +15,14 @@
 // lunghezza dell'oggetto restano regole scritte, non controllate dall'hook; git init non è bloccato (regola scritta).
 // git tag (creazione): solo con nome X.Y.Z (senza v) e dal branch main (git.md, «Rilascio»); il via
 // dell'utente non è verificabile dall'hook ed è una regola scritta. Sempre consentiti: git push (normale),
-// elenco e cancellazione dei tag. gh pr create/merge e gh release
+// elenco e cancellazione dei tag. gh issue create/edit/close/reopen/comment, gh pr create e gh release
 // create/delete/upload/edit passano solo se la GitHub CLI è installata sul PC: lo dice la riga
 // «GitHub CLI (gh) installata» nel CLAUDE.md della radice del repository (git.md), scritta una volta
 // per progetto dopo la domanda dell'utente. Fuori da un repository, vale il CLAUDE.md della cartella del comando.
-// Senza riga, o con riga non valida, PR e rilasci sono bloccati (fail closed).
-// Consentiti i comandi di sola lettura (git status/log/diff, git tag -l, gh pr view...).
+// Senza riga, o con riga non valida, queste operazioni sono bloccate (fail closed).
+// Sempre bloccati (git.md, «Integrazione GitHub»): gestione del repository (gh repo create/delete/edit/...,
+// gh secret, gh variable, gh ruleset, gh api in scrittura su impostazioni e accessi), gh pr merge e gh issue delete.
+// Consentiti i comandi di sola lettura (git status/log/diff, git tag -l, gh issue view, gh pr view...).
 // Il comando è cercato solo in posizione di comando: testo dentro virgolette, heredoc
 // o commenti non conta (es. git commit -m "docs: git push" passa). Fail-open: input
 // illeggibile o errore interno -> nessun blocco.
@@ -346,6 +348,14 @@ function analyzeGit(allArgs, cwd) {
   }
 }
 
+// Gestione del repository: mai di Claude (git.md, «Integrazione GitHub»). Blocco assoluto, senza gate.
+const GH_REPO_MANAGEMENT = new Set(["create", "delete", "edit", "archive", "unarchive", "rename", "transfer", "set-default"]);
+const GH_ALWAYS_BLOCKED_AREAS = new Set(["secret", "variable", "ruleset"]);
+// Impostazioni e accessi del repository via gh api: scritture su questi percorsi sono bloccate.
+const GH_API_SETTINGS = /\/(settings|collaborators|invitations|rulesets|branches\/[^/\s]+\/protection|hooks|secrets|variables|environments|pages|teams|actions\/permissions)(\/|$|\?)/;
+const GH_API_WRITE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
+
+/** Analisi di un comando gh: blocco immediato (stringa), operazione da gateare con la riga gh (oggetto), o null. */
 function analyzeGh(args, cwd) {
   const positional = [];
   for (let k = 0; k < args.length; k++) {
@@ -353,9 +363,23 @@ function analyzeGh(args, cwd) {
     else if (!isFlag(args[k])) positional.push(args[k].text);
   }
   const [area, action] = positional;
-  if (area === "pr" && (action === "create" || action === "merge")) return { text: `gh pr ${action}`, gate: "gh", dir: cwd };
-  if (area === "release" && ["create", "delete", "upload", "edit", "delete-asset"].includes(action))
-    return { text: `gh release ${action}`, gate: "gh", dir: cwd };
+  if (area === "repo" && GH_REPO_MANAGEMENT.has(action)) return `gh repo ${action} (gestione del repository: non di Claude, git.md)`;
+  if (GH_ALWAYS_BLOCKED_AREAS.has(area)) return `gh ${area} (impostazioni e segreti del repository: non di Claude, git.md)`;
+  if (area === "pr" && action === "merge") return "gh pr merge (il merge di PR resta all'utente, git.md)";
+  if (area === "issue" && action === "delete") return "gh issue delete (cancellazione: non di Claude, git.md)";
+  if (area === "api") {
+    // Scrittura: campi (-f, -F, ...) che fanno passare la richiesta a POST, oppure un metodo di scrittura esplicito.
+    const hasFields = args.some((t) => !t.quoted && ["-f", "-F", "--field", "--raw-field", "--input"].includes(t.text));
+    const methodIndex = args.findIndex((t) => !t.quoted && (t.text === "-X" || t.text === "--method"));
+    const method = methodIndex >= 0 ? (args[methodIndex + 1]?.text || "") : (args.find((t) => /^--method=/i.test(t.text))?.text.split("=")[1] || "");
+    const write = hasFields || GH_API_WRITE_METHODS.has(method.toUpperCase());
+    const target = args.find((t) => /repos\//.test(t.text));
+    if (write && target && GH_API_SETTINGS.test(target.text)) return "gh api in scrittura su impostazioni o accessi del repository (non di Claude, git.md)";
+    return null;
+  }
+  const gated = (area === "pr" && action === "create") || (area === "release" && ["create", "delete", "upload", "edit", "delete-asset"].includes(action)) ||
+    (area === "issue" && ["create", "edit", "close", "reopen", "comment"].includes(action));
+  if (gated) return { text: `gh ${area} ${action}`, gate: "gh", dir: cwd };
   return null;
 }
 
@@ -397,7 +421,7 @@ function check(command, cwd, depth = 0) {
       blockHint =
         "Chiedi all'utente, con UNA SOLA domanda, se su questo PC è installata la GitHub CLI (gh). Con la risposta scrivi nel " +
         "CLAUDE.md (sezione «Eccezioni alle regole globali») la riga «GitHub CLI (gh) installata: sì/no (AAAA-MM-GG)» (git.md). " +
-        "Senza gh installata, PR e rilasci li esegue l'utente.";
+        "Senza gh installata, issue, PR e rilasci li esegue l'utente.";
       return `${found.text} richiede la GitHub CLI, non ancora registrata per questo progetto (git.md, «Integrazione GitHub»)`;
     }
     return null;

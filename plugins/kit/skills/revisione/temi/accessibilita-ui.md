@@ -1,10 +1,3 @@
----
-description: Revisiona l'accessibilità di un'interfaccia web rispetto a WCAG 2.2 e propone le correzioni, senza modificare file: tastiera, focus, nomi accessibili, form e errori, annunci dinamici, contrasto e movimento. Riporta i problemi per gravità. Si lancia solo su richiesta.
-model: sonnet
-argument-hint: [cartella-o-componente]
-disable-model-invocation: true
-disallowed-tools: Edit Write NotebookEdit
----
 
 # Accessibilità dell'interfaccia
 

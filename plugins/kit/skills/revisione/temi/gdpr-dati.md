@@ -1,16 +1,9 @@
----
-description: Revisiona un progetto backend rispetto ai principi del GDPR: minimizzazione dei dati, conservazione (backup e log di audit compresi), log senza dati personali, errori senza dettagli sensibili, cifratura, consenso, diritti degli interessati e risposta a una violazione. Non è consulenza legale. Non modifica file. Si lancia solo su richiesta.
-model: sonnet
-argument-hint: [cartella-o-progetto]
-disable-model-invocation: true
-disallowed-tools: Edit Write NotebookEdit
----
 
 # Dati personali nel backend (GDPR)
 
 Rispondi in italiano. Una sola domanda per messaggio.
 
-Questa skill revisiona gli aspetti tecnici del trattamento dei dati personali nel backend. Non è consulenza legale: le basi giuridiche, la valutazione d'impatto e gli obblighi verso gli interessati si decidono con il titolare del trattamento. Le regole di base stanno in `security.md` («Dati e Segreti») e `core.md` §5.
+Questa skill revisiona gli aspetti tecnici del trattamento dei dati personali nel backend. Non è consulenza legale: le basi giuridiche, la valutazione d'impatto e gli obblighi verso gli interessati si decidono con il titolare del trattamento. Le regole di base stanno in `security.md` («Dati e Segreti») e `osservabilita.md`.
 
 1. **Mappa dei dati.** Individua i modelli e i campi che contengono dati personali (nome, email, indirizzo, identificativi, dati di pagamento, dati sanitari, geolocalizzazione). Se il progetto non lo dichiara, chiedi una sola domanda: quali categorie di dati personali tratta.
 2. **Minimizzazione.** Per ogni campo verifica che serva a una finalità dichiarata. I DTO di richiesta accettano solo i campi necessari, e le risposte non espongono campi che il chiamante non usa.
@@ -27,4 +20,4 @@ Questa skill revisiona gli aspetti tecnici del trattamento dei dati personali ne
 13. **Segreti.** Nessun segreto nel codice, nel repository o nelle immagini: solo variabili d'ambiente valorizzate da `.env` (con Docker, `docker.md`, «Configurazione e segreti»).
 14. **Esito.** Chiudi con un elenco per area (dati, API, log, conservazione, segreti, diritti), con il punto trovato, il file e la riga, e la gravità (bloccante, importante, suggerimento: `lavoro.md`, «Gravità dei rilievi»). Ricorda che l'esito tecnico non sostituisce il parere del titolare o di un consulente legale.
 
-Riferimenti: `security.md` («Dati e Segreti», con le voci «Log di sicurezza e allerta» e «Dati di test»; «Scansione dinamica, segnalazioni e risposta agli incidenti»); `frontend.md` §6; `security-backend.md` («Vulnerabilità applicative ricorrenti»; «Chiavi e password (.NET)», per il punto 7); `core.md` §5; `docker.md` (se attivo).
+Riferimenti: `security.md` («Dati e Segreti», con le voci «Log di sicurezza e allerta» e «Dati di test»; «Scansione dinamica, segnalazioni e risposta agli incidenti»); `frontend.md` §6; `security-backend.md` («Vulnerabilità applicative ricorrenti»; «Chiavi e password (.NET)», per il punto 7); `osservabilita.md`; `docker.md` (se attivo).

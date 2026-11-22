@@ -7,15 +7,15 @@
 ## Contesto e token
 - **Lettura mirata (PREFER):** file grandi si leggono a intervalli (`offset` e `limit`) o si cercano con `Grep`; non si rilegge un file appena modificato.
 - **Ricerche ampie a un subagent (opzionale, solo su richiesta):** Claude non lancia subagent di sua iniziativa; se l'utente lo chiede, o il `CLAUDE.md` del progetto lo prevede, una ricerca che tocca molti file o cartelle si delega a un subagent di sola lettura (`Explore`), che restituisce le conclusioni e non i file. Altrimenti si cerca direttamente con `Grep` e `Read` mirati, come sopra.
-- **Una attività, un contesto:** tra attività non collegate si suggerisce `/clear`; a fine attività vale il promemoria di `core.md` §6.19. Le conclusioni che servono dopo stanno in `PIANO.md`, non nella conversazione.
-- **`/clear` o `/compact` (PREFER):** `/clear` quando lo stato di ripartenza sta già su file (`PIANO.md`, `CHECKLIST.md`, modifiche non committate) o il lavoro successivo non è collegato; `/compact` quando il lavoro continua e nei file non c'è ancora tutto ciò che serve. Sono comandi interni: Claude li suggerisce e non li esegue.
-- **Plan mode:** utile per lavoro non piccolo e per analisi senza modifiche; il piano approvato si copia in `PIANO.md` (`core.md` §6.15).
+- **Una attività, un contesto:** tra attività non collegate si suggerisce `/clear`; a fine attività vale il promemoria di `core.md` §6.19. Le conclusioni che servono dopo stanno nella issue padre del piano, non nella conversazione.
+- **`/clear` o `/compact` (PREFER):** `/clear` quando lo stato di ripartenza sta già su file (issue aperte, modifiche non committate) o il lavoro successivo non è collegato; `/compact` quando il lavoro continua e nei file non c'è ancora tutto ciò che serve. Sono comandi interni: Claude li suggerisce e non li esegue.
+- **Plan mode:** utile per lavoro non piccolo e per analisi senza modifiche; il piano approvato si registra come issue padre con le sub-issue (`core.md` §6.15).
 
 ## Indagine di un difetto (MUST)
 1. Riprodurre prima: un test o un comando che fallisce, con l'errore così com'è.
 2. Un'ipotesi alla volta, verificata sul codice o sui log; niente correzioni "a tentativi".
 3. Correggere la causa, non il sintomo; un test di regressione (`core.md` §4). Mai disattivare o allentare un test per far passare la suite.
-4. Se la causa è fuori dall'ambito richiesto, riportarla e annotarla in `CHECKLIST.md` (`core.md` §6.22).
+4. Se la causa è fuori dall'ambito richiesto, riportarla e aprire una issue per il problema (`core.md` §6.22).
 
 ## Review prima della PR
 - **PREFER:** `/code-review` sulle modifiche prima di aprire la PR; `/security-review` per i temi sensibili (`security.md`, «Regola operativa»).

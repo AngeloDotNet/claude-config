@@ -1,4 +1,4 @@
-// Test dei hook di controllo di kit: guard-commands (git), guard-secrets, check-plan, plan-reminder.
+// Test dei hook di controllo di kit: guard-commands (git e gh), guard-secrets.
 // Ogni hook è eseguito come processo con l'input JSON su stdin, come fa Claude Code.
 // Eseguire con: node --test plugins/kit/tests/guards.test.mjs
 
@@ -25,16 +25,6 @@ const bash = (command) => run("guard-commands.mjs", { tool_input: { command }, c
 const secrets = (file_path, content) => run("guard-write.mjs", { tool_input: { file_path, content } });
 const editSecrets = (file_path, new_string) => run("guard-write.mjs", { tool_input: { file_path, old_string: "", new_string } });
 
-function withPlan(text, fn, name = "PIANO.md") {
-  const dir = mkdtempSync(path.join(os.tmpdir(), "kit-guards-"));
-  try {
-    const file = path.join(dir, name);
-    writeFileSync(file, text, "utf8");
-    return fn(file, dir);
-  } finally {
-    rmSync(dir, { recursive: true, force: true });
-  }
-}
 
 // --- git: messaggi di commit (Conventional Commits) ---
 
@@ -139,39 +129,3 @@ test("secrets: Edit e MultiEdit controllano il nuovo testo", () => {
   assert.equal(multi.code, 2);
 });
 
-// --- piano: esito di build e test sui passi spuntati ---
-
-test("plan: [x] senza esito di build e test segnalato", () => {
-  withPlan("- [x] 1. Modifica il parser\n", (file) => {
-    const r = run("check-write.mjs", { tool_input: { file_path: file } });
-    assert.equal(r.code, 2);
-    assert.match(r.err, /Modifica il parser/);
-  });
-});
-
-test("plan: [x] con build e test riportati passa", () => {
-  const text = "- [x] 1. Modifica il parser\n  Verifica: build senza errori, test 12/12 verdi\n- [ ] 2. Altro\n";
-  withPlan(text, (file) => {
-    assert.equal(run("check-write.mjs", { tool_input: { file_path: file } }).code, 0);
-  });
-});
-
-test("plan: passi aperti e file non PIANO.md ignorati", () => {
-  withPlan("- [ ] 1. Da fare\n", (file) => {
-    assert.equal(run("check-write.mjs", { tool_input: { file_path: file } }).code, 0);
-  });
-  withPlan("- [x] 1. Senza verifica\n", (file) => {
-    assert.equal(run("check-write.mjs", { tool_input: { file_path: file } }).code, 0);
-  }, "NOTE.md");
-});
-
-test("plan: promemoria di fine sessione solo con passi aperti", () => {
-  withPlan("- [ ] 1. Da fare\n- [x] 2. Fatto\n  Verifica: build ok, test ok\n", (_file, dir) => {
-    const r = run("session-close.mjs", { cwd: dir });
-    assert.equal(r.code, 0);
-    assert.match(r.out, /"systemMessage".*restano 1 passi aperti/);
-  });
-  withPlan("- [x] 1. Fatto\n  Verifica: build ok, test ok\n", (_file, dir) => {
-    assert.equal(run("session-close.mjs", { cwd: dir }).out, "");
-  });
-});

@@ -1,10 +1,3 @@
----
-description: Revisiona i test di un progetto o di un diff cercando test che danno falsa sicurezza, test fragili e duplicati, e propone come scrivere test xUnit parametrici e leggibili; controlla anche i test frontend (Vitest e Playwright) e le scorciatoie vietate (test saltati, EF InMemory, mock di DbContext). Non modifica file. Si lancia solo su richiesta.
-model: sonnet
-argument-hint: [cartella-o-file]
-disable-model-invocation: true
-disallowed-tools: Edit Write NotebookEdit
----
 
 # Qualità dei test
 

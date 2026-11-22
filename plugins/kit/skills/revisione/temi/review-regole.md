@@ -1,10 +1,3 @@
----
-description: Revisione del codice scritto contro le regole presenti in .claude/rules/ del progetto. È un'integrazione del code review integrato, non un suo sostituto. Non modifica file. Si lancia solo su richiesta.
-model: sonnet
-argument-hint: [percorso-o-branch]
-disable-model-invocation: true
-disallowed-tools: Edit Write NotebookEdit
----
 
 # Revisione del codice secondo le regole del progetto
 

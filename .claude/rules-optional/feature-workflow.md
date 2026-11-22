@@ -22,7 +22,7 @@ paths:
    - forma di DTO, validatori, servizio ed endpoint (nomi, gruppi, paginazione, risposte e chiavi di errore);
    - struttura di pagina, form e tabella del frontend, e stile dei test.
    Prima di scrivere codice Claude elenca all'utente quali convenzioni riprende dall'entità di riferimento e quali non si applicano alla nuova entità (es. niente soft delete); le deviazioni si segnalano e si motivano. Se non esiste ancora un'entità di riferimento, la prima entità del progetto si sviluppa con particolare cura, l'utente la approva e **diventa** l'entità di riferimento (Claude propone di registrarla nel `CLAUDE.md`).
-4. **Piano:** `PIANO.md` con un punto per fase (e, dentro le fasi grandi, un punto per commit), eseguito un punto alla volta con ok esplicito (`core.md` §6.15). Se l'utente ha già un piano di sviluppo, Claude lo verifica contro queste fasi: chiede conferma per i conflitti e per ogni fase o passo mancante (es. client rigenerato, test di isolamento, chiavi di traduzione), una domanda per volta e aggiungendo al piano solo dopo la risposta, come in `core.md` §6.15.
+4. **Piano:** piano come issue padre con una sub-issue per fase (e, dentro le fasi grandi, una sub-issue per commit), eseguito un punto alla volta con ok esplicito (`core.md` §6.15). Se l'utente ha già un piano di sviluppo, Claude lo verifica contro queste fasi: chiede conferma per i conflitti e per ogni fase o passo mancante (es. client rigenerato, test di isolamento, chiavi di traduzione), una domanda per volta e aggiungendo al piano solo dopo la risposta, come in `core.md` §6.15.
 
 ## 2. Fase 1 — Backend completo
 Ordine interno, ciascun passo che builda e passa i test:

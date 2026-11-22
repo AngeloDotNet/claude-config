@@ -1,9 +1,7 @@
 #!/usr/bin/env node
-// Hook Stop: unisce tre promemoria. Non bloccano la chiusura: mostrano solo un systemMessage
+// Hook Stop: unisce promemoria che non bloccano la chiusura: mostrano solo un systemMessage
 // all'utente. Stop scatta a ogni risposta di Claude (non solo a fine sessione), quindi i promemoria
 // tornano finché la situazione resta: non c'è uno stato per sessione.
-// - plan-reminder (core.md §6.15-16): se PIANO.md (root del progetto) ha passi con casella `[ ]` o
-//   `[~]`, lo segnala prima di chiudere.
 // - site-reminder (core.md §5b, lib/sito.mjs): se CHANGELOG.md o README.md sono modificati e il sito
 //   di documentazione della voce `sito` non ha modifiche, ricorda di aggiornarlo.
 // - check-close (core.md §5b, §0b, frontend.md §10): sulle modifiche non ancora committate ricorda
@@ -37,23 +35,6 @@ function modelChangeNote(input, cwd) {
   state[markerKey] = sessionId;
   saveState(state);
   return `Cambio di modello nella sessione.\n${modelLog(rows)}\nDettagli con /kit:modelli.`;
-}
-
-// --- plan-reminder ---
-
-const OPEN_STEP = /^\s*(?:[-*]|\d+\.)\s+\[[ ~]\]/;
-
-/** Numero di passi con casella aperta (`[ ]` o `[~]`). */
-function openSteps(text) {
-  return text.split(/\r?\n/).filter((line) => OPEN_STEP.test(line)).length;
-}
-
-/** Promemoria del piano, o null se non ci sono passi aperti o PIANO.md manca. */
-function planNote(cwd) {
-  const file = path.join(cwd, "PIANO.md");
-  if (!existsSync(file)) return null;
-  const open = openSteps(readFileSync(file, "utf8"));
-  return open > 0 ? `PIANO.md: restano ${open} passi aperti. Prima di chiudere aggiorna le caselle o annota dove riprendere.` : null;
 }
 
 // --- check-close ---
@@ -135,8 +116,6 @@ process.stdin.on("end", () => {
     const input = JSON.parse(raw);
     const cwd = typeof input?.cwd === "string" && input.cwd ? input.cwd : process.cwd();
     const messages = [];
-    const plan = attempt(() => planNote(cwd), null);
-    if (plan) messages.push(plan);
     const close = attempt(() => closeNotes(cwd), []);
     if (close.length) messages.push(`Promemoria prima di chiudere: ${close.join("; ")}.`);
     const site = attempt(() => siteReminder(cwd, readConfig()), null);

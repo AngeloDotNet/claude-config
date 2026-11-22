@@ -2,6 +2,123 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-22
+
+### Skill accorpate: da 22 a 12
+**Perché:** molte skill di revisione ripetevano regole e `/code-review` o `/security-review`; ventidue comandi erano troppi da ricordare.
+**Cosa:** le nove revisioni tematiche (`accessi-api`, `dati-efcore`, `gdpr-dati`, `accessibilita-ui`, `colori-tema`, `localizzazione`, `qualita-test`, `review-regole`, `sicurezza`) diventano `/kit:revisione <tema>` con una procedura per tema in `revisione/temi/`; `verifica-frontend` entra in `verifica` (`frontend.md`); `aggiorna-docs` entra in `buonasera` (`documentazione.md`). `modelli` resta invariato: ha un registro che `session-close` usa.
+**Dove:** `plugins/kit/skills/`, `docs/skill.md`, `README.md`, `plugins/kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `.claude/rules/core.md` (v3.53: il rimando alla wiki non cita più `aggiorna-docs`).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 146/146. Le skill non sono state lanciate su un progetto di prova.
+**Note:** `/kit:sicurezza`, `/kit:gdpr-dati` e simili ora sono `/kit:revisione <tema>`; `/kit:verifica-frontend` è `/kit:verifica` su un frontend Angular.
+
+### Profili nelle procedure di avvio, copia e aggiornamento
+**Perché:** le procedure non conoscevano ancora il profilo né i quattro moduli nuovi (`workflow.md`, `qualita.md`, `git-avanzato.md`, `security-avanzata.md`); la modalità solo Git perdeva le regole del piano e delle PR a cui `git.md` rimanda.
+**Cosa:** domanda 10 (profilo) in `avvio-progetto.md` §1, con il suo effetto sui moduli; tabella dei moduli e nota solo Git aggiornate; `copia-regole` chiede il profilo nel caso «No» e copia `git-avanzato.md` e `workflow.md` in solo Git; `aggiorna-regole` propone i moduli nuovi e controlla il posto nel profilo `mini`, senza spostare nulla senza ok.
+**Dove:** `_template/avvio-progetto.md`, `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 146/146. Le skill non sono state lanciate su un progetto di prova.
+**Note:** in solo Git si copiano anche `workflow.md` e `git-avanzato.md` (scelta del kit, reversibile).
+
+### Default del profilo `mini` nel `CLAUDE.md`
+**Perché:** il profilo `mini` deve evitare decine di domande di avvio; l'utente ha approvato i default per le voci reversibili.
+**Cosa:** riga «Default del profilo `mini`» in «Progetto» del `CLAUDE.md`; eccezione alla regola «chiedi» in `core.md` §6.5 (v3.52).
+**Dove:** `CLAUDE.md`, `.claude/rules/core.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 146/146.
+**Note:** il profilo `mini` pesa circa 67 KB di file sempre caricati; il limite di 15 KB del piano è stato abbandonato per decisione dell'utente.
+
+### Sicurezza avanzata in `security-avanzata.md`
+
+**Perché:** `security.md` (21 KB) si caricava in ogni sessione. Per uno script o un tool interno bastano i principi che valgono sempre (segreti, log senza dati personali, security review quando serve); ASVS, progettazione, crittografia, mobile, supply chain, DAST e test automatici servono ai progetti standard e strutturati.
+
+**Cosa:** nuovo `.claude/rules/security-avanzata.md` con le sezioni «Mappa ASVS 5.0 e livelli», «Progettazione sicura e fail closed», «Crittografia», «Mobile (sezione minima)», «Supply chain», «Scansione dinamica, segnalazioni e risposta agli incidenti» e «Test di sicurezza automatici», con gli stessi titoli. `security.md` v2.6 tiene «Dati e Segreti» e «Regola operativa». `core.md` v3.51 e `CLAUDE.md` elencano il nuovo modulo; profilo `mini`: `security-avanzata.md` in `rules-optional/`.
+
+**Dove:** `.claude/rules/security-avanzata.md` (nuovo), `.claude/rules/security.md`, `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga persa: confronto riga per riga con la versione precedente. Misura: `security.md` da 21,5 a 5,9 KB; `security-avanzata.md` 16,4 KB.
+
+**Note:** `CLAUDE.md` template (16,5 KB) è il prossimo peso fisso del profilo `mini`: i campi «chiesto, non presunto» vanno ridotti con i default per profilo (passo 3, dopo questo lavoro).
+
+### Pull request, rilascio e skill in `git-avanzato.md`
+
+**Perché:** `git.md` (26 KB) si caricava in ogni sessione, anche per uno script che non apre PR né rilasci. Le sezioni su pull request, rilascio, skill del plugin ed esempio servono solo ai progetti con remoto e flusso di rilascio (standard e strutturato).
+
+**Cosa:** nuovo `.claude/rules/git-avanzato.md` con le sezioni «Pull Request», «Rilascio», «Skill del plugin `kit` per commit e PR» ed «Esempio di riferimento», con gli stessi titoli. `git.md` v2.1 mantiene integrazione GitHub, branch, Conventional Commits, granularità, commit multipli, repository e hook, cosa non entra mai, sicurezza della cronologia, con un puntatore alle sezioni spostate. Profilo `mini`: `git-avanzato.md` in `rules-optional/`. `core.md` v3.50 elenca il nuovo modulo. `CLAUDE.md` e `copia-regole` aggiornati.
+
+**Dove:** `.claude/rules/git-avanzato.md` (nuovo), `.claude/rules/git.md`, `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga persa: confronto riga per riga con la versione precedente. Misura: `git.md` da 26,2 a 17,8 KB; `git-avanzato.md` 9,0 KB.
+
+**Note:** `git.md` resta sopra i 17 KB perché contiene l'integrazione GitHub e i branch, che servono a ogni progetto. `security.md` (21 KB) è la prossima decisione.
+
+### Checklist e test in `qualita.md`
+
+**Perché:** nel profilo `mini` (script, tool interno, prototipo) `core.md` caricava ancora circa 29 KB, con la checklist di consegna e le regole di test, che per uno script senza test pesano poco.
+
+**Cosa:** nuovo `.claude/rules/qualita.md` con §0b (checklist di consegna) e §4 (test e qualità) di `core.md`, con la stessa numerazione. `core.md` v3.49 mantiene un puntatore. Il profilo `mini` sposta `qualita.md` in `rules-optional/`, insieme a `workflow.md`. `CLAUDE.md` e `copia-regole` aggiornati.
+
+**Dove:** `.claude/rules/qualita.md` (nuovo), `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga di §0b e §4 persa: confronto riga per riga. Misura: `core.md` da 29,1 a 22,1 KB.
+
+**Note:** i messaggi dei hook che citano «core.md §4» o «§0b» restano validi grazie al puntatore. `core.md` profilo `mini` ora pesa circa 22 KB, contro il bersaglio di 15 KB: le sezioni rimaste da valutare sono §3, §1–§2 e §5b (documentazione).
+
+### Workflow esteso in `workflow.md`
+
+**Perché:** §6 di `core.md` pesava 12,5 KB, e circa 6 KB riguardano scelte di codice e di architettura che non servono a ogni passo. Si separa il minimo (regola inviolabile, verifica, git, piano, sessione, fine attività, problemi) dal resto.
+
+**Cosa:** nuovo `.claude/rules/workflow.md` con i punti 1–4, 6, 10, 12, 13, 17, 18, 20, 23 e la parte 15b (piano già scritto), con la stessa numerazione di §6, così i riferimenti «§6.N» restano validi. `core.md` v3.48 mantiene la regola inviolabile e i punti 5, 7, 8, 9, 11, 14, 15a, 15c, 15d, 16, 19, 21, 22, con un puntatore al workflow. `CLAUDE.md`: campo «Profilo» (default `strutturato`; `mini` sposta `workflow.md` in `rules-optional/`). `copia-regole` applica la regola del profilo.
+
+**Dove:** `.claude/rules/workflow.md` (nuovo), `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga di §6 persa: confronto riga per riga con la versione precedente. Misura: `core.md` da 34,1 a 29,1 KB; `workflow.md` 5,6 KB.
+
+**Note:** nel profilo `mini` `core.md` pesa ancora circa 29 KB, sopra il bersaglio di 15 KB del piano. Le sezioni da spostare sono §0b (3,3 KB), §4 (3,9 KB), §3 (2,2 KB) e §1–§2: da valutare nel passo successivo. `aggiorna-regole` non sa ancora di `workflow.md` (passo 4).
+
+### Logging e osservabilità in un modulo a parte
+
+**Perché:** `core.md` si carica in ogni sessione, anche per uno script senza backend; il logging, lo shutdown e lo stack di osservabilità servono solo ai progetti con backend o Docker.
+
+**Cosa:** nuovo `.claude/rules/osservabilita.md` (`paths:` su `.cs`, `.csproj`, `.props`, Dockerfile, compose e `observability/`), con il contenuto di `core.md` §5 sul logging, shutdown, più container, OpenTelemetry e stack. `core.md` v3.47: §5 diventa «Operatività e CI» (restano CI/CD e Git). Riferimenti aggiornati in `backend.md`, `frontend.md`, `security.md`, `docker.md`, `CLAUDE.md`, template di avvio, ADR 0001, skill `copia-regole`, `aggiorna-regole`, `gdpr-dati` e nel commento di `check-write.mjs`.
+
+**Dove:** `.claude/rules/core.md`, `.claude/rules/osservabilita.md` (nuovo), `.claude/rules/backend.md`, `.claude/rules/frontend.md`, `.claude/rules/security.md`, `.claude/rules-optional/docker.md`, `CLAUDE.md`, `_template/avvio-progetto.md`, `docs/adr/0001-profili.md`, `plugins/kit/scripts/check-write.mjs`, `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `plugins/kit/skills/gdpr-dati/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Misura: `core.md` da 37,4 KB a 34,1 KB sempre caricati; `osservabilita.md` (4,1 KB) solo sui file backend e Docker.
+
+**Note:** §5b (documentazione) resta in `core.md`: va applicato a ogni passo che cambia codice. La sezione più pesante è §6 (12,5 KB): da valutare a parte.
+
+### Rilascio 1.17.0
+
+**Modificato:** piani e problemi in issue GitHub al posto di `PIANO.md` e `CHECKLIST.md`; `gh` esteso a issue, sub-issue e commit autonomi, con PR, push, tag e rilasci al via dell'utente; gestione del repository vietata a Claude; cancellazione dei branch di lavoro solo dopo verifica della PR `MERGED`.
+
+**Aggiunto:** ADR 0001 con la mappa obbligo → profilo minimo.
+
+**Corretto:** nessuna correzione in questo rilascio.
+
+### Piani e problemi in issue, `gh` esteso
+
+**Perché:** `PIANO.md` e `CHECKLIST.md` vivevano nel repository e si disallineavano dal lavoro reale. Ogni progetto ha un repository remoto su GitHub, quindi il piano è una issue padre con le sub-issue come passi, e i problemi sono issue. `gh` può ora fare il lavoro corrente (issue, sub-issue, commit, PR, tag, rilasci, branch) senza chiedere per ogni operazione, con il confine della gestione del repository, che resta all'utente.
+
+**Cosa:** `git.md` v2.0 (ambito di `gh`, cancellazione dei branch dopo verifica `MERGED`, un commit alla volta senza ok). `core.md` v3.46 (§0b, §5c, §6.15, §6.16, §6.20, §6.22: piano e problemi in issue). Hook: rimossi `check-plan` e `plan-reminder`; `guard-commands` gate per `gh issue`, blocco di `gh pr merge`, `gh repo` in scrittura, `gh secret`, `gh variable`, `gh ruleset` e `gh api` in scrittura su impostazioni. Skill: `buongiorno`, `buonasera`, `commit-passo`, `pr-main`, `avvia-progetto`, `consegna`, `copia-regole`, `pr-develop`. Eliminato `_template/CHECKLIST.md`.
+
+**Dove:** `.claude/rules/git.md`, `.claude/rules/core.md`, `.claude/rules/lavoro.md`, `.claude/rules/frontend.md`, `.claude/rules/backend-architecture.md`, `.claude/rules-optional/feature-workflow.md`, `_template/avvio-progetto.md`, `CLAUDE.md`, `plugins/kit/scripts/` (`check-write`, `session-close`, `prompt-start`, `guard-commands`), `plugins/kit/skills/`, `plugins/kit/tests/`, `plugins/kit/.claude-plugin/plugin.json`, `README.md`, `docs/skill.md`.
+
+**Verifica:** nessuna build (regole e script del plugin). `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi.
+
+**Note:** la versione del plugin non è stata alzata: sarà una decisione separata. I progetti già avviati con `PIANO.md` lo migrano in issue quando `buonasera` lo chiede. `gh pr merge` è ora bloccato sempre, perché il merge resta all'utente.
+
+## 2026-11-22
+
+### Mappa obbligo → profilo minimo (ADR 0001)
+
+**Perché:** le regole sono pensate per un progetto grande e applicate uguali a uno script interno, con circa 105 KB caricati in ogni sessione. Serve dichiarare il profilo del progetto e applicare solo gli obblighi che servono.
+
+**Cosa:** nuovo `docs/adr/0001-profili.md` con i tre profili (mini, standard, strutturato), la regola «il profilo fissa il minimo, la funzionalità fa scattare l'obbligo» e la tabella obbligo → profilo minimo. Stato: proposta, in attesa della decisione sulla deroga alla regola inviolabile.
+
+**Dove:** `docs/adr/0001-profili.md` (nuovo). Nessuna regola modificata in questo passo.
+
+**Verifica:** documento, nessuna build. `node --test plugins/kit/tests/*.test.mjs`: 148/148 verdi.
+
+**Note:** il passo 3 del piano spezzerà `core.md` e userà questa tabella. Il campo `Profilo:` nel `CLAUDE.md` non è ancora stato aggiunto.
+
 ## 2026-11-17
 
 ### Unit test per livello in Clean Architecture
