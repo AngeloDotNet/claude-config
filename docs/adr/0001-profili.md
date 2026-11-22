@@ -20,7 +20,7 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Nessun segreto nel repository, valori reali da variabili d'ambiente | `security.md`, «Dati e Segreti» | mini |
 | Build e test verdi prima di dichiarare chiuso un passo | `core.md` §6.7, §6.21 | mini |
 | Dipendenze gratuite con licenza permissiva; lock file committato | `core.md` §3 | mini |
-| Log tramite `ILogger`, nessun dato personale nei log | `core.md` §5 | mini |
+| Log tramite `ILogger`, nessun dato personale nei log | `osservabilita.md` | mini |
 | `CHANGELOG.md` aggiornato a ogni rilascio; `README.md` minimo | `core.md` §5b | mini |
 | Piano (`PIANO.md`) per il lavoro non piccolo | `core.md` §6.15 | standard (sotto soglia: nessun piano) |
 | `CHECKLIST.md` per i problemi trovati lavorando | `core.md` §6.22 | standard |
@@ -40,7 +40,7 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Utenti del database separati e connessione cifrata | `backend-app.md` §4.4 | strutturato |
 | Integration test su database reale di prova | `backend-app.md` §4.5 | strutturato |
 | Repository, Specification, Clean Architecture | `backend-architecture.md` §2b–§2c | strutturato (default: no) |
-| Osservabilità OpenTelemetry, Prometheus, Grafana | `core.md` §5 | strutturato |
+| Osservabilità OpenTelemetry, Prometheus, Grafana | `osservabilita.md` | strutturato |
 | Rate limit, timeout, `pageSize` massimo | `security-backend.md`, «Abuso di risorse» | strutturato |
 
 ## Conseguenze

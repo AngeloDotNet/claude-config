@@ -4,6 +4,18 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Logging e osservabilità in un modulo a parte
+
+**Perché:** `core.md` si carica in ogni sessione, anche per uno script senza backend; il logging, lo shutdown e lo stack di osservabilità servono solo ai progetti con backend o Docker.
+
+**Cosa:** nuovo `.claude/rules/osservabilita.md` (`paths:` su `.cs`, `.csproj`, `.props`, Dockerfile, compose e `observability/`), con il contenuto di `core.md` §5 sul logging, shutdown, più container, OpenTelemetry e stack. `core.md` v3.47: §5 diventa «Operatività e CI» (restano CI/CD e Git). Riferimenti aggiornati in `backend.md`, `frontend.md`, `security.md`, `docker.md`, `CLAUDE.md`, template di avvio, ADR 0001, skill `copia-regole`, `aggiorna-regole`, `gdpr-dati` e nel commento di `check-write.mjs`.
+
+**Dove:** `.claude/rules/core.md`, `.claude/rules/osservabilita.md` (nuovo), `.claude/rules/backend.md`, `.claude/rules/frontend.md`, `.claude/rules/security.md`, `.claude/rules-optional/docker.md`, `CLAUDE.md`, `_template/avvio-progetto.md`, `docs/adr/0001-profili.md`, `plugins/kit/scripts/check-write.mjs`, `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `plugins/kit/skills/gdpr-dati/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Misura: `core.md` da 37,4 KB a 34,1 KB sempre caricati; `osservabilita.md` (4,1 KB) solo sui file backend e Docker.
+
+**Note:** §5b (documentazione) resta in `core.md`: va applicato a ogni passo che cambia codice. La sezione più pesante è §6 (12,5 KB): da valutare a parte.
+
 ### Rilascio 1.17.0
 
 **Modificato:** piani e problemi in issue GitHub al posto di `PIANO.md` e `CHECKLIST.md`; `gh` esteso a issue, sub-issue e commit autonomi, con PR, push, tag e rilasci al via dell'utente; gestione del repository vietata a Claude; cancellazione dei branch di lavoro solo dopo verifica della PR `MERGED`.

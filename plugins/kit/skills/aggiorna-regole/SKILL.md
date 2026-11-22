@@ -12,7 +12,7 @@ Rispondi in italiano. Una sola domanda per messaggio. Il template è la cartella
 1. Se la variabile non è impostata o la cartella non contiene `.claude/rules/core.md`, dillo e fermati.
 2. Progetto: se è stato passato un argomento, è quello; altrimenti usa la cartella corrente se è un repository git, ha `.claude/rules/` e non coincide con il template (dillo in una riga e prosegui); altrimenti chiedi il percorso con una sola domanda. Verifica che esista e che non coincida con il template.
 3. Se il progetto non ha `.claude/rules/`, fermati e suggerisci `/kit:copia-regole`.
-4. Se il progetto ha `backend.md` ma non `backend-architecture.md` o `backend-app.md`, proponi di aggiungerli (sono tre moduli sempre insieme), con conferma.
+4. Se il progetto ha `backend.md` ma non `backend-architecture.md` o `backend-app.md`, proponi di aggiungerli (sono tre moduli sempre insieme), con conferma. Se manca `osservabilita.md`, proponi di aggiungere anche quello.
 5. Confronta ogni modulo del template (`.claude/rules/` e `.claude/rules-optional/`) con il file del progetto, cercato in `rules/` e poi in `rules-optional/`:
    - se è uguale, non fare nulla;
    - se è diverso, leggi la riga `> Versione x.y — ultima revisione: AAAA-MM-GG` in testa a entrambi i file e mostra il riassunto delle differenze con le due versioni; chiedi conferma prima di sovrascrivere, con una sola domanda; il vecchio file va salvato accanto come `<nome>.bak`. Se la versione (o, a parità, la data) del file del progetto è **più recente** di quella del template, o la riga manca in uno dei due, dillo esplicitamente nella domanda e raccomanda di non sovrascrivere: il file del progetto potrebbe avere modifiche proprie;

@@ -3,7 +3,7 @@
 // - check-quality (docker.md, core.md §3, frontend.md, core.md §0b): avvisi non bloccanti su Docker
 //   (tag `latest` o assente, porte host di database e broker), dipendenze (range `*`, `latest`, `[`)
 //   e promemoria di audit, frontend (`any`, `innerHTML`, `bypassSecurityTrust*`, colori esadecimali).
-// - check-practice (core.md §4, §5, §5b; security.md; backend-architecture.md §2c): avvisi non bloccanti
+// - check-practice (core.md §4, §5b; osservabilita.md; security.md; backend-architecture.md §2c): avvisi non bloccanti
 //   su scrittura in blocco, soppressioni, attese arbitrarie nei test, NoWarn di progetto, AllowAnonymous, Regex senza timeout, log diretti, membri
 //   pubblici senza ///, file di servizio nuovi senza test. Attivo solo nei progetti con il kit.
 // Gli avvisi di check-quality e check-practice escono in un unico JSON (systemMessage e
@@ -147,7 +147,7 @@ const PRACTICE_RULES = [
     files: /\.cs$/i,
     exceptTests: true,
     re: /\bConsole\.Write(?:Line)?\s*\(/,
-    why: "Console nel backend (core.md §5: logging tramite ILogger)",
+    why: "Console nel backend (osservabilita.md: logging tramite ILogger)",
   },
 ];
 

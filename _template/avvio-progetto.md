@@ -77,8 +77,8 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | CSP della SPA statica | «CSP della SPA statica» | `security-backend.md`, «Protezione dell'API» |
 | Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security.md`, «Log di sicurezza e allerta» |
 | Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security.md`, «Supply chain» |
-| Logging (provider, sink, formato, livelli) | «Logging» | `core.md` §5 |
-| Osservabilità | «Osservabilità» | `core.md` §5 |
+| Logging (provider, sink, formato, livelli) | «Logging» | `osservabilita.md` |
+| Osservabilità | «Osservabilità» | `osservabilita.md` |
 | Cache | «Cache» | `backend-infra.md` |
 | File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend.md` §2 e §5, moduli opzionali |
 | Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security.md` |
@@ -94,7 +94,7 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 |---|---|
 | `core.md` | sempre |
 | `git.md` | sempre |
-| `backend.md`, `backend-architecture.md`, `backend-app.md` | solo API o fullstack (i tre moduli backend vanno sempre insieme) |
+| `backend.md`, `backend-architecture.md`, `backend-app.md`, `osservabilita.md` | solo API o fullstack (i tre moduli backend vanno sempre insieme; `osservabilita.md` si copia con il backend) |
 | `frontend.md` | solo frontend o fullstack, con frontend Angular (non con Blazor) |
 | `feature-workflow.md` | **solo fullstack** e solo se l'utente ha risposto sì alla domanda 8 (anche per la migrazione Blazor → Angular, §3d); mai in solo API, solo frontend o solo Git. Sta in `rules-optional/` |
 | `backend-email.md` | **non all'avvio**: si attiva quando il progetto deve inviare email (§4, "Aggiunta di un modulo"). Sta in `rules-optional/` |
@@ -106,7 +106,7 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 
 **Modalità solo Git:** restano soltanto `core.md` (che `git.md` richiede), `lavoro.md` e `git.md`; né i moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`), né `frontend.md`, né `feature-workflow.md`, né `security.md`, né `security-backend.md`, né `security-frontend.md`, né `docker.md`. Le sezioni di `core.md` che riguardano moduli non inclusi non si applicano. Il `CLAUDE.md` contiene solo le sezioni "Regole", "Progetto", "Git" ed "Eccezioni alle regole globali"; le altre (scelte architetturali, nomi e struttura, comandi, operatività) si aggiungono se in seguito si aggiungono i moduli. Ogni altro modulo si può aggiungere dopo (§4, "Aggiunta di un modulo"). Se la domanda 2 (sicurezza) ha risposta sì, quel modulo resta comunque.
 
-I moduli non scelti sono fuori ambito: i rimandi che li citano (es. "vedi anche `security.md`") non si applicano. Se in seguito l'utente li vuole, si aggiungono con la stessa procedura. I tre moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`) si spostano, si copiano o si aggiungono sempre insieme.
+I moduli non scelti sono fuori ambito: i rimandi che li citano (es. "vedi anche `security.md`") non si applicano. Se in seguito l'utente li vuole, si aggiungono con la stessa procedura. I tre moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`) si spostano, si copiano o si aggiungono sempre insieme, con `osservabilita.md`.
 
 ## 2b. Piano di avvio (prima di scrivere nel progetto)
 Dopo le domande del §1 (e, per un progetto esistente, dopo le ispezioni in sola lettura dei §3b e §3c) e **prima di eliminare, spostare o copiare qualunque modulo o creare qualunque file**, Claude redige il piano dell'avvio e lo registra come **issue padre** sul repository remoto, con le sub-issue come passi. Il progetto deve avere il repository remoto prima di questo passo: se manca, Claude si ferma e chiede all'utente di crearlo (creare il repository è a cura dell'utente). Il `core.md` non è ancora stato applicato al progetto, quindi la regola vale qui per esplicito richiamo del suo §6 punto 15. Il piano elenca: risposte alle domande, moduli da tenere, eliminare o attivare, `CLAUDE.md` da compilare, eventuali deroghe e decisioni aperte, passi ordinati come sub-issue. Si procede poi **un punto alla volta**, con l'ok esplicito dell'utente a fine di ogni punto (come da `core.md` §6.15). Se esiste già una issue padre di avvio aperta, Claude chiede se riprenderla o sostituirla. Nessun file di piano viene creato nel repository.
