@@ -1,5 +1,5 @@
 // Test dei hook di inizio messaggio e di inizio sessione: ask-one-question (promemoria),
-// limit-one-question (una domanda per chiamata) e session-plan (PIANO.md nel contesto).
+// limit-one-question (una domanda per chiamata).
 // Usano cartelle temporanee e una home finta: non toccano ~/.claude.
 // Eseguire con: node --test plugins/kit/tests/prompt-start.test.mjs
 
