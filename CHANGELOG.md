@@ -4,6 +4,18 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-22
 
+### Pull request, rilascio e skill in `git-avanzato.md`
+
+**Perché:** `git.md` (26 KB) si caricava in ogni sessione, anche per uno script che non apre PR né rilasci. Le sezioni su pull request, rilascio, skill del plugin ed esempio servono solo ai progetti con remoto e flusso di rilascio (standard e strutturato).
+
+**Cosa:** nuovo `.claude/rules/git-avanzato.md` con le sezioni «Pull Request», «Rilascio», «Skill del plugin `kit` per commit e PR» ed «Esempio di riferimento», con gli stessi titoli. `git.md` v2.1 mantiene integrazione GitHub, branch, Conventional Commits, granularità, commit multipli, repository e hook, cosa non entra mai, sicurezza della cronologia, con un puntatore alle sezioni spostate. Profilo `mini`: `git-avanzato.md` in `rules-optional/`. `core.md` v3.50 elenca il nuovo modulo. `CLAUDE.md` e `copia-regole` aggiornati.
+
+**Dove:** `.claude/rules/git-avanzato.md` (nuovo), `.claude/rules/git.md`, `.claude/rules/core.md`, `CLAUDE.md`, `plugins/kit/skills/copia-regole/SKILL.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 146/146 verdi. Nessuna riga persa: confronto riga per riga con la versione precedente. Misura: `git.md` da 26,2 a 17,8 KB; `git-avanzato.md` 9,0 KB.
+
+**Note:** `git.md` resta sopra i 17 KB perché contiene l'integrazione GitHub e i branch, che servono a ogni progetto. `security.md` (21 KB) è la prossima decisione.
+
 ### Checklist e test in `qualita.md`
 
 **Perché:** nel profilo `mini` (script, tool interno, prototipo) `core.md` caricava ancora circa 29 KB, con la checklist di consegna e le regole di test, che per uno script senza test pesano poco.
