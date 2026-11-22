@@ -20,7 +20,7 @@ Il primo gesto è stabilire se il progetto è **nuovo** o **esistente** (domanda
 ### A. Progetto nuovo (cartella con la copia del template)
 Le regole sono il punto di partenza: si applicano per intero, senza deroghe preesistenti.
 1. Domande del §1 (una per volta, ciascuna con risposta a scelta, attendendo la risposta prima della successiva).
-2. `PIANO.md` di avvio (§2b), ok dell'utente a ogni punto.
+2. Issue padre di avvio (§2b), con le sub-issue come passi; ok dell'utente a ogni punto.
 3. Pulizia della copia del template (§2): spostamento dei moduli non scelti da `.claude/rules/` a `.claude/rules-optional/`, attivazione di quelli opzionali confermati, compilazione del `CLAUDE.md` (§3), rimozione di tutto il materiale del template (§3, punto 5: `_template/`, `.claude-plugin/`, `plugins/`): le scelte "chiesto, non presunto" si chiedono quando diventano rilevanti.
 4. Verifica con `/context` e, se il repository esiste, commit `chore(rules)` su branch confermato. Se git non è inizializzato Claude lo segnala, non esegue `git init`.
 5. Da qui si sviluppa seguendo le regole; nessuna ispezione del codice (non c'è).
@@ -29,8 +29,8 @@ Le regole sono il punto di partenza: si applicano per intero, senza deroghe pree
 Le regole si **integrano** senza stravolgere ciò che c'è: Claude rileva, mostra, chiede; non presume e non adegua il codice da solo.
 1. Domande del §1, una per volta (tipo, sicurezza, stato = esistente; tecnologia frontend, mobile e ORM si **rilevano** dal codice e si fanno confermare, non si chiedono da zero).
 2. **Ispezioni in sola lettura:** git e cronologia (§3b), poi scelte già presenti nel codice (§3c). Nessuna modifica in questa fase.
-3. **Riepilogo delle differenze** rispetto alle regole e, **una domanda per volta**, la decisione per ciascuna: *deroga* nel `CLAUDE.md` di quel progetto (la scelta esistente resta) oppure *adeguamento* con refactoring a parte, pianificato in `PIANO.md`.
-4. `PIANO.md` di integrazione (§2b), poi copia dei moduli in `.claude/rules/`, `CLAUDE.md` (campi noti compilati, gli altri `[..]`; se esiste già, anche perché copiato come modello o preesistente del progetto, lo **allinea e completa** senza sostituirlo né perdere il contenuto del progetto) e commit `chore(rules)` su branch confermato.
+3. **Riepilogo delle differenze** rispetto alle regole e, **una domanda per volta**, la decisione per ciascuna: *deroga* nel `CLAUDE.md` di quel progetto (la scelta esistente resta) oppure *adeguamento* con refactoring a parte, pianificato nella issue padre.
+4. Issue padre di integrazione (§2b), poi copia dei moduli in `.claude/rules/`, `CLAUDE.md` (campi noti compilati, gli altri `[..]`; se esiste già, anche perché copiato come modello o preesistente del progetto, lo **allinea e completa** senza sostituirlo né perdere il contenuto del progetto) e commit `chore(rules)` su branch confermato.
 5. Vincoli: la cronologia git esistente non si riscrive mai; non si migra a zoneless né si ristruttura senza chiedere; le regole valgono per il codice **nuovo** dal punto concordato in poi.
 6. **Solo Git:** variante minima del percorso B, con soli `core.md`, `lavoro.md` e `git.md` (§2).
 7. **Frontend Blazor da sostituire con Angular:** caso particolare del percorso B, con procedura propria al §3d.
@@ -109,7 +109,7 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 I moduli non scelti sono fuori ambito: i rimandi che li citano (es. "vedi anche `security.md`") non si applicano. Se in seguito l'utente li vuole, si aggiungono con la stessa procedura. I tre moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`) si spostano, si copiano o si aggiungono sempre insieme.
 
 ## 2b. Piano di avvio (prima di scrivere nel progetto)
-Dopo le domande del §1 (e, per un progetto esistente, dopo le ispezioni in sola lettura dei §3b e §3c) e **prima di eliminare, spostare o copiare qualunque modulo o creare qualunque file**, Claude redige il piano dell'avvio e lo salva come file `.md` dedicato, `PIANO.md`, nella **root del progetto/soluzione**. Il `core.md` non è ancora stato applicato al progetto, quindi la regola vale qui per esplicito richiamo del suo §6 punto 15. Il piano elenca: risposte alle domande, moduli da tenere, eliminare o attivare, `CLAUDE.md` da compilare, eventuali deroghe e decisioni aperte, passi ordinati con casella di stato. Si procede poi **un punto alla volta**, con l'ok esplicito dell'utente a fine di ogni punto (come da `core.md` §6.15). Se esiste già un `PIANO.md` con passi aperti, Claude chiede se riprenderlo o sostituirlo. `PIANO.md` non entra in nessun commit, salvo richiesta dell'utente; non si copia nei moduli.
+Dopo le domande del §1 (e, per un progetto esistente, dopo le ispezioni in sola lettura dei §3b e §3c) e **prima di eliminare, spostare o copiare qualunque modulo o creare qualunque file**, Claude redige il piano dell'avvio e lo registra come **issue padre** sul repository remoto, con le sub-issue come passi. Il progetto deve avere il repository remoto prima di questo passo: se manca, Claude si ferma e chiede all'utente di crearlo (creare il repository è a cura dell'utente). Il `core.md` non è ancora stato applicato al progetto, quindi la regola vale qui per esplicito richiamo del suo §6 punto 15. Il piano elenca: risposte alle domande, moduli da tenere, eliminare o attivare, `CLAUDE.md` da compilare, eventuali deroghe e decisioni aperte, passi ordinati come sub-issue. Si procede poi **un punto alla volta**, con l'ok esplicito dell'utente a fine di ogni punto (come da `core.md` §6.15). Se esiste già una issue padre di avvio aperta, Claude chiede se riprenderla o sostituirla. Nessun file di piano viene creato nel repository.
 
 ## 3. Cosa fa Claude, in ordine
 1. Verifica che il template (la copia nella cartella, oppure la radice indicata per un progetto esistente) contenga `.claude/rules/` (con `core.md` almeno), `.claude/rules-optional/`, `CLAUDE.md` e `_template/avvio-progetto.md`, e legge la versione nell'intestazione di `core.md`. **Se manca qualcosa si ferma**: elenca ciò che manca, non procede e chiede all'utente di completare il template o di indicare il percorso giusto. Se la procedura gira dal progetto (regole e `_template/` copiati con `/kit:copia-regole`) e non è stato indicato un percorso del template, il controllo riguarda i moduli e il `CLAUDE.md` già presenti nel progetto.
@@ -139,11 +139,11 @@ Per un progetto esistente Claude non pone da zero le domande "chiesto, non presu
 2. **Riepilogo all'utente** di quanto rilevato, confrontato con le regole.
 3. **Una domanda per volta, per ogni scelta** (e per git e i file di progetto, vedi §3b): Claude chiede come comportarsi. Le opzioni sono due:
    - **Registrare una deroga**: la scelta esistente resta, e va nella sezione "Eccezioni alle regole globali" del `CLAUDE.md` **di quel progetto**, con il motivo. La deroga vale solo per quel progetto: non modifica mai i moduli in `.claude/rules/` né le regole globali e non si estende ad altri progetti.
-   - **Adeguare il progetto alle regole** con un refactoring: non è escluso. Claude non lo avvia da solo; segue la regola dei refactoring ampi (descrive il piano in `PIANO.md`, chiede conferma, procede un punto alla volta).
+   - **Adeguare il progetto alle regole** con un refactoring: non è escluso. Claude non lo avvia da solo; segue la regola dei refactoring ampi (descrive il piano nella issue padre, chiede conferma, procede un punto alla volta).
 4. Le scelte già conformi alle regole vanno nei campi del `CLAUDE.md` dopo la conferma dell'utente. Quelle non rilevabili restano `[..]` e si chiedono quando diventano rilevanti.
 
 ## 3d. Sostituzione del frontend esistente (Blazor → Angular)
-Caso di un progetto esistente con frontend Blazor che l'utente vuole sostituire con Angular. È un **refactoring ampio** (`core.md` §6.12): non parte mai da solo, ha un `PIANO.md` dedicato e si esegue un punto alla volta con ok esplicito. Le regole di `frontend.md` si applicano al nuovo codice Angular; il codice Blazor non si adegua, si rimuove alla fine.
+Caso di un progetto esistente con frontend Blazor che l'utente vuole sostituire con Angular. È un **refactoring ampio** (`core.md` §6.12): non parte mai da solo, ha una issue padre dedicata e si esegue un punto alla volta con ok esplicito. Le regole di `frontend.md` si applicano al nuovo codice Angular; il codice Blazor non si adegua, si rimuove alla fine.
 1. **Rilevamento in sola lettura:** progetti e pagine Blazor, modello di hosting (Server, WebAssembly, Auto), librerie UI (es. MudBlazor), risorse di localizzazione, autenticazione e sessione (cookie, Identity UI), servizi chiamati direttamente dalle pagine anziché via API, file statici. Riepilogo all'utente.
 2. **Domande precise, una per volta** (`core.md` §6.5), senza presumere. Almeno:
    - dove gira il nuovo frontend: servito dall'host esistente (`Web`) oppure separato (altro progetto/container);
@@ -153,10 +153,10 @@ Caso di un progetto esistente con frontend Blazor che l'utente vuole sostituire 
    - dove stanno oggi testi e traduzioni e come portarli nel dizionario del progetto (`frontend.md` §4.2);
    - se il livello di host (`Web`) diventa **host solo API** subito o solo a fine migrazione;
    - se usare `feature-workflow.md` come flusso per ogni area migrata (domanda 8 del §1; se no, si segue il piano normale).
-3. **Strategia:** Angular **in parallelo** a Blazor, poi rimozione di Blazor. Mai una riscrittura in blocco con un unico commit. Fasi tipiche, ciascuna un punto del `PIANO.md`:
+3. **Strategia:** Angular **in parallelo** a Blazor, poi rimozione di Blazor. Mai una riscrittura in blocco con un unico commit. Fasi tipiche, ciascuna una sub-issue della issue padre:
    1. predisporre l'API: endpoint necessari, schema OpenAPI e client generato (flusso di `feature-workflow.md`, fasi 1 e 2, se l'utente ha scelto di usarlo; altrimenti piano normale);
    2. creare il progetto Angular secondo `frontend.md`, con tema, localizzazione, autenticazione e layout base;
-   3. migrare le pagine **un'area alla volta** (flusso di `feature-workflow.md`, fase 3, se adottato), con le due interfacce che convivono e un elenco di avanzamento nel `PIANO.md` (pagina Blazor → equivalente Angular → stato);
+   3. migrare le pagine **un'area alla volta** (flusso di `feature-workflow.md`, fase 3, se adottato), con le due interfacce che convivono e un elenco di avanzamento nella issue padre (pagina Blazor → equivalente Angular → stato);
    4. a copertura completa, e solo con l'ok dell'utente: rimuovere pagine, progetti e pacchetti Blazor (compresa la libreria UI), ripulire configurazione e file statici, far diventare `Web` un host solo API;
    5. aggiornare `CLAUDE.md` (campi "Tecnologia frontend", cartelle, comandi), README e CHANGELOG, e togliere dal `CLAUDE.md` la deroga transitoria.
 4. **Deroghe transitorie:** finché Blazor è presente, nel `CLAUDE.md` del progetto si registra come deroga, con il criterio di rimozione (la tecnologia frontend in uso è doppia). Il codice Blazor non si modifica se non per ciò che serve alla coesistenza o a fix urgenti concordati.
