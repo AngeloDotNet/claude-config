@@ -24,7 +24,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `l
 
 ## Scelte architetturali (decise una volta per progetto)
 - **Architettura backend:** [Vertical Slice | Clean Architecture] (chiesta una volta per progetto; in un progetto esistente rilevata dal codice e confermata)
-- **Livelli Clean Architecture (se Clean):** [Domain, Application, Infrastructure, Api | nomi diversi come deroga: .. (rinomina pianificata in `PIANO.md`: sì/no)]
+- **Livelli Clean Architecture (se Clean):** [Domain, Application, Infrastructure, Api | nomi diversi come deroga: .. (rinomina pianificata nel piano del progetto, cioè nella issue padre: sì/no)]
 - **Entità di riferimento (solo se si usa `feature-workflow.md`):** [nessuna ancora | `NomeEntità`] — spunto di configurazione per le nuove entità, **non un modello da clonare**: se ne riprendono le convenzioni (interfaccia/classe base per l'id, audit, soft delete, tenant, configurazione EF, forma di DTO/endpoint/UI), non campi né regole di business; vedi `feature-workflow.md` §1.
 - **Modello del dominio (se Clean):** [anemico per i CRUD (default) | ricco: entità/aggregati: ..] (valutato a ogni progetto, non presunto; vedi `backend-architecture.md` §2b)
 - **Repository (Clean e Vertical Slice):** [no (default) | sì: per aggregato o generico `IRepository<T>`, motivo, ambito] (valutato a ogni progetto, non presunto; vedi `backend-architecture.md` §2b e §2c)
@@ -123,7 +123,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `l
 - **Lingua della documentazione (README.md, CHANGELOG.md):** [italiano | inglese | altro: ..] (chiesta, non presunta)
 - **Fine riga:** [`.gitattributes` con `* text=auto` | altro: .. | nessuno: motivo] (valutato caso per caso, non presunto)
 - **Hook pre-commit:** [nessuno | husky + lint-staged | `.githooks/`] — attivazione a cura dell'utente
-- **Push, PR, tag, release ed esecuzione delle pipeline:** come da `git.md` («Integrazione GitHub»); PR e rilasci con `gh` solo se installata (riga in «Eccezioni alle regole globali»).
+- **Push, PR, tag, release ed esecuzione delle pipeline:** come da `git.md` («Integrazione GitHub»); issue, sub-issue, PR e rilasci con `gh` solo se installata (riga in «Eccezioni alle regole globali»).
 - **Attribuzione Claude nei commit:** [no | trailer Co-Authored-By]
 
 ## Eccezioni alle regole globali
