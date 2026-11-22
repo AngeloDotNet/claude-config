@@ -1,5 +1,5 @@
 // Test degli script uniti (check-write, session-close): più controlli dello stesso gruppo emettono
-// un solo JSON, e il blocco di check-plan resta exit 2. Eseguire con:
+// un solo JSON. Eseguire con:
 // node --test plugins/kit/tests/merged.test.mjs
 
 import { test } from "node:test";
@@ -47,22 +47,3 @@ test("check-write: avvisi di qualità e di pratica escono in un solo JSON", () =
   });
 });
 
-test("check-write: PIANO.md con [x] senza esito blocca con exit 2 anche con il piano scritto", () => {
-  kitProject((dir) => {
-    const file = path.join(dir, "PIANO.md");
-    writeFileSync(file, "- [x] 1. Passo senza verifiche\n", "utf8");
-    const r = run("check-write.mjs", { tool_input: { file_path: file } }, dir);
-    assert.equal(r.code, 2);
-    assert.match(r.err, /senza esito di build e di test/);
-  });
-});
-
-test("session-close: il promemoria del piano esce come un solo JSON con systemMessage", () => {
-  kitProject((dir) => {
-    writeFileSync(path.join(dir, "PIANO.md"), "- [ ] 1. Da fare\n", "utf8");
-    const r = run("session-close.mjs", { cwd: dir }, dir);
-    assert.equal(r.code, 0);
-    const json = JSON.parse(r.out);
-    assert.match(json.systemMessage, /PIANO\.md: restano 1 passi aperti/);
-  });
-});

@@ -1,12 +1,9 @@
 #!/usr/bin/env node
-// Hook PostToolUse su Write, Edit e MultiEdit: unisce tre controlli sul testo appena scritto.
-// - check-plan (core.md §6.21): se si scrive PIANO.md, ogni passo spuntato `[x]` deve riportare
-//   nel proprio blocco l'esito di build e di test. Se manca, exit 2 e il motivo su stderr: Claude
-//   lo riceve e corregge il piano. Il file già scritto non viene annullato.
+// Hook PostToolUse su Write, Edit e MultiEdit: unisce due controlli sul testo appena scritto.
 // - check-quality (docker.md, core.md §3, frontend.md, core.md §0b): avvisi non bloccanti su Docker
 //   (tag `latest` o assente, porte host di database e broker), dipendenze (range `*`, `latest`, `[`)
 //   e promemoria di audit, frontend (`any`, `innerHTML`, `bypassSecurityTrust*`, colori esadecimali).
-// - check-practice (core.md §4, §5, §5b; security.md; backend-architecture.md §2c): avvisi non bloccanti
+// - check-practice (core.md §4, §5b; osservabilita.md; security.md; backend-architecture.md §2c): avvisi non bloccanti
 //   su scrittura in blocco, soppressioni, attese arbitrarie nei test, NoWarn di progetto, AllowAnonymous, Regex senza timeout, log diretti, membri
 //   pubblici senza ///, file di servizio nuovi senza test. Attivo solo nei progetti con il kit.
 // Gli avvisi di check-quality e check-practice escono in un unico JSON (systemMessage e
@@ -18,40 +15,6 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { isWaived, projectUsesKit, writtenText } from "./lib/text.mjs";
-
-// --- check-plan ---
-
-const CHECKBOX = /^\s*(?:[-*]|\d+\.)\s+\[[ x~]\]/i;
-const CHECKED = /^\s*(?:[-*]|\d+\.)\s+\[x\]/i;
-const HEADING = /^#{1,6}\s/;
-
-/** Passi spuntati senza esito di build e di test: restituisce il titolo di ciascuno. */
-function uncheckedVerifications(text) {
-  const lines = text.split(/\r?\n/);
-  const missing = [];
-  for (let i = 0; i < lines.length; i++) {
-    if (!CHECKED.test(lines[i])) continue;
-    const block = [lines[i]];
-    for (let j = i + 1; j < lines.length && !CHECKBOX.test(lines[j]) && !HEADING.test(lines[j]); j++) block.push(lines[j]);
-    const body = block.join("\n");
-    const hasBuild = /\b(build|compil\w*)\b/i.test(body);
-    const hasTest = /\btest\b/i.test(body);
-    if (!hasBuild || !hasTest) missing.push(lines[i].replace(CHECKED, "").trim().slice(0, 80));
-  }
-  return missing;
-}
-
-/** Messaggio di blocco per PIANO.md, o null se il piano è a posto o il file non è PIANO.md. */
-function planBlock(file) {
-  if (path.basename(file) !== "PIANO.md" || !existsSync(file)) return null;
-  const missing = uncheckedVerifications(readFileSync(file, "utf8"));
-  if (!missing.length) return null;
-  return (
-    `PIANO.md: passo spuntato [x] senza esito di build e di test: ${missing.map((t) => `"${t}"`).join(", ")}. ` +
-    "Riporta nel passo l'esito della verifica (es. \"Verifica: build senza errori, test 12/12 verdi\") oppure riportalo " +
-    "come [ ] finché i test non sono eseguiti (core.md §6.21)."
-  );
-}
 
 // --- check-quality ---
 
@@ -184,7 +147,7 @@ const PRACTICE_RULES = [
     files: /\.cs$/i,
     exceptTests: true,
     re: /\bConsole\.Write(?:Line)?\s*\(/,
-    why: "Console nel backend (core.md §5: logging tramite ILogger)",
+    why: "Console nel backend (osservabilita.md: logging tramite ILogger)",
   },
 ];
 
@@ -289,15 +252,12 @@ process.stdin.on("data", (chunk) => (raw += chunk));
 process.stdin.on("end", () => {
   const systemParts = [];
   const contextParts = [];
-  let planMessage = null;
   try {
     const input = JSON.parse(raw);
     const file = typeof input?.tool_input?.file_path === "string" ? input.tool_input.file_path : "";
     const cwd = typeof input?.cwd === "string" && input.cwd ? input.cwd : process.cwd();
     if (!file) process.exit(0);
     const name = path.basename(file);
-
-    planMessage = attempt(() => planBlock(file), null);
 
     const quality = attempt(() => {
       const notes = qualityFindings(file, writtenText(input.tool_input));
@@ -330,10 +290,6 @@ process.stdin.on("end", () => {
     }
   } catch {
     process.exit(0);
-  }
-  if (planMessage) {
-    process.stderr.write(planMessage + "\n");
-    process.exit(2);
   }
   process.exit(0);
 });

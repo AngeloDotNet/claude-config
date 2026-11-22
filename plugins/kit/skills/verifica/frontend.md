@@ -1,10 +1,3 @@
----
-description: Esegue il controllo di verifica di un frontend Angular prima di dichiarare chiuso un lavoro: installazione, lint, formattazione, test con copertura, build di produzione, audit npm e controlli su any, colori e traduzioni. Riporta l'esito reale senza modificare file. Per il backend .NET vedi /kit:verifica. Si lancia solo su richiesta.
-model: haiku
-argument-hint: [cartella-frontend]
-disable-model-invocation: true
-disallowed-tools: Edit Write NotebookEdit
----
 
 # Verifica del frontend Angular
 
@@ -28,6 +21,6 @@ Questa skill esegue i controlli di chiusura di `frontend.md` §10 e di `core.md`
 10. **Spazi bianchi.** `git diff --check` e `git diff --cached --check`. Se il repository non è git, «non verificato».
 11. **Esito.** Chiudi con un esito complessivo: «superata» solo se tutti i controlli sono passati, altrimenti «non superata», con l'elenco dei controlli falliti o non verificati e, per ognuno, il comando eseguito e la parte rilevante dell'output.
 
-Il gate non sostituisce i test E2E con Playwright e il controllo di accessibilità con axe (`frontend.md` §10), che richiedono un ambiente avviabile: se sono previsti, li segnala come controlli non eseguiti. Non sostituisce nemmeno `/code-review` e, per i temi sensibili, `/security-review` (`lavoro.md`); per i contrasti e l'accessibilità vedi `/kit:colori-tema` e `/kit:accessibilita-ui`.
+Il gate non sostituisce i test E2E con Playwright e il controllo di accessibilità con axe (`frontend.md` §10), che richiedono un ambiente avviabile: se sono previsti, li segnala come controlli non eseguiti. Non sostituisce nemmeno `/code-review` e, per i temi sensibili, `/security-review` (`lavoro.md`); per i contrasti e l'accessibilità vedi `/kit:revisione colori-tema` e `/kit:revisione accessibilita-ui`.
 
 Riferimenti: `core.md` §0b, §3 e §4; `frontend.md` §2, §3 e §10; `security.md` («Supply chain»).

@@ -137,10 +137,50 @@ test("gh release create: con gh no è bloccato", () => {
   });
 });
 
-test("gh pr create e merge: passano con gh sì", () => {
+test("gh pr create: passa con gh sì; gh pr merge è sempre bloccato (merge di PR all'utente)", () => {
   project(ghLine("sì"), (dir) => {
     assert.equal(guard("gh pr create --title \"feat: x\" --body \"y\"", dir).code, 0);
-    assert.equal(guard("gh pr merge 12 --squash", dir).code, 0);
+    assert.equal(guard("gh pr merge 12 --squash", dir).code, 2);
+  });
+});
+
+test("gh issue create/edit/close: passano con gh sì, bloccati con gh no", () => {
+  project(ghLine("sì"), (dir) => {
+    assert.equal(guard("gh issue create --title \"Passo 1\" --body \"x\"", dir).code, 0);
+    assert.equal(guard("gh issue edit 12 --add-label docs", dir).code, 0);
+    assert.equal(guard("gh issue close 12", dir).code, 0);
+  });
+  project(ghLine("no"), (dir) => {
+    assert.equal(guard("gh issue create --title \"Passo 1\"", dir).code, 2);
+  });
+});
+
+test("gh issue e sub-issue: lettura sempre consentita, delete sempre bloccato", () => {
+  project(ghLine("no"), (dir) => {
+    assert.equal(guard("gh issue view 12", dir).code, 0);
+    assert.equal(guard("gh issue list --state open", dir).code, 0);
+    assert.equal(guard("gh issue delete 12", dir).code, 2);
+  });
+});
+
+test("gestione del repository: gh repo create/delete/edit, segreti, variabili e ruleset sempre bloccati", () => {
+  project(ghLine("sì"), (dir) => {
+    assert.equal(guard("gh repo create nuovo --private", dir).code, 2);
+    assert.equal(guard("gh repo delete AngeloDotNet/claude-config --yes", dir).code, 2);
+    assert.equal(guard("gh repo edit --visibility private", dir).code, 2);
+    assert.equal(guard("gh secret set TOKEN", dir).code, 2);
+    assert.equal(guard("gh variable set X --body y", dir).code, 2);
+    assert.equal(guard("gh ruleset list", dir).code, 2);
+    assert.equal(guard("gh repo view AngeloDotNet/claude-config", dir).code, 0);
+  });
+});
+
+test("gh api: scrittura su impostazioni o accessi bloccata; lettura consentita", () => {
+  project(ghLine("sì"), (dir) => {
+    assert.equal(guard("gh api -X PUT repos/AngeloDotNet/claude-config/branches/main/protection --input p.json", dir).code, 2);
+    assert.equal(guard("gh api -X PUT repos/AngeloDotNet/claude-config/collaborators/x", dir).code, 2);
+    assert.equal(guard("gh api repos/AngeloDotNet/claude-config/issues/12/sub_issues", dir).code, 0);
+    assert.equal(guard("gh api -X POST repos/AngeloDotNet/claude-config/issues/12/sub_issues -f sub_issue_id=99", dir).code, 0);
   });
 });
 
