@@ -19,6 +19,8 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `w
 
 ## Progetto
 - **Profilo:** [strutturato (default) | standard | mini] — `mini` (script, tool interno, prototipo) sposta `workflow.md`, `qualita.md`, `git-avanzato.md` e `security-avanzata.md` in `.claude/rules-optional/`; gli altri profili li tengono in `.claude/rules/` (vedi `docs/adr/0001-profili.md`). Chiesto una volta; un progetto senza dichiarazione è `strutturato`.
+- **Default del profilo `mini`** (approvati dall'utente, `core.md` §6.5): con `mini` le voci marcate «chiesto, non presunto» prendono il default qui sotto, senza domanda, e il campo nel `CLAUDE.md` riporta il default. Restano da chiedere: Livello ASVS, Architettura backend, Database, Tecnologia frontend, Sviluppo mobile.
+  - Sicurezza backend: nessuna (endpoint pubblici) · Esposizione OpenAPI: solo Development · ORM: EF Core · Validazione: FluentValidation · Database nei test: nessuno · Mock EF nei test unitari: no · Multi-tenancy: no · Soft delete: no · Cache: nessuna · File storage: non usato · Invio email: non previsto · Messaggistica: non usata · Job in background: non usati · Logging: provider standard .NET · Osservabilità: nessuna · Backup, RPO/RTO e DAST: nessuno (fuori ambito) · Eccezioni, CSP, JWT, sessione SPA, micro frontend, SSR, Tailwind: no/default · Preferenze, lingue, temi, browser: default delle regole.
 - **Scopo:** [una frase: cosa fa l'applicazione e per chi]
 - **Tipo:** [fullstack | solo API | solo frontend | solo Git (progetto esistente)]
 - **Stato:** [nuovo progetto | esistente] — se esistente, NON migrare a zoneless né ristrutturare senza chiedere.
