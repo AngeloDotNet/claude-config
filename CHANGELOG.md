@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-23
 
+### Profilo mini sotto 15 KB: core, git e sicurezza divisi per profilo
+**Perché:** il profilo `mini` caricava circa 50 KB di regole in ogni sessione; la ADR 0001 fissa il target a 15 KB per `mini` (#83, passo 3).
+**Cosa:** `core.md` (v4.0) ridotto a regole minime: Regola inviolabile, §0, §3 e i punti 5, 7, 8, 9, 11, 14 del §6, più il changelog minimo (§5b) e la mappa dei moduli. Nuovi moduli con la stessa numerazione: `contratto.md` (§1 e §2, solo sui file backend e frontend), `operativita.md` (§5 e §5a), `documentazione.md` (§5b), `git-flusso.md` (sezioni di `git.md` non minime). `git.md` (v3.0) diventa la versione minima. `security.md` (v3.0) ha solo segreti e log minimi; il resto è in `security-avanzata.md`. I punti 15, 16, 19, 21, 22 del §6 passano a `workflow.md`. Liste di copia aggiornate in `copia-regole`, `aggiorna-regole` e `_template/avvio-progetto.md`.
+**Dove:** `.claude/rules/` (`core.md`, `git.md`, `security.md`, `security-avanzata.md`, `workflow.md`, `lavoro.md`, nuovi `contratto.md`, `operativita.md`, `documentazione.md`, `git-flusso.md`), `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `_template/avvio-progetto.md`, `CLAUDE.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Profilo `mini` sempre caricato: 13.983 byte (≤ 15 KB). Profilo `standard` sempre caricato: circa 86 KB, sopra il target di 40 KB della ADR, da rivedere.
+**Note:** il `CLAUDE.md` del template non è ancora ridotto con i default per profilo (resta nel passo successivo). La mappa obbligo → profilo non include ancora le due integrazioni concordate (condizioni di sicurezza e chiavi IT/EN): restano da aggiungere alla ADR.
+
 ### ADR dei profili accettata e mappa obbligo → profilo
 **Perché:** le decisioni aperte di #83 sono chiuse (approccio a profili, deroga per le scelte a basso rischio, fusione delle skill, compatibilità dei progetti già avviati); la proposta di `0001-profili.md` non era ancora accettata.
 **Cosa:** ADR accettata; aggiunte le decisioni di compatibilità (progetti già avviati su `strutturato`) e di basso rischio; i riferimenti a `PIANO.md` e `CHECKLIST.md` sostituiti con le issue (`core.md` §6.15 e §6.22).

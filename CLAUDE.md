@@ -126,7 +126,7 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `w
 - **Lingua della documentazione (README.md, CHANGELOG.md):** [italiano | inglese | altro: ..] (chiesta, non presunta)
 - **Fine riga:** [`.gitattributes` con `* text=auto` | altro: .. | nessuno: motivo] (valutato caso per caso, non presunto)
 - **Hook pre-commit:** [nessuno | husky + lint-staged | `.githooks/`] — attivazione a cura dell'utente
-- **Push, PR, tag, release ed esecuzione delle pipeline:** come da `git.md` («Integrazione GitHub»); issue, sub-issue, PR e rilasci con `gh` solo se installata (riga in «Eccezioni alle regole globali»).
+- **Push, PR, tag, release ed esecuzione delle pipeline:** come da `git-flusso.md` («Integrazione GitHub»); issue, sub-issue, PR e rilasci con `gh` solo se installata (riga in «Eccezioni alle regole globali»).
 - **Attribuzione Claude nei commit:** [no | trailer Co-Authored-By]
 
 ## Eccezioni alle regole globali

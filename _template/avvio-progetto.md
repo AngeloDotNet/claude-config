@@ -84,9 +84,9 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend.md` §2 e §5, moduli opzionali |
 | Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security.md` |
 | Lingua di README e CHANGELOG | «Lingua della documentazione» | `core.md` §5b |
-| Fine riga del repository | «Fine riga» | `git.md`, «Repository, fine riga e hook» |
-| GitHub CLI installata | «Eccezioni alle regole globali» | `git.md`, «Integrazione GitHub» |
-| Attribuzione di Claude nei commit | «Attribuzione Claude nei commit» | `git.md`, «Messaggi di commit» |
+| Fine riga del repository | «Fine riga» | `git-flusso.md`, «Repository, fine riga e hook» |
+| GitHub CLI installata | «Eccezioni alle regole globali» | `git-flusso.md`, «Integrazione GitHub» |
+| Attribuzione di Claude nei commit | «Attribuzione Claude nei commit» | `git-flusso.md`, «Messaggi di commit» |
 
 ## 2. Quali moduli tenere in `.claude/rules/`
 Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelti si **spostano** da `.claude/rules/` a `.claude/rules-optional/` (non si caricano più, ma restano disponibili per aggiungerli in seguito), quelli opzionali scelti si **spostano** da `.claude/rules-optional/`. Nel progetto esistente i moduli scelti si **copiano** dal template in `.claude/rules/`: la copia la fa `/kit:copia-regole` (o `/kit:aggiorna-regole` per i progetti che hanno già le regole); se i moduli risultano già presenti e identici al template, Claude non li ricopia e prosegue con il resto della procedura.
@@ -95,7 +95,8 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 |---|---|
 | `core.md` | sempre |
 | `git.md` | sempre |
-| `workflow.md`, `qualita.md`, `git-avanzato.md`, `security-avanzata.md` | profili standard e strutturato: in `.claude/rules/`. Profilo `mini` (domanda 10): in `.claude/rules-optional/`. In modalità solo Git si copia solo `workflow.md` e `git-avanzato.md` (vedi sotto) |
+| `contratto.md` | sempre; si carica solo sui file backend e frontend (`paths:`) |
+| `workflow.md`, `qualita.md`, `git-flusso.md`, `git-avanzato.md`, `documentazione.md`, `operativita.md`, `security-avanzata.md` | profili standard e strutturato: in `.claude/rules/`. Profilo `mini` (domanda 10): in `.claude/rules-optional/`. In modalità solo Git si copia solo `workflow.md`, `git-flusso.md` e `git-avanzato.md` (vedi sotto) |
 | `backend.md`, `backend-architecture.md`, `backend-app.md`, `osservabilita.md` | solo API o fullstack (i tre moduli backend vanno sempre insieme; `osservabilita.md` si copia con il backend) |
 | `frontend.md` | solo frontend o fullstack, con frontend Angular (non con Blazor) |
 | `feature-workflow.md` | **solo fullstack** e solo se l'utente ha risposto sì alla domanda 8 (anche per la migrazione Blazor → Angular, §3d); mai in solo API, solo frontend o solo Git. Sta in `rules-optional/` |
@@ -106,7 +107,7 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 | `security-frontend.md` | se l'utente ha scelto la sicurezza e il tipo include un frontend Angular |
 | `docker.md` | **non all'avvio**: si attiva solo se l'utente lo chiede esplicitamente (per esempio «crea un Dockerfile»; §4, "Aggiunta di un modulo"). Sta in `rules-optional/` |
 
-**Modalità solo Git:** restano `core.md` (che `git.md` richiede), `lavoro.md`, `git.md`, `git-avanzato.md` (pull request e rilascio, a cui `git.md` rimanda) e `workflow.md` (la regola del piano, `core.md` §6.15, vale anche qui); né i moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`), né `frontend.md`, né `feature-workflow.md`, né `security.md`, né `security-backend.md`, né `security-frontend.md`, né `docker.md`, né `qualita.md`, né `security-avanzata.md`. Le sezioni di `core.md` che riguardano moduli non inclusi non si applicano. Il `CLAUDE.md` contiene solo le sezioni "Regole", "Progetto", "Git" ed "Eccezioni alle regole globali"; le altre (scelte architetturali, nomi e struttura, comandi, operatività) si aggiungono se in seguito si aggiungono i moduli. Ogni altro modulo si può aggiungere dopo (§4, "Aggiunta di un modulo"). Se la domanda 2 (sicurezza) ha risposta sì, quel modulo resta comunque.
+**Modalità solo Git:** restano `core.md` (che `git.md` richiede), `lavoro.md`, `git.md`, `git-flusso.md` (branch, messaggi e integrazione GitHub, a cui `git.md` rimanda), `git-avanzato.md` (pull request e rilascio) e `workflow.md` (la regola del piano, `core.md` §6.15, vale anche qui); né i moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`), né `frontend.md`, né `feature-workflow.md`, né `security.md`, né `security-backend.md`, né `security-frontend.md`, né `docker.md`, né `qualita.md`, né `security-avanzata.md`. Le sezioni di `core.md` che riguardano moduli non inclusi non si applicano. Il `CLAUDE.md` contiene solo le sezioni "Regole", "Progetto", "Git" ed "Eccezioni alle regole globali"; le altre (scelte architetturali, nomi e struttura, comandi, operatività) si aggiungono se in seguito si aggiungono i moduli. Ogni altro modulo si può aggiungere dopo (§4, "Aggiunta di un modulo"). Se la domanda 2 (sicurezza) ha risposta sì, quel modulo resta comunque.
 
 I moduli non scelti sono fuori ambito: i rimandi che li citano (es. "vedi anche `security.md`") non si applicano. Se in seguito l'utente li vuole, si aggiungono con la stessa procedura. I tre moduli backend (`backend.md`, `backend-architecture.md`, `backend-app.md`) si spostano, si copiano o si aggiungono sempre insieme, con `osservabilita.md`.
 
