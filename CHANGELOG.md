@@ -2,6 +2,15 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-23
+
+### ADR dei profili accettata e mappa obbligo → profilo
+**Perché:** le decisioni aperte di #83 sono chiuse (approccio a profili, deroga per le scelte a basso rischio, fusione delle skill, compatibilità dei progetti già avviati); la proposta di `0001-profili.md` non era ancora accettata.
+**Cosa:** ADR accettata; aggiunte le decisioni di compatibilità (progetti già avviati su `strutturato`) e di basso rischio; i riferimenti a `PIANO.md` e `CHECKLIST.md` sostituiti con le issue (`core.md` §6.15 e §6.22).
+**Dove:** `docs/adr/0001-profili.md`, `CHANGELOG.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149.
+**Note:** passo 2 di #83. La mappa va verificata con l'utente prima del passo 3 (spezzare `core.md`).
+
 ## 2026-11-22
 
 ### Rilascio 2.0.1

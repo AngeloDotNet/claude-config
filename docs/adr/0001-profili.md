@@ -1,6 +1,6 @@
 # 0001. Profili di adozione: mini, standard, strutturato
 
-**Stato:** proposta. Il default «proponi e prosegui» della tabella dipende dalla decisione aperta 1 del `PIANO.md` (deroga alla regola inviolabile), ancora da prendere.
+**Stato:** accettata (2026-11-23), decisioni di #83. Tutte le decisioni aperte del piano sono chiuse.
 
 ## Contesto
 Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model, DAST, runbook, osservabilità, RPO/RTO, ADR. Applicate uguali a uno script interno, costano più di quanto proteggono e caricano circa 105 KB di regole in ogni sessione. Serve un modo per dichiarare quanto è grande il progetto e applicare solo gli obblighi che servono.
@@ -10,6 +10,8 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 2. Ogni obbligo ha un **profilo minimo**: si applica da quel profilo in su. Ogni regola nuova dichiara il proprio.
 3. Il **profilo fissa il minimo, la funzionalità fa scattare l'obbligo**: un upload, un'autenticazione o un dato personale attivano le regole corrispondenti in qualunque profilo, anche in `mini`.
 4. Restano sempre **da chiedere** all'utente, in ogni profilo, le decisioni irreversibili: tipo di progetto, architettura backend, motore di database, ORM, autenticazione, dati personali.
+5. **Compatibilità:** i progetti già avviati restano sul profilo `strutturato` finché non migrano esplicitamente.
+6. **Basso rischio:** Claude decide da solo le scelte reversibili senza costi che hanno già un default in regole o `CLAUDE.md`, le annota nel `CLAUDE.md` del progetto e le elenca nel riepilogo finale. Restano domande: dati, sicurezza, dipendenze, licenze, migrazioni, struttura, API pubbliche, costi.
 
 ## Mappa obbligo → profilo minimo
 
@@ -22,8 +24,8 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Dipendenze gratuite con licenza permissiva; lock file committato | `core.md` §3 | mini |
 | Log tramite `ILogger`, nessun dato personale nei log | `osservabilita.md` | mini |
 | `CHANGELOG.md` aggiornato a ogni rilascio; `README.md` minimo | `core.md` §5b | mini |
-| Piano (`PIANO.md`) per il lavoro non piccolo | `core.md` §6.15 | standard (sotto soglia: nessun piano) |
-| `CHECKLIST.md` per i problemi trovati lavorando | `core.md` §6.22 | standard |
+| Piano come issue padre con sub-issue per il lavoro non piccolo | `core.md` §6.15 | standard (sotto la soglia di §6.15c: nessun piano) |
+| Problemi trovati lavorando come issue, una per problema | `core.md` §6.22 | standard |
 | Test per ogni funzionalità nuova; test con input malevoli su input, auth e dati | `core.md` §4, `security.md` | standard |
 | Commenti XML in inglese sui membri pubblici | `core.md` §5b | standard |
 | Audit dei pacchetti (`npm audit`, `dotnet list package --vulnerable`) | `core.md` §3 | standard |
