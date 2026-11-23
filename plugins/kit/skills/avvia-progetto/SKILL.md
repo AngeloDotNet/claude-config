@@ -9,11 +9,11 @@ disable-model-invocation: true
 
 Rispondi in italiano. Una sola domanda per messaggio, mai elenchi di domande.
 
-1. Leggi il file di avvio del template: `avvio-progetto.md`, nella cartella del template indicata dalla variabile d'ambiente `KIT_CONFIG_TEMPLATE_DIR` (in `_template/avvio-progetto.md`); è sempre la copia del template, la più aggiornata, non quella eventualmente copiata nel progetto da `/kit:copia-regole`. Se la variabile non è impostata o il file manca, dillo e fermati.
+1. Leggi il file di avvio del template: `avvio-progetto.md`, nella cartella del template indicata dalla variabile d'ambiente `KIT_CONFIG_TEMPLATE_DIR` (in `_template/avvio-progetto.md`); è sempre la copia del template, la più aggiornata, non quella eventualmente copiata nel progetto da `/kit:regole`. Se la variabile non è impostata o il file manca, dillo e fermati.
    Se nella radice del progetto esiste già un `CLAUDE.md`, non sovrascriverlo: poni una sola domanda (completare solo i campi ancora a segnaposto, partire da un modello nuovo salvando il vecchio come `CLAUDE.md.bak`, oppure fermarsi) e attendi la risposta.
 2. Segui le domande di quel file nell'ordine indicato, a partire dalla domanda 0 (il profilo). Per ogni risposta registra il valore; non assumere nulla che l'utente non ha detto. Se è stato passato un nome progetto come argomento, usalo come valore proposto per i campi «Solution» e «Namespace radice» (da confermare, non da presumere) e non rifare quella domanda.
 3. Quando hai tutte le risposte, mostra il riepilogo e chiedi conferma prima di scrivere.
    Prima di scrivere nel progetto, scrivi il piano di avvio come issue padre con le sub-issue, come descritto al §2b del file di avvio (`core.md` §6.15). Il progetto deve avere il repository remoto su GitHub: se manca, fermati e chiedi all'utente di crearlo (non lo crei tu). Se esiste già una issue padre di avvio aperta, chiedi con una sola domanda se riprenderla o sostituirla.
 4. Dopo l'ok, compila `CLAUDE.md` nella radice del progetto con le risposte, nei campi del modello. Non scrivere valori reali di segreti: solo segnaposto.
-5. Segnala i moduli di regole da copiare: non copiarli qui, usa `/kit:copia-regole`.
+5. Segnala i moduli di regole da copiare: non copiarli qui, usa `/kit:regole`.
 6. Non creare commit e non modificare altri file (oltre a `CLAUDE.md`); il piano vive nella issue padre, non in un file.

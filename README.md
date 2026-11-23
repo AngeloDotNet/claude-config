@@ -19,7 +19,7 @@ La documentazione è nel sito [wiki.aepserver.it](http://wiki.aepserver.it/claud
 |---|---|
 | [Cosa contiene](http://wiki.aepserver.it/claude-config/contenuto) | Struttura del repository, moduli delle regole, cartella `_template/` e plugin |
 | [Plugin `kit`](http://wiki.aepserver.it/claude-config/plugin) | Hook personali (domanda unica, comandi vietati, regole aggiornate) e comandi `/kit:...`: installazione, aggiornamento, migrazione |
-| [Come si usa, nei dettagli](http://wiki.aepserver.it/claude-config/uso) | Quale caso è il tuo (progetto nuovo, esistente senza regole, esistente con regole), il template come cartella a parte, `/kit:copia-regole` e `/kit:aggiorna-regole`, moduli da tenere per tipo di progetto |
+| [Come si usa, nei dettagli](http://wiki.aepserver.it/claude-config/uso) | Quale caso è il tuo (progetto nuovo, esistente senza regole, esistente con regole), il template come cartella a parte, `/kit:regole` e `/kit:regole`, moduli da tenere per tipo di progetto |
 | [Come funziona](http://wiki.aepserver.it/claude-config/funzionamento) | Caricamento delle regole, deroghe, cosa chiede Claude e cosa fa da solo |
 | [Manutenzione](http://wiki.aepserver.it/claude-config/manutenzione) | Verifiche periodiche, risoluzione dei problemi, punti aperti, aggiornamento del template |
 
@@ -49,18 +49,16 @@ I controlli del plugin stanno in sei script. I controlli su scrittura sono raggr
 
 ## Comandi del plugin
 
-Il plugin aggiunge dodici comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
+Il plugin aggiunge dieci comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dalle issue del progetto (issue padre e sub-issue aperte), e propone il primo passo.
 - `/kit:buonasera`: salva lo stato dei lavori nelle issue (chiude le sub-issue verificate, registra la ripartenza sulla issue padre, apre le issue dei problemi nuovi), aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/clear` o `/compact`.
 - `/kit:avvia-progetto`: avvia un progetto nuovo con le domande di avvio (profilo compreso), e compila il `CLAUDE.md`.
-- `/kit:copia-regole`: copia le regole in un progetto che non le ha (usa la cartella corrente quando è valida, altrimenti chiede il percorso).
-- `/kit:aggiorna-regole`: aggiorna le regole di un progetto (file diversi, moduli nuovi e rimossi dal template, righe del `CLAUDE.md` legate alle regole), con conferma e `.bak`.
-- `/kit:consegna`: controlla il lavoro corrente contro la checklist di consegna.
+- `/kit:regole`: copia le regole in un progetto che non le ha, o le aggiorna se le ha già (con conferma e `.bak`); usa la cartella corrente quando è valida, altrimenti chiede il percorso.
 - `/kit:pr-develop` e `/kit:pr-main` si usano solo se la GitHub CLI è installata e autenticata (`gh --version`, `gh auth status`): altrimenti terminano subito e dicono cosa manca. `/kit:commit-passo` usa `gh` solo per la issue della serie, se la riga gh è «sì».
 - `/kit:commit-passo`: crea i commit in sequenza e senza conferme intermedie (il lancio è il via libera), mai su `main` o `develop` (crea direttamente il branch di lavoro), con il piano come issue padre; chiede il tipo di commit solo se ambiguo e si ferma con una domanda solo nei casi anomali.
 - `/kit:pr-develop`: apre con `gh` la PR dal branch di lavoro verso `develop`, con push e creazione senza altra conferma; si può lanciare anche da `/kit:commit-passo`, che a fine commit lo propone con una domanda; il merge (squash) resta all'utente.
 - `/kit:pr-main`: apre con `gh` la PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, dopo il controllo di `main` avanti rispetto a `develop`; il merge (merge commit) resta all'utente. Dopo il merge, verificato con `gh` che la PR risulta mergiata, cancella i branch di lavoro corrispondenti (locali e remoti) e allinea `main` e `develop` con `git pull --ff-only`, segnalando se serve la sincronizzazione di `main` in `develop`.
-- `/kit:verifica`: esegue i controlli di una soluzione .NET o di un frontend Angular (build, test, lint, audit, formattazione) e riporta l'esito, senza modificare file.
+- `/kit:verifica`: controlla il lavoro corrente contro la checklist di consegna, poi esegue i controlli di una soluzione .NET o di un frontend Angular (build, test, lint, audit, formattazione) e riporta l'esito, senza modificare file.
 - `/kit:revisione <tema>`: revisione in sola lettura di un tema (accessi API, EF Core, GDPR, accessibilità, colori, localizzazione, test, regole del progetto, sicurezza). Senza tema elenca i temi e chiede quale usare.
 - `/kit:modelli`: mostra quali modelli sono stati usati nella sessione e per cosa (sessione, skill, subagent), leggendo il registro della sessione; sola lettura. Lo stesso log compare da solo, una volta per sessione, al primo cambio di modello.

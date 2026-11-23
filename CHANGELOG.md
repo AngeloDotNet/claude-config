@@ -4,6 +4,14 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-23
 
+### Skill fuse da dodici a dieci (passo 5 di #83)
+**Perché:** `consegna` e `verifica` erano due controlli prima della chiusura; `copia-regole` e `aggiorna-regole` facevano la stessa cosa in due casi. Le descrizioni del plugin elencavano ancora ventidue nomi, di cui molti non più esistenti (#82).
+**Cosa:** `consegna` diventa la sezione 0 di `verifica` (checklist di consegna, poi i controlli). `copia-regole` e `aggiorna-regole` diventano `regole`, con il caso A (copia) e il caso B (aggiornamento). `modelli` resta nel plugin: il hook `session-close` dipende da lui.
+**Breaking change:** `/kit:consegna` è ora `/kit:verifica`; `/kit:copia-regole` e `/kit:aggiorna-regole` sono ora `/kit:regole`.
+**Dove:** `plugins/kit/skills/verifica/SKILL.md`, `plugins/kit/skills/regole/SKILL.md` (nuova), rimosse `plugins/kit/skills/consegna/`, `copia-regole/` e `aggiorna-regole/`; `plugins/kit/.claude-plugin/plugin.json` e `.claude-plugin/marketplace.json` (descrizione con i dieci comandi); `docs/skill.md`, `README.md`, `_template/avvio-progetto.md`, `plugins/kit/skills/avvia-progetto/SKILL.md`, `plugins/kit/tests/skills-layout.test.mjs` (conteggio 10).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Le skill fuse non sono state lanciate su un progetto di prova.
+**Note:** la wiki (`C:/DEV/wiki`) non è stata toccata: va aggiornata con conferma. La versione del plugin non cambia in questo passo (passo 6).
+
 ### Avvio: il profilo si chiede per primo, mini salta l'ORM
 **Perché:** il profilo decide i default e quali domande servono, ma era l'ultima domanda (la 10); con `mini` l'avvio chiedeva ancora l'ORM, che ha già il default (passo 4 di #83).
 **Cosa:** la domanda sul profilo diventa la 0, posta per prima; la 10 rimanda alla 0 (i numeri restano). Con `mini` non si chiede l'ORM (EF Core, default). Nel piano dei moduli (§3) il profilo `standard` sostituisce i cinque moduli con versione breve e copia il testo completo in `rules-optional/dettaglio/`. La skill `avvia-progetto` segue la domanda 0 per prima.
