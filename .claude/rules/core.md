@@ -1,7 +1,7 @@
-# Regole Core (sempre caricate, profilo mini)
+# Regole Core (sempre caricate)
 
 > Versione 4.0 — ultima revisione: 2026-11-23.
-> Questo file contiene il minimo che vale in ogni progetto (profilo `mini`). Il resto sta nei moduli indicati qui sotto, con la stessa numerazione, e si carica nei profili `standard` e `strutturato`.
+> Questo file contiene il minimo che vale in ogni progetto. Il profilo (`mini`, `standard`, `strutturato`) è dichiarato nel `CLAUDE.md`. Il resto sta nei moduli indicati qui sotto, con la stessa numerazione, e si carica nei profili `standard` e `strutturato`.
 > **Mappa:** §1 e §2 in `contratto.md`; §5 e §5a in `operativita.md`; §5b in `documentazione.md`; §5c in `git.md` e `git-flusso.md`; §6 punti 15, 16, 19, 21, 22 in `workflow.md`.
 
 ## Regola inviolabile: nel dubbio, una domanda alla volta
