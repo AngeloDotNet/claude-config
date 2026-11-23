@@ -2,7 +2,7 @@
 
 <!--
 Copia questo file nella radice del progetto come `CLAUDE.md` e compila i campi tra [parentesi].
-I moduli delle regole stanno in `.claude/rules/` e Claude Code li carica da solo, senza import: `core`, `lavoro`, `git` e `security` all'avvio; `frontend`, `security-frontend`, `backend` e `security-backend` solo quando si legge o modifica un file corrispondente (`paths:` nell'intestazione). I moduli opzionali stanno in `.claude/rules-optional/` (non si caricano): `docker` (solo su richiesta esplicita dell'utente, per esempio «crea un Dockerfile»; non si chiede all'avvio), `feature-workflow` (solo fullstack e solo se confermato all'avvio, domanda 8), `backend-email` e `backend-infra` (non all'avvio: si attivano spostandoli in `.claude/rules/` quando servono invio email o messaggistica/cache/eventi).
+I moduli e il loro caricamento sono descritti nella sezione «Regole». I moduli opzionali restano in `.claude/rules-optional/` finché non servono (`docker` solo su richiesta esplicita, `feature-workflow` solo fullstack e su conferma, `backend-email` e `backend-infra` quando servono invio email o messaggistica, cache o eventi).
 Il modulo non scelto all'avvio si sposta in `.claude/rules-optional/` (es. `frontend.md` in un progetto solo API), poi si compilano i campi tra [parentesi].
 In modalità "solo Git" (progetto esistente) restano solo le sezioni "Regole", "Progetto", "Git" ed "Eccezioni alle regole globali", con i moduli `core` e `git`.
 Questo file PREVALE sulle regole globali in caso di conflitto. Tienilo breve: solo ciò che è specifico del progetto.
@@ -12,13 +12,13 @@ Questo file PREVALE sulle regole globali in caso di conflitto. Tienilo breve: so
 Nel dubbio Claude **non decide in autonomia**: pone **una sola domanda alla volta** e **attende la risposta**. Il testo completo, con le eccezioni, è in `core.md` (sezione in testa e §6, punto 5), che prevale su questo riepilogo solo per i dettagli.
 
 ## Regole
-I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `workflow.md` e `qualita.md` (in `rules/` nei profili standard e strutturato), `lavoro.md`, `git.md` e `git-avanzato.md` (in `rules/` nei profili standard e strutturato) e `security.md` all'avvio, con `security-avanzata.md` (in `rules/` nei profili standard e strutturato); `frontend.md` (`**/*.{ts,html,css,scss}`, `angular.json`, `tsconfig*.json`), `backend.md`, `backend-architecture.md` e `backend-app.md` (tutti e tre `**/*.{cs,csproj,props}`), `osservabilita.md` (logging e osservabilità: `**/*.{cs,csproj,props}`, Dockerfile, compose, `observability/`) `security-backend.md` (come i moduli backend, `**/*.{cs,csproj,props}`) e `security-frontend.md` (come `frontend.md`) quando si legge o modifica un file corrispondente (`paths:` nell'intestazione). I moduli opzionali stanno in `.claude/rules-optional/` (non si caricano): si attivano spostandoli in `.claude/rules/` e annotandolo qui; hanno già il loro `paths:` (backend per `backend-email.md` e `backend-infra.md`, backend e frontend per `feature-workflow.md`, Dockerfile, `docker-compose*`/`compose*` `.yml`/`.yaml`, `.dockerignore` e `docker/**` per `docker.md`, che si attiva solo su richiesta esplicita dell'utente, per esempio «crea un Dockerfile»), quindi attivati si caricano solo sui file corrispondenti. Per verificare cosa è caricato: `/context`. Non aggiungere altri `.md` in `.claude/rules/` se non sono regole: vengono caricati tutti.
+I moduli sono in `.claude/rules/` e Claude Code li carica da solo. Sempre caricati: `core.md`, `lavoro.md`, `git.md` e `security.md`; nei profili standard e strutturato anche `workflow.md`, `qualita.md`, `git-flusso.md`, `git-avanzato.md`, `documentazione.md`, `operativita.md` e `security-avanzata.md` (il profilo `mini` li sposta in `.claude/rules-optional/`; lo `standard` usa per cinque moduli le versioni brevi di `_template/rules-standard/`, con il testo completo in `.claude/rules-optional/dettaglio/`); `security-strutturato.md` solo nel profilo `strutturato`. Caricati solo sui file corrispondenti (`paths:` nell'intestazione): `contratto.md` (backend e frontend), `frontend.md` (`**/*.{ts,html,css,scss}`, `angular.json`, `tsconfig*.json`), `backend.md`, `backend-architecture.md` e `backend-app.md` (`**/*.{cs,csproj,props}`), `osservabilita.md` (`**/*.{cs,csproj,props}`, Dockerfile, compose, `observability/`), `security-backend.md` (come i moduli backend) e `security-frontend.md` (come `frontend.md`). I moduli opzionali stanno in `.claude/rules-optional/` (non si caricano) e si attivano spostandoli in `.claude/rules/` e annotandolo qui: `feature-workflow.md`, `backend-email.md`, `backend-infra.md`, `docker.md` (solo su richiesta esplicita). Per verificare cosa è caricato: `/context`. Non aggiungere altri `.md` in `.claude/rules/` se non sono regole: vengono caricati tutti.
 
 - **Versione delle regole copiate:** `core.md` v[x.y] del [data]
 - **Moduli rimossi o non attivati (fuori ambito):** [nessuno | security | docker | frontend | backend | feature-workflow | backend-email | backend-infra]
 
 ## Progetto
-- **Profilo:** [strutturato (default) | standard | mini] — `mini` (script, tool interno, prototipo) sposta `workflow.md`, `qualita.md`, `git-avanzato.md` e `security-avanzata.md` in `.claude/rules-optional/`; gli altri profili li tengono in `.claude/rules/` (vedi `docs/adr/0001-profili.md`). Chiesto una volta; un progetto senza dichiarazione è `strutturato`.
+- **Profilo:** [strutturato (default) | standard | mini] — `mini` (script, tool interno, prototipo) sposta in `.claude/rules-optional/` `workflow.md`, `qualita.md`, `git-flusso.md`, `git-avanzato.md`, `documentazione.md`, `operativita.md`, `security-avanzata.md` e `security-strutturato.md`; `standard` sposta `security-strutturato.md`; `strutturato` tiene tutto in `.claude/rules/` (vedi `docs/adr/0001-profili.md`). Chiesto una volta; un progetto senza dichiarazione è `strutturato`.
 - **Default del profilo `mini`** (approvati dall'utente, `core.md` §6.5): con `mini` le voci marcate «chiesto, non presunto» prendono il default qui sotto, senza domanda, e il campo nel `CLAUDE.md` riporta il default. Restano da chiedere: Livello ASVS, Architettura backend, Database, Tecnologia frontend, Sviluppo mobile.
   - Sicurezza backend: nessuna (endpoint pubblici) · Esposizione OpenAPI: solo Development · ORM: EF Core · Validazione: FluentValidation · Database nei test: nessuno · Mock EF nei test unitari: no · Multi-tenancy: no · Soft delete: no · Cache: nessuna · File storage: non usato · Invio email: non previsto · Messaggistica: non usata · Job in background: non usati · Logging: provider standard .NET · Osservabilità: nessuna · Backup, RPO/RTO e DAST: nessuno (fuori ambito) · Eccezioni, CSP, JWT, sessione SPA, micro frontend, SSR, Tailwind: no/default · Preferenze, lingue, temi, browser: default delle regole.
 - **Scopo:** [una frase: cosa fa l'applicazione e per chi]
@@ -48,10 +48,10 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `w
 - **Indirizzo pubblico e host ammessi:** `App:PublicBaseUrl` [dominio pubblico], `AllowedHosts` [elenco] (chiesto, non presunto; valori reali da variabile d'ambiente; vedi `security-backend.md`, «Host header e URL assoluti»)
 - **Utenti del database:** applicativo (senza DDL) e utente separato per le migrazioni (`ConnectionStrings:Migrations`), valori solo da variabili d'ambiente valorizzate da `.env`, elencati in `.env.example`; connessione cifrata [Encrypt=True | SslMode=VerifyFull], CA fidata [..] (chiesto, non presunto; vedi `backend-app.md` §4.4)
 - **Upload di file:** [non previsto | previsto: tipi ammessi, limiti, antivirus/disarmo dei contenuti sì/no] (chiesto, non presunto; vedi `security-backend.md`, «Upload e parsing di file»)
-- **Eccezioni a `npm ci --ignore-scripts`:** [nessuna | pacchetto: motivo e script lanciato a parte] (vedi `security.md`, «Supply chain»)
+- **Eccezioni a `npm ci --ignore-scripts`:** [nessuna | pacchetto: motivo e script lanciato a parte] (vedi `security-strutturato.md`, «Supply chain»)
 - **Limiti e rate limiting:** `pageSize` predefinito e massimo [20 / 100 | ..], limiti per IP e per utente [..], timeout database e HTTP [..] (concordati, non presunti; vedi `security-backend.md`, «Abuso di risorse»)
-- **Allerta sugli eventi di sicurezza:** [solo log strutturati, controllati da: .. | alert su Grafana/Prometheus, canale: ..]; retention dei log di audit [..] (concordata, non presunta; vedi `security.md`, «Log di sicurezza e allerta»)
-- **DAST (OWASP ZAP baseline):** [no | sì, in CI su istanza di prova] (opzionale; vedi `security.md`, «Scansione dinamica, segnalazioni e risposta agli incidenti»); `SECURITY.md` e `docs/runbook-sicurezza.md` [presenti | da creare]
+- **Allerta sugli eventi di sicurezza:** [solo log strutturati, controllati da: .. | alert su Grafana/Prometheus, canale: ..]; retention dei log di audit [..] (concordata, non presunta; vedi `security-strutturato.md`, «Log di sicurezza e allerta»)
+- **DAST (OWASP ZAP baseline):** [no | sì, in CI su istanza di prova] (opzionale; vedi `security-strutturato.md`, «Scansione dinamica, segnalazioni e risposta agli incidenti»); `SECURITY.md` e `docs/runbook-sicurezza.md` [presenti | da creare]
 - **CSP della SPA statica:** [hash alla build con `autoCsp` (default) | nonce inserito dal server | deroga: ..] (vedi `security-backend.md`, «Protezione dell'API»)
 - **Token JWT (se Identity e solo API):** [no | sì — ciclo di vita: solo creazione e verifica | anche rinnovo | anche rinnovo e revoca; algoritmo, durata access token]
 - **Granularità (se Identity):** [solo autenticazione | ruoli | policy/claim | permessi granulari] — extra: [registrazione, conferma email, reset password, MFA, login esterni, lockout, multi-tenancy, UI amministrativa]
@@ -117,22 +117,22 @@ I moduli sono in `.claude/rules/` e Claude Code li carica da solo: `core.md`, `w
 - **Soglie di performance diverse dal default:** [nessuna | ...]
 
 ## Git
-- **Modello branch (git flow):** git flow completo con `develop`, obbligatorio in ogni progetto (`feature`/`bugfix`/`release` da `develop`, `hotfix` da `main`; vedi `git.md`) — Claude crea da solo il branch di lavoro quando serve, senza chiederti conferma; se `develop` manca, chiede se crearlo
+- **Modello branch (git flow):** git flow completo con `develop`, obbligatorio in ogni progetto (`feature`/`bugfix`/`release` da `develop`, `hotfix` da `main`; vedi `git-flusso.md`) — Claude crea da solo il branch di lavoro quando serve, senza chiederti conferma; se `develop` manca, chiede se crearlo
 - **Branch principale:** [main]
-- **Strategia di merge:** come da `git.md` (squash verso `develop`, merge commit per ogni PR che coinvolge `main`)
+- **Strategia di merge:** come da `git-avanzato.md` (squash verso `develop`, merge commit per ogni PR che coinvolge `main`)
 - **Ticket nei branch/commit:** [no | sì, formato `ABC-123`]
 - **Scope Conventional Commits ammessi:** [liberi | elenco: ..]
 - **File della versione e changelog:** [`Directory.Build.props` + `CHANGELOG.md` | ...] — `CHANGELOG.md` e `README.md` si aggiornano a ogni step del piano (`core.md` §5b)
 - **Lingua della documentazione (README.md, CHANGELOG.md):** [italiano | inglese | altro: ..] (chiesta, non presunta)
 - **Fine riga:** [`.gitattributes` con `* text=auto` | altro: .. | nessuno: motivo] (valutato caso per caso, non presunto)
 - **Hook pre-commit:** [nessuno | husky + lint-staged | `.githooks/`] — attivazione a cura dell'utente
-- **Push, PR, tag, release ed esecuzione delle pipeline:** come da `git.md` («Integrazione GitHub»); issue, sub-issue, PR e rilasci con `gh` solo se installata (riga in «Eccezioni alle regole globali»).
+- **Push, PR, tag, release ed esecuzione delle pipeline:** come da `git-flusso.md` («Integrazione GitHub»); issue, sub-issue, PR e rilasci con `gh` solo se installata (riga in «Eccezioni alle regole globali»).
 - **Attribuzione Claude nei commit:** [no | trailer Co-Authored-By]
 
 ## Eccezioni alle regole globali
 <!-- Ogni deroga va motivata. Se vuota, vale tutto il resto. -->
 - [nessuna]
-<!-- GitHub CLI: riga fissa letta dal hook guard-commands (git.md, «Integrazione GitHub»). Si scrive con la risposta dell'utente alla domanda unica per progetto, aggiungendo la data tra parentesi. Push e tag non la richiedono. -->
+<!-- GitHub CLI: riga fissa letta dal hook guard-commands (git-flusso.md, «Integrazione GitHub»). Si scrive con la risposta dell'utente alla domanda unica per progetto, aggiungendo la data tra parentesi. Push e tag non la richiedono. -->
 - **GitHub CLI (gh) installata:** sì (2026-11-08)
 
 ## Note per Claude
