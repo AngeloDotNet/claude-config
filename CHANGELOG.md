@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-23
 
+### Profilo standard sotto 40 KB: versioni brevi di cinque moduli
+**Perché:** lo `standard` caricava circa 73 KB di regole; la ADR 0001 fissa il target a 40 KB (#83, opzione A confermata).
+**Cosa:** nuova cartella `_template/rules-standard/` con versioni brevi di `git-flusso.md`, `git-avanzato.md`, `workflow.md`, `qualita.md` e `documentazione.md`. Per il profilo `standard`, `copia-regole` copia la versione breve in `.claude/rules/` e il testo completo in `.claude/rules-optional/dettaglio/` (non caricato, leggibile su richiesta). Il profilo `strutturato` resta con il testo completo. `aggiorna-regole`, `avvio-progetto` e il `CLAUDE.md` del template descrivono il nuovo meccanismo.
+**Dove:** `_template/rules-standard/` (nuovi cinque file), `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `_template/avvio-progetto.md`, `CLAUDE.md`, `CHANGELOG.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Profilo `standard` sempre caricato: 38.567 byte (≤ 40 KB), misurato sui file della composizione prevista. Profilo `mini`: 14.036 byte.
+**Note:** la copia reale in un progetto di prova non è ancora stata eseguita: la skill `copia-regole` va lanciata su una cartella di prova per verificarla.
+
 ### Profilo standard ridotto: sicurezza strutturata in un modulo a parte
 **Perché:** lo `standard` caricava circa 88,5 KB di regole; spostare le sezioni che la tabella dell'ADR assegna solo allo `strutturato` lo riduce senza togliere regole agli altri profili (scelta B di #83).
 **Cosa:** nuovo `security-strutturato.md` con ASVS, supply chain, scansione dinamica, mobile, test di sicurezza automatici (tranne la riga sugli input malevoli, che resta nello `standard`) e dettaglio di dati e segreti. `security-avanzata.md` (v2.0) tiene progettazione sicura, crittografia, input malevoli e regola operativa. Nei profili `standard` e `mini` `security-strutturato.md` va in `.claude/rules-optional/`. Liste di copia, template e riferimenti aggiornati.
