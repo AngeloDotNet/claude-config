@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-23
 
+### Rilascio 3.0.0
+**Aggiunto:** profili `mini`, `standard` e `strutturato` con regole per profilo (`mini` sotto 15 KB sempre caricati, `standard` sotto 40 KB); versioni brevi dello `standard` in `_template/rules-standard/`; moduli `contratto.md`, `operativita.md`, `documentazione.md`, `git-flusso.md` e `security-strutturato.md`.
+**Modificato:** **breaking change:** `/kit:consegna` è ora `/kit:verifica`; `/kit:copia-regole` e `/kit:aggiorna-regole` sono ora `/kit:regole`. La domanda sul profilo è la prima dell'avvio. Le regole minime stanno in `core.md` (v4.0), `git.md` (v3.0) e `security.md` (v3.0); il dettaglio è nei moduli indicati e, per lo `standard`, in `rules-optional/dettaglio/`.
+**Corretto:** le descrizioni di plugin e marketplace elencavano comandi non più esistenti (#82).
+**Sicurezza:** nessuna regola di sicurezza è stata tolta: le sezioni sono state spostate tra moduli, e per lo `standard` il testo completo resta leggibile in `rules-optional/dettaglio/`.
+
 ### Skill fuse da dodici a dieci (passo 5 di #83)
 **Perché:** `consegna` e `verifica` erano due controlli prima della chiusura; `copia-regole` e `aggiorna-regole` facevano la stessa cosa in due casi. Le descrizioni del plugin elencavano ancora ventidue nomi, di cui molti non più esistenti (#82).
 **Cosa:** `consegna` diventa la sezione 0 di `verifica` (checklist di consegna, poi i controlli). `copia-regole` e `aggiorna-regole` diventano `regole`, con il caso A (copia) e il caso B (aggiornamento). `modelli` resta nel plugin: il hook `session-close` dipende da lui.
