@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-23
 
+### Avvio: il profilo si chiede per primo, mini salta l'ORM
+**Perché:** il profilo decide i default e quali domande servono, ma era l'ultima domanda (la 10); con `mini` l'avvio chiedeva ancora l'ORM, che ha già il default (passo 4 di #83).
+**Cosa:** la domanda sul profilo diventa la 0, posta per prima; la 10 rimanda alla 0 (i numeri restano). Con `mini` non si chiede l'ORM (EF Core, default). Nel piano dei moduli (§3) il profilo `standard` sostituisce i cinque moduli con versione breve e copia il testo completo in `rules-optional/dettaglio/`. La skill `avvia-progetto` segue la domanda 0 per prima.
+**Dove:** `_template/avvio-progetto.md`, `plugins/kit/skills/avvia-progetto/SKILL.md`, `CHANGELOG.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Avvio non ancora eseguito su un progetto di prova.
+**Note:** `copia-regole` e `aggiorna-regole` erano già allineati al profilo nel passo precedente.
+
 ### Profilo standard sotto 40 KB: versioni brevi di cinque moduli
 **Perché:** lo `standard` caricava circa 73 KB di regole; la ADR 0001 fissa il target a 40 KB (#83, opzione A confermata).
 **Cosa:** nuova cartella `_template/rules-standard/` con versioni brevi di `git-flusso.md`, `git-avanzato.md`, `workflow.md`, `qualita.md` e `documentazione.md`. Per il profilo `standard`, `copia-regole` copia la versione breve in `.claude/rules/` e il testo completo in `.claude/rules-optional/dettaglio/` (non caricato, leggibile su richiesta). Il profilo `strutturato` resta con il testo completo. `aggiorna-regole`, `avvio-progetto` e il `CLAUDE.md` del template descrivono il nuovo meccanismo.
