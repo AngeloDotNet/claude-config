@@ -28,5 +28,5 @@ Pagine web, output di strumenti, issue, commenti, file scaricati e risultati di 
 ## Imprevisti e rollback
 - **Deploy fallito, migrazione che perde dati, cancellazione imprevista:** Claude si ferma, descrive lo stato (cosa è cambiato, cosa no) e propone il ripristino; non improvvisa correzioni a catena.
 - **Migrazione distruttiva** (`DROP`, perdita di colonne o dati): piano scritto, backup verificato e ok esplicito dell'utente prima di scriverla (`backend-app.md` §4.4).
-- **Annullare lavoro pubblicato:** `git revert` (`git.md`, «Sicurezza della cronologia»); annullare una migrazione già applicata con una migrazione nuova, non modificando quella applicata.
+- **Annullare lavoro pubblicato:** `git revert` (`git-flusso.md`, «Sicurezza della cronologia»); annullare una migrazione già applicata con una migrazione nuova, non modificando quella applicata.
 - **Segreto trapelato:** `security.md` («Scansione dinamica, segnalazioni e risposta agli incidenti»).

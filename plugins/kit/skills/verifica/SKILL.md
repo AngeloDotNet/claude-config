@@ -1,14 +1,33 @@
 ---
-description: Esegue il controllo di verifica di una soluzione .NET prima di dichiarare chiuso un lavoro: ripristino, formattazione, build in Release senza avvisi, using inutilizzati, test, pacchetti vulnerabili, modifiche al modello EF senza migrazione, compose valido e spazi bianchi. Riporta l'esito reale senza modificare file. Per un frontend Angular segue la procedura di frontend.md. Si lancia solo su richiesta.
-model: haiku
+description: Controlla il lavoro corrente contro la checklist di consegna (core.md §0b) e poi esegue i controlli di una soluzione .NET o di un frontend Angular prima di dichiarare chiuso un lavoro: ripristino, formattazione, build in Release senza avvisi, using inutilizzati, test, pacchetti vulnerabili, modello EF senza migrazione, compose valido e spazi bianchi. Riporta l'esito reale senza modificare file. Si lancia solo su richiesta.
+model: sonnet
 argument-hint: [cartella-soluzione]
 disable-model-invocation: true
 disallowed-tools: Edit Write NotebookEdit
 ---
 
-# Verifica della soluzione .NET
+# Verifica: checklist di consegna e controlli
 
-Rispondi in italiano. Una sola domanda per messaggio.
+Rispondi in italiano. Una sola domanda per messaggio. Questa skill non modifica file.
+
+## 0. Checklist di consegna sul lavoro corrente
+1. Leggi la checklist in `.claude/rules/core.md`, sezione «0b. Checklist di consegna». Se il file manca, dillo e fermati.
+2. Raccogli in sola lettura: `git status --short`, `git diff --stat`, `git diff --cached --stat`, il branch corrente, le issue aperte della serie (con `gh`, se la riga gh del `CLAUDE.md` dice «sì») e l'esito dei test se sono stati eseguiti nella sessione.
+3. Per ogni voce decidi: «ok» (verificata sul lavoro), «manca» (non fatta), «non verificata» (si può dire solo eseguendo qualcosa) o «non pertinente» (il progetto o il lavoro non la riguardano).
+4. Presenta quattro gruppi: ok, manca, non verificata, non pertinente. Per ogni voce «manca» indica una riga di cosa fare. Le voci «non pertinente» si elencano solo nel gruppo, senza commento.
+5. Non segnare «ok» una voce che richiede un'esecuzione: va in «non verificata» finché i controlli della sezione 1 non passano.
+6. Non dichiarare chiuso il compito: il giudizio finale resta all'utente.
+
+## 1. Controlli sulla soluzione o sul frontend
+Si eseguono quando il lavoro tocca `*.cs`, `*.csproj`, `*.props` o `*.sln` (backend .NET), oppure `*.ts`, `*.html`, `*.css`, `*.scss`, `angular.json` o `package.json` (frontend Angular, con la procedura di `frontend.md`).
+
+## 2. Da lanciare a parte (lancio manuale dell'utente)
+Questa skill non lancia altro. Nel gruppo «non verificata» indica, se servono, queste skill a lancio manuale:
+- `/kit:revisione sicurezza`: il lavoro tocca autenticazione, autorizzazione, upload, URL esterni, query dinamiche o dati personali.
+- `/kit:revisione gdpr-dati`: solo se il lavoro riguarda dati personali davvero.
+- `/code-review`: sempre, per i difetti.
+
+---
 
 Se la cartella indicata è un frontend Angular (ha `package.json` e `angular.json`), non usare questa procedura: leggi `frontend.md` in questa cartella e segui quella.
 

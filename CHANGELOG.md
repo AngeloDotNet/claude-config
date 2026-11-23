@@ -2,6 +2,58 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-23
+
+### Skill fuse da dodici a dieci (passo 5 di #83)
+**Perché:** `consegna` e `verifica` erano due controlli prima della chiusura; `copia-regole` e `aggiorna-regole` facevano la stessa cosa in due casi. Le descrizioni del plugin elencavano ancora ventidue nomi, di cui molti non più esistenti (#82).
+**Cosa:** `consegna` diventa la sezione 0 di `verifica` (checklist di consegna, poi i controlli). `copia-regole` e `aggiorna-regole` diventano `regole`, con il caso A (copia) e il caso B (aggiornamento). `modelli` resta nel plugin: il hook `session-close` dipende da lui.
+**Breaking change:** `/kit:consegna` è ora `/kit:verifica`; `/kit:copia-regole` e `/kit:aggiorna-regole` sono ora `/kit:regole`.
+**Dove:** `plugins/kit/skills/verifica/SKILL.md`, `plugins/kit/skills/regole/SKILL.md` (nuova), rimosse `plugins/kit/skills/consegna/`, `copia-regole/` e `aggiorna-regole/`; `plugins/kit/.claude-plugin/plugin.json` e `.claude-plugin/marketplace.json` (descrizione con i dieci comandi); `docs/skill.md`, `README.md`, `_template/avvio-progetto.md`, `plugins/kit/skills/avvia-progetto/SKILL.md`, `plugins/kit/tests/skills-layout.test.mjs` (conteggio 10).
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Le skill fuse non sono state lanciate su un progetto di prova.
+**Note:** la wiki (`C:/DEV/wiki`) non è stata toccata: va aggiornata con conferma. La versione del plugin non cambia in questo passo (passo 6).
+
+### Avvio: il profilo si chiede per primo, mini salta l'ORM
+**Perché:** il profilo decide i default e quali domande servono, ma era l'ultima domanda (la 10); con `mini` l'avvio chiedeva ancora l'ORM, che ha già il default (passo 4 di #83).
+**Cosa:** la domanda sul profilo diventa la 0, posta per prima; la 10 rimanda alla 0 (i numeri restano). Con `mini` non si chiede l'ORM (EF Core, default). Nel piano dei moduli (§3) il profilo `standard` sostituisce i cinque moduli con versione breve e copia il testo completo in `rules-optional/dettaglio/`. La skill `avvia-progetto` segue la domanda 0 per prima.
+**Dove:** `_template/avvio-progetto.md`, `plugins/kit/skills/avvia-progetto/SKILL.md`, `CHANGELOG.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Avvio non ancora eseguito su un progetto di prova.
+**Note:** `copia-regole` e `aggiorna-regole` erano già allineati al profilo nel passo precedente.
+
+### Profilo standard sotto 40 KB: versioni brevi di cinque moduli
+**Perché:** lo `standard` caricava circa 73 KB di regole; la ADR 0001 fissa il target a 40 KB (#83, opzione A confermata).
+**Cosa:** nuova cartella `_template/rules-standard/` con versioni brevi di `git-flusso.md`, `git-avanzato.md`, `workflow.md`, `qualita.md` e `documentazione.md`. Per il profilo `standard`, `copia-regole` copia la versione breve in `.claude/rules/` e il testo completo in `.claude/rules-optional/dettaglio/` (non caricato, leggibile su richiesta). Il profilo `strutturato` resta con il testo completo. `aggiorna-regole`, `avvio-progetto` e il `CLAUDE.md` del template descrivono il nuovo meccanismo.
+**Dove:** `_template/rules-standard/` (nuovi cinque file), `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `_template/avvio-progetto.md`, `CLAUDE.md`, `CHANGELOG.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Profilo `standard` sempre caricato: 38.567 byte (≤ 40 KB), misurato sui file della composizione prevista. Profilo `mini`: 14.036 byte.
+**Note:** la copia reale in un progetto di prova non è ancora stata eseguita: la skill `copia-regole` va lanciata su una cartella di prova per verificarla.
+
+### Profilo standard ridotto: sicurezza strutturata in un modulo a parte
+**Perché:** lo `standard` caricava circa 88,5 KB di regole; spostare le sezioni che la tabella dell'ADR assegna solo allo `strutturato` lo riduce senza togliere regole agli altri profili (scelta B di #83).
+**Cosa:** nuovo `security-strutturato.md` con ASVS, supply chain, scansione dinamica, mobile, test di sicurezza automatici (tranne la riga sugli input malevoli, che resta nello `standard`) e dettaglio di dati e segreti. `security-avanzata.md` (v2.0) tiene progettazione sicura, crittografia, input malevoli e regola operativa. Nei profili `standard` e `mini` `security-strutturato.md` va in `.claude/rules-optional/`. Liste di copia, template e riferimenti aggiornati.
+**Dove:** `.claude/rules/security-strutturato.md` (nuovo), `.claude/rules/security-avanzata.md`, `.claude/rules/security.md`, `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `_template/avvio-progetto.md`, `_template/ci/ci.yml`, `plugins/kit/skills/revisione/temi/gdpr-dati.md`, `plugins/kit/skills/verifica/frontend.md`, `CLAUDE.md`, `docs/adr/0001-profili.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Profilo `standard` sempre caricato: 73.371 byte (era 88.539). Profilo `mini`: 14.036 byte.
+**Note:** il target dello `standard` (40 KB) non è raggiunto. Per arrivarci servirebbe condensare i moduli standard (opzione A di #83), con il dettaglio in `rules-optional/` da leggere su richiesta.
+
+### Profilo mini sotto 15 KB: core, git e sicurezza divisi per profilo
+**Perché:** il profilo `mini` caricava circa 50 KB di regole in ogni sessione; la ADR 0001 fissa il target a 15 KB per `mini` (#83, passo 3).
+**Cosa:** `core.md` (v4.0) ridotto a regole minime: Regola inviolabile, §0, §3 e i punti 5, 7, 8, 9, 11, 14 del §6, più il changelog minimo (§5b) e la mappa dei moduli. Nuovi moduli con la stessa numerazione: `contratto.md` (§1 e §2, solo sui file backend e frontend), `operativita.md` (§5 e §5a), `documentazione.md` (§5b), `git-flusso.md` (sezioni di `git.md` non minime). `git.md` (v3.0) diventa la versione minima. `security.md` (v3.0) ha solo segreti e log minimi; il resto è in `security-avanzata.md`. I punti 15, 16, 19, 21, 22 del §6 passano a `workflow.md`. Liste di copia aggiornate in `copia-regole`, `aggiorna-regole` e `_template/avvio-progetto.md`.
+**Dove:** `.claude/rules/` (`core.md`, `git.md`, `security.md`, `security-avanzata.md`, `workflow.md`, `lavoro.md`, nuovi `contratto.md`, `operativita.md`, `documentazione.md`, `git-flusso.md`), `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `_template/avvio-progetto.md`, `CLAUDE.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Profilo `mini` sempre caricato: 13.983 byte (≤ 15 KB). Profilo `standard` sempre caricato: circa 86 KB, sopra il target di 40 KB della ADR, da rivedere.
+**Note:** `CLAUDE.md` del template: il paragrafo «Regole» ora descrive i moduli e il loro caricamento per profilo, e i riferimenti alle sezioni spostate puntano al modulo giusto. Il target dello `standard` (40 KB) resta aperto (vedi la voce successiva).
+
+### Voci aperte del passo 3: riferimenti, ADR e CLAUDE.md
+**Perché:** chiusura del passo 3 di #83: riferimenti alle sezioni spostate ancora sbagliati, mappa della ADR senza due obblighi concordati, paragrafo «Regole» del `CLAUDE.md` non aggiornato ai nuovi moduli.
+**Cosa:** riferimenti corretti in `core.md`, `workflow.md`, `qualita.md`, `CLAUDE.md`, `_template/avvio-progetto.md`, `_template/ci/ci.yml`, `plugins/kit/skills/verifica/frontend.md`, `plugins/kit/skills/revisione/temi/gdpr-dati.md`. Nella ADR aggiunti quattro obblighi: dipendenze dichiarate (`core.md` §6.8, mini), condizioni di sicurezza per auth, upload e dati personali (mini, si attiva con la funzionalità), chiavi IT/EN (standard), test di architettura (strutturato, solo Clean). Il paragrafo «Regole» del `CLAUDE.md` ora elenca i moduli per profilo.
+**Dove:** `docs/adr/0001-profili.md`, `.claude/rules/core.md`, `.claude/rules/workflow.md`, `.claude/rules/qualita.md`, `CLAUDE.md`, `_template/avvio-progetto.md`, `_template/ci/ci.yml`, `plugins/kit/skills/verifica/frontend.md`, `plugins/kit/skills/revisione/temi/gdpr-dati.md`, `CHANGELOG.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Profilo `mini` sempre caricato: 13.997 byte. Profilo `standard` sempre caricato: 88.539 byte.
+**Note:** il target dello `standard` (40 KB) non è raggiunto; la scelta (ridurre i moduli standard o alzare il target) è aperta.
+
+### ADR dei profili accettata e mappa obbligo → profilo
+**Perché:** le decisioni aperte di #83 sono chiuse (approccio a profili, deroga per le scelte a basso rischio, fusione delle skill, compatibilità dei progetti già avviati); la proposta di `0001-profili.md` non era ancora accettata.
+**Cosa:** ADR accettata; aggiunte le decisioni di compatibilità (progetti già avviati su `strutturato`) e di basso rischio; i riferimenti a `PIANO.md` e `CHECKLIST.md` sostituiti con le issue (`core.md` §6.15 e §6.22).
+**Dove:** `docs/adr/0001-profili.md`, `CHANGELOG.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149.
+**Note:** passo 2 di #83. La mappa va verificata con l'utente prima del passo 3 (spezzare `core.md`).
+
 ## 2026-11-22
 
 ### Rilascio 2.0.1
