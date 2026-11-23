@@ -1,4 +1,4 @@
-# Workflow CI di esempio (core.md §5, security-avanzata.md «Supply chain»): build, test, lint e audit a ogni pull request.
+# Workflow CI di esempio (core.md §5, security-strutturato.md «Supply chain»): build, test, lint e audit a ogni pull request.
 # Copiare in .github/workflows/ del progetto e adattare cartelle, versioni e comandi (tabella Comandi del CLAUDE.md).
 # Cancellare il job che non serve (solo API o solo frontend). Le action sono fissate al commit SHA, con la
 # versione in commento (verificate il 2026-11-10 sui repository ufficiali; rifarlo al primo uso).
@@ -40,7 +40,7 @@ jobs:
           node-version-file: src/web/.nvmrc
           cache: npm
           cache-dependency-path: src/web/package-lock.json
-      - run: npm ci --ignore-scripts # eccezioni: security-avanzata.md «Supply chain»
+      - run: npm ci --ignore-scripts # eccezioni: security-strutturato.md «Supply chain»
       - run: npm run lint
       - run: npm test
       - run: npm run build

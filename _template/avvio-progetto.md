@@ -76,8 +76,8 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | Upload di file | «Upload di file» | `security-backend.md`, «Upload e parsing di file» |
 | Limiti, paginazione e rate limiting | «Limiti e rate limiting» | `security-backend.md`, «Abuso di risorse» |
 | CSP della SPA statica | «CSP della SPA statica» | `security-backend.md`, «Protezione dell'API» |
-| Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security-avanzata.md`, «Log di sicurezza e allerta» |
-| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security-avanzata.md`, «Supply chain» |
+| Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security-strutturato.md`, «Log di sicurezza e allerta» |
+| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security-strutturato.md`, «Supply chain» |
 | Logging (provider, sink, formato, livelli) | «Logging» | `osservabilita.md` |
 | Osservabilità | «Osservabilità» | `osservabilita.md` |
 | Cache | «Cache» | `backend-infra.md` |
@@ -97,6 +97,7 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 | `git.md` | sempre |
 | `contratto.md` | sempre; si carica solo sui file backend e frontend (`paths:`) |
 | `workflow.md`, `qualita.md`, `git-flusso.md`, `git-avanzato.md`, `documentazione.md`, `operativita.md`, `security-avanzata.md` | profili standard e strutturato: in `.claude/rules/`. Profilo `mini` (domanda 10): in `.claude/rules-optional/`. In modalità solo Git si copia solo `workflow.md`, `git-flusso.md` e `git-avanzato.md` (vedi sotto) |
+| `security-strutturato.md` | solo profilo `strutturato`: in `.claude/rules/`. Profili `standard` e `mini`: in `.claude/rules-optional/` (se si include `security.md`) |
 | `backend.md`, `backend-architecture.md`, `backend-app.md`, `osservabilita.md` | solo API o fullstack (i tre moduli backend vanno sempre insieme; `osservabilita.md` si copia con il backend) |
 | `frontend.md` | solo frontend o fullstack, con frontend Angular (non con Blazor) |
 | `feature-workflow.md` | **solo fullstack** e solo se l'utente ha risposto sì alla domanda 8 (anche per la migrazione Blazor → Angular, §3d); mai in solo API, solo frontend o solo Git. Sta in `rules-optional/` |

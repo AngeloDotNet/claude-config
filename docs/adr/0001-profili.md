@@ -36,9 +36,9 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Fail closed con test; `ValidateOnStart` su configurazioni di sicurezza | `security-avanzata.md`, «Progettazione sicura» | standard |
 | Copertura ≥ 80% sul codice nuovo | `core.md` §4 | strutturato |
 | Threat model (ADR) prima del codice per funzionalità sensibili | `security-avanzata.md`, «Progettazione sicura» | strutturato |
-| Endpoint protetti di default, test di ruoli e proprietà (anti-IDOR) | `security-avanzata.md`, «Test di sicurezza automatici» | strutturato |
-| Log di sicurezza con eventi nominati, alert, retention | `security-avanzata.md`, «Log di sicurezza e allerta» | strutturato |
-| Livello ASVS, DAST con ZAP, `SECURITY.md`, runbook | `security-avanzata.md` | strutturato |
+| Endpoint protetti di default, test di ruoli e proprietà (anti-IDOR) | `security-strutturato.md`, «Test di sicurezza automatici» | strutturato |
+| Log di sicurezza con eventi nominati, alert, retention | `security-strutturato.md`, «Log di sicurezza e allerta» | strutturato |
+| Livello ASVS, DAST con ZAP, `SECURITY.md`, runbook | `security-strutturato.md` | strutturato |
 | Utenti del database separati e connessione cifrata | `backend-app.md` §4.4 | strutturato |
 | Integration test su database reale di prova | `backend-app.md` §4.5 | strutturato |
 | Repository, Specification, Clean Architecture | `backend-architecture.md` §2b–§2c | strutturato (default: no) |

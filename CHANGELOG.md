@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-23
 
+### Profilo standard ridotto: sicurezza strutturata in un modulo a parte
+**Perché:** lo `standard` caricava circa 88,5 KB di regole; spostare le sezioni che la tabella dell'ADR assegna solo allo `strutturato` lo riduce senza togliere regole agli altri profili (scelta B di #83).
+**Cosa:** nuovo `security-strutturato.md` con ASVS, supply chain, scansione dinamica, mobile, test di sicurezza automatici (tranne la riga sugli input malevoli, che resta nello `standard`) e dettaglio di dati e segreti. `security-avanzata.md` (v2.0) tiene progettazione sicura, crittografia, input malevoli e regola operativa. Nei profili `standard` e `mini` `security-strutturato.md` va in `.claude/rules-optional/`. Liste di copia, template e riferimenti aggiornati.
+**Dove:** `.claude/rules/security-strutturato.md` (nuovo), `.claude/rules/security-avanzata.md`, `.claude/rules/security.md`, `plugins/kit/skills/copia-regole/SKILL.md`, `plugins/kit/skills/aggiorna-regole/SKILL.md`, `_template/avvio-progetto.md`, `_template/ci/ci.yml`, `plugins/kit/skills/revisione/temi/gdpr-dati.md`, `plugins/kit/skills/verifica/frontend.md`, `CLAUDE.md`, `docs/adr/0001-profili.md`.
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`, 149/149. Profilo `standard` sempre caricato: 73.371 byte (era 88.539). Profilo `mini`: 14.036 byte.
+**Note:** il target dello `standard` (40 KB) non è raggiunto. Per arrivarci servirebbe condensare i moduli standard (opzione A di #83), con il dettaglio in `rules-optional/` da leggere su richiesta.
+
 ### Profilo mini sotto 15 KB: core, git e sicurezza divisi per profilo
 **Perché:** il profilo `mini` caricava circa 50 KB di regole in ogni sessione; la ADR 0001 fissa il target a 15 KB per `mini` (#83, passo 3).
 **Cosa:** `core.md` (v4.0) ridotto a regole minime: Regola inviolabile, §0, §3 e i punti 5, 7, 8, 9, 11, 14 del §6, più il changelog minimo (§5b) e la mappa dei moduli. Nuovi moduli con la stessa numerazione: `contratto.md` (§1 e §2, solo sui file backend e frontend), `operativita.md` (§5 e §5a), `documentazione.md` (§5b), `git-flusso.md` (sezioni di `git.md` non minime). `git.md` (v3.0) diventa la versione minima. `security.md` (v3.0) ha solo segreti e log minimi; il resto è in `security-avanzata.md`. I punti 15, 16, 19, 21, 22 del §6 passano a `workflow.md`. Liste di copia aggiornate in `copia-regole`, `aggiorna-regole` e `_template/avvio-progetto.md`.
