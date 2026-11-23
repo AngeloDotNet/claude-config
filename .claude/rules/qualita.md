@@ -17,7 +17,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti al pro
 - [ ] Nuove chiavi di traduzione fornite (IT/EN).
 - [ ] Endpoint protetti (se la sicurezza è prevista dal progetto, vedi `security-backend.md`), input validati lato server, controlli di proprietà (anti-IDOR).
 - [ ] Se la funzionalità tocca autenticazione, autorizzazione, upload, URL esterni o dati personali: security review eseguita (`security.md`).
-- [ ] Per le stesse funzionalità sensibili: threat model leggero (ADR) approvato prima del codice, fail closed con test, upload con file ostili, link assoluti con test di `Host` ostile (`security.md` «Progettazione sicura e fail closed», `security-backend.md`).
+- [ ] Per le stesse funzionalità sensibili: threat model leggero (ADR) approvato prima del codice, fail closed con test, upload con file ostili, link assoluti con test di `Host` ostile (`security-avanzata.md` «Progettazione sicura e fail closed», `security-backend.md`).
 - [ ] Abuso di risorse e API: `pageSize` limitato, rate limit, timeout, `matchTimeout`, `no-store`, endpoint operativi non pubblici, webhook firmati (`security-backend.md`, «Abuso di risorse» e «Protezione dell'API»); eventi di sicurezza con alert, `SECURITY.md` e runbook (`security.md`).
 - [ ] Migrazioni con l'utente database dedicato e connessione cifrata, nessun servizio interno esposto (`backend-app.md` §4.4, `security.md`).
 - [ ] Migrazione EF inclusa, se il modello è cambiato.

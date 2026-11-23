@@ -40,5 +40,5 @@ Gli altri punti del §6 (15, 16, 19, 21, 22 e i restanti) stanno in `workflow.md
 7. **Verifica:** esegui build e test prima di dichiarare concluso un compito. Riporta gli errori così come sono, senza minimizzarli.
 8. **Dipendenze:** non aggiungere pacchetti senza dichiarare nome, versione e motivo. Preferisci quelli già presenti.
 9. **Lingua:** codice, identificatori e commenti in inglese; spiegazioni e risposte in italiano; messaggi di commit in inglese.
-11. **Azioni git e distruttive:** commit, push, tag, PR, rilasci (con `gh`) e pipeline seguono `git.md`, in particolare «Integrazione GitHub». Mai `reset --hard`, `push --force`, cancellazione di branch o di dati senza conferma (eccezione: i piani `.md` di Claude, punto 15c).
+11. **Azioni git e distruttive:** commit, push, tag, PR, rilasci (con `gh`) e pipeline seguono `git-flusso.md`, in particolare «Integrazione GitHub». Mai `reset --hard`, `push --force`, cancellazione di branch o di dati senza conferma (eccezione: i piani `.md` di Claude, punto 15c).
 14. **Segnalazione di conflitti:** se una richiesta contraddice queste regole (es. una dipendenza a pagamento, un `any`), dillo e proponi l'alternativa conforme prima di eseguire.

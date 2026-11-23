@@ -76,8 +76,8 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | Upload di file | «Upload di file» | `security-backend.md`, «Upload e parsing di file» |
 | Limiti, paginazione e rate limiting | «Limiti e rate limiting» | `security-backend.md`, «Abuso di risorse» |
 | CSP della SPA statica | «CSP della SPA statica» | `security-backend.md`, «Protezione dell'API» |
-| Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security.md`, «Log di sicurezza e allerta» |
-| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security.md`, «Supply chain» |
+| Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security-avanzata.md`, «Log di sicurezza e allerta» |
+| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security-avanzata.md`, «Supply chain» |
 | Logging (provider, sink, formato, livelli) | «Logging» | `osservabilita.md` |
 | Osservabilità | «Osservabilità» | `osservabilita.md` |
 | Cache | «Cache» | `backend-infra.md` |
