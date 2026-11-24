@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-24
 
+### Template standard: commenti in italiano (passo 5 di #88)
+**Perché:** le versioni brevi di `documentazione.md` e `qualita.md` nel profilo `standard` dicevano «commenti in inglese», come le regole complete (#88).
+**Cosa:** commenti XML e gli altri commenti di codice in italiano per default, identificatori in inglese, deroga solo su richiesta esplicita; la voce della checklist diventa italiana.
+**Dove:** `_template/rules-standard/documentazione.md`, `_template/rules-standard/qualita.md`.
+**Verifica:** ricerca testuale su `_template` e `.claude/rules-optional`: nessuna regola sui commenti che dica ancora «in inglese». Restano da decidere il passo 6 (`docs/adr/0001-profili.md`, riga 30) e la riga 20 dello stesso ADR, che parla di «codice e commit in inglese» e che verrà valutata con il passo 6. Nessun codice toccato, nessun test lanciato.
+
 ### Test frontend: commenti in italiano (passo 4 di #88)
 **Perché:** la sezione test di `frontend.md` diceva «commenti in inglese», in contrasto con il default italiano di `core.md` §9 (#88).
 **Cosa:** la frase diventa «commenti in italiano (default, `core.md` §9)»; i nomi dei test restano descrittivi.
