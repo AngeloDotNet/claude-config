@@ -9,7 +9,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti al pro
 - [ ] Piano come issue padre con le sub-issue come passi, aperto prima di toccare qualsiasi file, per ogni lavoro non piccolo, e aggiornato (sub-issue chiuse) a ogni passo; per una modifica piccola senza piano, la richiesta soddisfa i criteri del §6, punto 15c.
 - [ ] `README.md` e `CHANGELOG.md` creati o aggiornati per questo passo (§5b).
 - [ ] Build senza warning e test passati (riporta gli errori così come sono), verificati prima di chiudere la sub-issue del passo (§6, punto 15a).
-- [ ] Commenti XML in inglese su tutti i tipi e i membri pubblici (§5b).
+- [ ] Commenti XML in italiano su tutti i tipi e i membri pubblici, e gli altri commenti di codice in italiano, salvo richiesta diversa (§5b, `core.md` §9).
 - [ ] ▲ Pacchetti (NuGet e npm) privi di vulnerabilità note, con l'audit indicato al §3.
 - [ ] Test di sicurezza con input malevoli per ogni modifica che tocca input, autenticazione o dati (`security.md`).
 - [ ] Lint e formattazione puliti.
