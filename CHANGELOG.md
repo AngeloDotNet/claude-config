@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-24
 
+### ADR 0002: commenti in italiano, supera due righe dell'ADR 0001 (passo 6 di #88)
+**Perché:** l'ADR 0001 accettato diceva «commenti XML in inglese» e «codice e commit in inglese»; per non riscriverne la storia, la decisione sul default italiano è registrata in un ADR nuovo (#88, opzione B).
+**Cosa:** nuovo `docs/adr/0002-commenti-in-italiano.md` (accettata): commenti di codice in italiano per default, identificatori e commit in inglese, deroga solo su richiesta esplicita. L'ADR 0001 non cambia.
+**Dove:** `docs/adr/0002-commenti-in-italiano.md`, `CHANGELOG.md`.
+**Verifica:** lettura del file e confronto con le righe 20 e 30 dell'ADR 0001. Nessun codice toccato, nessun test lanciato.
+
 ### Template standard: commenti in italiano (passo 5 di #88)
 **Perché:** le versioni brevi di `documentazione.md` e `qualita.md` nel profilo `standard` dicevano «commenti in inglese», come le regole complete (#88).
 **Cosa:** commenti XML e gli altri commenti di codice in italiano per default, identificatori in inglese, deroga solo su richiesta esplicita; la voce della checklist diventa italiana.
