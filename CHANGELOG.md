@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-24
 
+### Rilascio 3.1.0
+**Aggiunto:** ADR 0002 (`docs/adr/0002-commenti-in-italiano.md`): commenti di codice in italiano per default, identificatori e messaggi di commit in inglese.
+**Modificato:** commenti di codice in italiano per default, anche XML `<summary>`, in `core.md` §9, `documentazione.md` §5b, `qualita.md` §0b, la sezione test di `frontend.md` e le versioni brevi in `_template/rules-standard/`. Nessun cambio incompatibile: il cambio riguarda le regole di stile, non il codice.
+**Corretto:** nessuno.
+**Sicurezza:** nessuna regola di sicurezza modificata.
+
 ### Documentazione allineata: commenti in italiano (passi 7 e 8 di #88)
 **Perché:** `README.md` diceva che codice e identificatori sono in inglese, senza distinguere i commenti; nella wiki (`C:/DEV/wiki`) due pagine ripetevano la stessa cosa e rimandavano a `core.md` §6, dove la regola di lingua non è più (ora §9).
 **Cosa:** `README.md` (riga sulla lingua): commenti di codice in italiano per default, identificatori e messaggi di commit in inglese. Nella wiki, `docs/claude-config/intro.md` (stessa riga) e `docs/claude-config/manutenzione.md` (riferimento a `core.md` §9). Nessun'altra pagina della wiki parla della lingua dei commenti.
