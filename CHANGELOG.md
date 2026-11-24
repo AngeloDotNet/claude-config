@@ -2,6 +2,14 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-24
+
+### Commenti di codice in italiano di default (passo 1 di #88)
+**Perché:** la regola diceva «commenti in inglese», anche per i commenti XML; la richiesta dell'utente è il default italiano per ogni commento, salvo richiesta esplicita diversa (#88).
+**Cosa:** `core.md` §9: identificatori in inglese, commenti di codice in italiano per default (anche `<summary>`), deroga solo su richiesta esplicita. Le voci sui commenti in `documentazione.md`, `qualita.md`, `frontend.md`, `_template` e l'ADR 0001 si aggiornano nei passi successivi di #88.
+**Dove:** `.claude/rules/core.md`, `CHANGELOG.md`.
+**Verifica:** ricerca testuale sulle regole: il default inglese per i commenti resta in `documentazione.md`, `qualita.md`, `frontend.md`, `_template` e `docs/adr/0001-profili.md`, da aggiornare nei passi 2-6. Nessun test di codice toccato.
+
 ## 2026-11-23
 
 ### Skill fuse da dodici a dieci (passo 5 di #83)
