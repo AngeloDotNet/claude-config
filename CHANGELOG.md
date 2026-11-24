@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-24
 
+### Commenti XML in italiano (passo 2 di #88)
+**Perché:** `documentazione.md` §5b diceva «commenti XML in inglese»; con il default italiano per ogni commento (#88) la regola del file doveva allinearsi a `core.md` §9.
+**Cosa:** commenti XML `<summary>` in italiano per default; tutti gli altri commenti di codice in italiano, identificatori in inglese, deroga solo su richiesta esplicita.
+**Dove:** `.claude/rules/documentazione.md` §5b.
+**Verifica:** ricerca testuale sul file: resta solo la voce «Lingua dei documenti», che riguarda README e CHANGELOG e non i commenti. Nessun codice toccato, nessun test lanciato.
+
 ### Commenti di codice in italiano di default (passo 1 di #88)
 **Perché:** la regola diceva «commenti in inglese», anche per i commenti XML; la richiesta dell'utente è il default italiano per ogni commento, salvo richiesta esplicita diversa (#88).
 **Cosa:** `core.md` §9: identificatori in inglese, commenti di codice in italiano per default (anche `<summary>`), deroga solo su richiesta esplicita. Le voci sui commenti in `documentazione.md`, `qualita.md`, `frontend.md`, `_template` e l'ADR 0001 si aggiornano nei passi successivi di #88.
