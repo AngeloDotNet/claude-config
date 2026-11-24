@@ -9,7 +9,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti si ign
 - [ ] Piano come issue padre per il lavoro non piccolo, aggiornato a ogni passo.
 - [ ] `README.md` e `CHANGELOG.md` creati o aggiornati per questo passo.
 - [ ] Build senza warning e test passati, con gli errori riportati così come sono.
-- [ ] Commenti XML in inglese sui tipi e i membri pubblici.
+- [ ] Commenti XML in italiano sui tipi e i membri pubblici; gli altri commenti di codice in italiano, salvo richiesta diversa.
 - [ ] Pacchetti senza vulnerabilità note (audit NuGet e npm).
 - [ ] Test con input malevoli per ogni modifica che tocca input, autenticazione o dati.
 - [ ] Lint e formattazione puliti; nessun `any`, nessuna stringa o colore hardcoded (frontend).

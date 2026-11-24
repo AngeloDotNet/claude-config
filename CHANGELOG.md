@@ -2,6 +2,50 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-24
+
+### Documentazione allineata: commenti in italiano (passi 7 e 8 di #88)
+**Perché:** `README.md` diceva che codice e identificatori sono in inglese, senza distinguere i commenti; nella wiki (`C:/DEV/wiki`) due pagine ripetevano la stessa cosa e rimandavano a `core.md` §6, dove la regola di lingua non è più (ora §9).
+**Cosa:** `README.md` (riga sulla lingua): commenti di codice in italiano per default, identificatori e messaggi di commit in inglese. Nella wiki, `docs/claude-config/intro.md` (stessa riga) e `docs/claude-config/manutenzione.md` (riferimento a `core.md` §9). Nessun'altra pagina della wiki parla della lingua dei commenti.
+**Dove:** `README.md`; wiki: `docs/claude-config/intro.md`, `docs/claude-config/manutenzione.md` (repository separato, non committato).
+**Verifica:** ricerca testuale su `README.md` e sulla wiki (`docs/`, `src/`): nessun'altra occorrenza della regola di lingua dei commenti. Nessuna build o test lanciato: modifiche solo a testo. La wiki ha un proprio `CHANGELOG.md` che non è stato toccato, perché le sue voci riguardano la wiki stessa.
+
+### ADR 0002: commenti in italiano, supera due righe dell'ADR 0001 (passo 6 di #88)
+**Perché:** l'ADR 0001 accettato diceva «commenti XML in inglese» e «codice e commit in inglese»; per non riscriverne la storia, la decisione sul default italiano è registrata in un ADR nuovo (#88, opzione B).
+**Cosa:** nuovo `docs/adr/0002-commenti-in-italiano.md` (accettata): commenti di codice in italiano per default, identificatori e commit in inglese, deroga solo su richiesta esplicita. L'ADR 0001 non cambia.
+**Dove:** `docs/adr/0002-commenti-in-italiano.md`, `CHANGELOG.md`.
+**Verifica:** lettura del file e confronto con le righe 20 e 30 dell'ADR 0001. Nessun codice toccato, nessun test lanciato.
+
+### Template standard: commenti in italiano (passo 5 di #88)
+**Perché:** le versioni brevi di `documentazione.md` e `qualita.md` nel profilo `standard` dicevano «commenti in inglese», come le regole complete (#88).
+**Cosa:** commenti XML e gli altri commenti di codice in italiano per default, identificatori in inglese, deroga solo su richiesta esplicita; la voce della checklist diventa italiana.
+**Dove:** `_template/rules-standard/documentazione.md`, `_template/rules-standard/qualita.md`.
+**Verifica:** ricerca testuale su `_template` e `.claude/rules-optional`: nessuna regola sui commenti che dica ancora «in inglese». Restano da decidere il passo 6 (`docs/adr/0001-profili.md`, riga 30) e la riga 20 dello stesso ADR, che parla di «codice e commit in inglese» e che verrà valutata con il passo 6. Nessun codice toccato, nessun test lanciato.
+
+### Test frontend: commenti in italiano (passo 4 di #88)
+**Perché:** la sezione test di `frontend.md` diceva «commenti in inglese», in contrasto con il default italiano di `core.md` §9 (#88).
+**Cosa:** la frase diventa «commenti in italiano (default, `core.md` §9)»; i nomi dei test restano descrittivi.
+**Dove:** `.claude/rules/frontend.md` (sezione test, riga «Isolamento e determinismo»).
+**Verifica:** ricerca testuale sul file: la frase sui commenti non dice più «in inglese». Nessun codice toccato, nessun test lanciato.
+
+### Checklist: commenti in italiano (passo 3 di #88)
+**Perché:** la voce di `qualita.md` §0b chiedeva commenti XML in inglese, in contrasto con il default italiano di `core.md` §9 (#88).
+**Cosa:** la voce diventa «commenti XML in italiano su tutti i tipi e i membri pubblici, e gli altri commenti di codice in italiano, salvo richiesta diversa».
+**Dove:** `.claude/rules/qualita.md` §0b.
+**Verifica:** ricerca testuale sul file: nessuna occorrenza residua di «inglese» riferita ai commenti. Nessun codice toccato, nessun test lanciato.
+
+### Commenti XML in italiano (passo 2 di #88)
+**Perché:** `documentazione.md` §5b diceva «commenti XML in inglese»; con il default italiano per ogni commento (#88) la regola del file doveva allinearsi a `core.md` §9.
+**Cosa:** commenti XML `<summary>` in italiano per default; tutti gli altri commenti di codice in italiano, identificatori in inglese, deroga solo su richiesta esplicita.
+**Dove:** `.claude/rules/documentazione.md` §5b.
+**Verifica:** ricerca testuale sul file: resta solo la voce «Lingua dei documenti», che riguarda README e CHANGELOG e non i commenti. Nessun codice toccato, nessun test lanciato.
+
+### Commenti di codice in italiano di default (passo 1 di #88)
+**Perché:** la regola diceva «commenti in inglese», anche per i commenti XML; la richiesta dell'utente è il default italiano per ogni commento, salvo richiesta esplicita diversa (#88).
+**Cosa:** `core.md` §9: identificatori in inglese, commenti di codice in italiano per default (anche `<summary>`), deroga solo su richiesta esplicita. Le voci sui commenti in `documentazione.md`, `qualita.md`, `frontend.md`, `_template` e l'ADR 0001 si aggiornano nei passi successivi di #88.
+**Dove:** `.claude/rules/core.md`, `CHANGELOG.md`.
+**Verifica:** ricerca testuale sulle regole: il default inglese per i commenti resta in `documentazione.md`, `qualita.md`, `frontend.md`, `_template` e `docs/adr/0001-profili.md`, da aggiornare nei passi 2-6. Nessun test di codice toccato.
+
 ## 2026-11-23
 
 ### Skill fuse da dodici a dieci (passo 5 di #83)
