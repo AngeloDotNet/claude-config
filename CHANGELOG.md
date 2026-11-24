@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-24
 
+### Test frontend: commenti in italiano (passo 4 di #88)
+**Perché:** la sezione test di `frontend.md` diceva «commenti in inglese», in contrasto con il default italiano di `core.md` §9 (#88).
+**Cosa:** la frase diventa «commenti in italiano (default, `core.md` §9)»; i nomi dei test restano descrittivi.
+**Dove:** `.claude/rules/frontend.md` (sezione test, riga «Isolamento e determinismo»).
+**Verifica:** ricerca testuale sul file: la frase sui commenti non dice più «in inglese». Nessun codice toccato, nessun test lanciato.
+
 ### Checklist: commenti in italiano (passo 3 di #88)
 **Perché:** la voce di `qualita.md` §0b chiedeva commenti XML in inglese, in contrasto con il default italiano di `core.md` §9 (#88).
 **Cosa:** la voce diventa «commenti XML in italiano su tutti i tipi e i membri pubblici, e gli altri commenti di codice in italiano, salvo richiesta diversa».
