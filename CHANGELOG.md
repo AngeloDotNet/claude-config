@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-24
 
+### Checklist: commenti in italiano (passo 3 di #88)
+**Perché:** la voce di `qualita.md` §0b chiedeva commenti XML in inglese, in contrasto con il default italiano di `core.md` §9 (#88).
+**Cosa:** la voce diventa «commenti XML in italiano su tutti i tipi e i membri pubblici, e gli altri commenti di codice in italiano, salvo richiesta diversa».
+**Dove:** `.claude/rules/qualita.md` §0b.
+**Verifica:** ricerca testuale sul file: nessuna occorrenza residua di «inglese» riferita ai commenti. Nessun codice toccato, nessun test lanciato.
+
 ### Commenti XML in italiano (passo 2 di #88)
 **Perché:** `documentazione.md` §5b diceva «commenti XML in inglese»; con il default italiano per ogni commento (#88) la regola del file doveva allinearsi a `core.md` §9.
 **Cosa:** commenti XML `<summary>` in italiano per default; tutti gli altri commenti di codice in italiano, identificatori in inglese, deroga solo su richiesta esplicita.
