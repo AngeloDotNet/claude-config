@@ -4,7 +4,7 @@ Repository di partenza per i nuovi progetti sviluppati con [Claude Code](https:/
 
 Contiene le regole di sviluppo (stack .NET + Angular, git flow, sicurezza, Docker come modulo opzionale) già organizzate nel formato che Claude Code carica da solo, più un `CLAUDE.md` da compilare per il progetto.
 
-Le regole sono in italiano; codice, identificatori e messaggi di commit che ne derivano sono in inglese.
+Le regole sono in italiano; i commenti di codice sono in italiano per default, mentre identificatori e messaggi di commit sono in inglese.
 
 > [!WARNING]
 > Questo `README.md` descrive il template. In un progetto nuovo va **sostituito** con il README del progetto.

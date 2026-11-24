@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-24
 
+### Documentazione allineata: commenti in italiano (passi 7 e 8 di #88)
+**Perché:** `README.md` diceva che codice e identificatori sono in inglese, senza distinguere i commenti; nella wiki (`C:/DEV/wiki`) due pagine ripetevano la stessa cosa e rimandavano a `core.md` §6, dove la regola di lingua non è più (ora §9).
+**Cosa:** `README.md` (riga sulla lingua): commenti di codice in italiano per default, identificatori e messaggi di commit in inglese. Nella wiki, `docs/claude-config/intro.md` (stessa riga) e `docs/claude-config/manutenzione.md` (riferimento a `core.md` §9). Nessun'altra pagina della wiki parla della lingua dei commenti.
+**Dove:** `README.md`; wiki: `docs/claude-config/intro.md`, `docs/claude-config/manutenzione.md` (repository separato, non committato).
+**Verifica:** ricerca testuale su `README.md` e sulla wiki (`docs/`, `src/`): nessun'altra occorrenza della regola di lingua dei commenti. Nessuna build o test lanciato: modifiche solo a testo. La wiki ha un proprio `CHANGELOG.md` che non è stato toccato, perché le sue voci riguardano la wiki stessa.
+
 ### ADR 0002: commenti in italiano, supera due righe dell'ADR 0001 (passo 6 di #88)
 **Perché:** l'ADR 0001 accettato diceva «commenti XML in inglese» e «codice e commit in inglese»; per non riscriverne la storia, la decisione sul default italiano è registrata in un ADR nuovo (#88, opzione B).
 **Cosa:** nuovo `docs/adr/0002-commenti-in-italiano.md` (accettata): commenti di codice in italiano per default, identificatori e commit in inglese, deroga solo su richiesta esplicita. L'ADR 0001 non cambia.
