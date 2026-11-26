@@ -2,6 +2,15 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
+## 2026-11-26
+
+### Push e tag restano con il via dell'utente
+**Perché:** le voci del 2026-11-08 («Push, tag, PR e rilasci consentiti sempre» e «Tag e pubblicazione del rilascio senza approvazione per progetto») descrivevano una riscrittura di `git.md` §Integrazione GitHub che non risulta nelle regole attuali: `git-flusso.md` e `git.md` dicono ancora che push, PR, tag e rilasci vanno eseguiti con il via dell'utente. Su decisione dell'utente (2026-11-26) vale il testo attuale: push e tag restano con il via dell'utente.
+**Cosa:** nessuna regola cambiata. Le voci del 2026-11-08 su push e tag sono superate e non vanno seguite; la riga «GitHub CLI (gh) installata» per PR e rilasci resta com'è.
+**Dove:** `CHANGELOG.md`.
+**Verifica:** nessun file di regole toccato; nessun codice toccato.
+**Note:** il comportamento del hook `guard-commands` su push e tag non è stato verificato in questo intervento.
+
 ## 2026-11-24
 
 ### Rilascio 3.1.0
