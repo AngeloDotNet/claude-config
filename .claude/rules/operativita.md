@@ -1,7 +1,12 @@
+---
+paths:
+  - "**/.github/**"
+---
+
 # Operatività, Docker e CI
 
-> Versione 1.1 — ultima revisione: 2026-11-25.
-> Estratto da `core.md` §5 e §5a, con la stessa numerazione. Caricato nei profili standard e strutturato.
+> Versione 1.2 — ultima revisione: 2026-11-27.
+> Estratto da `core.md` §5 e §5a, con la stessa numerazione. Caricato nei profili standard e strutturato solo quando si toccano file sotto `.github/` (`paths:`).
 
 ## 5. Operatività e CI
 - **Logging, shutdown, più container, OpenTelemetry e stack di osservabilità:** in `osservabilita.md`, caricato sui file backend, Docker e `observability/`.
