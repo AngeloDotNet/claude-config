@@ -1,11 +1,17 @@
 ---
 paths:
   - "**/*.{cs,csproj,props}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
 ---
 
 # Regole Backend: logica applicativa e infrastruttura
 
-> Versione 1.8 — ultima revisione: 2026-11-27.
+> Versione 1.9 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md` e `backend.md`. Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §4: errori e risposte API (4.1), concorrenza (4.2), paginazione (4.3), database ed EF Core (4.4), integration test (4.5), utente corrente e proprietà (4.6); la numerazione dei paragrafi è quella storica di `backend.md`.
 

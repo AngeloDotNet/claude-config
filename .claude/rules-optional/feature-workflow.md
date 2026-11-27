@@ -2,6 +2,16 @@
 paths:
   - "**/*.{cs,csproj,props}"
   - "**/*.{ts,html,css,scss}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
+  - "**/package.json"
+  - "**/.npmrc"
+  - "**/.nvmrc"
+  - "**/eslint.config.*"
 ---
 
 # Regole di flusso per entità (backend → frontend)

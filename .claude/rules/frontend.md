@@ -3,11 +3,15 @@ paths:
   - "**/*.{ts,html,css,scss}"
   - "**/angular.json"
   - "**/tsconfig*.json"
+  - "**/package.json"
+  - "**/.npmrc"
+  - "**/.nvmrc"
+  - "**/eslint.config.*"
 ---
 
 # Regole Frontend (Angular, TypeScript & UI)
 
-> Versione 1.15 — ultima revisione: 2026-11-26.
+> Versione 1.16 — ultima revisione: 2026-11-27.
 > Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md` e `security-frontend.md`.
 
 ## 1. Stack Frontend

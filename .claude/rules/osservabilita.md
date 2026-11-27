@@ -5,11 +5,17 @@ paths:
   - "**/docker-compose*.{yml,yaml}"
   - "**/compose*.{yml,yaml}"
   - "observability/**"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
 ---
 
 # Osservabilità (logging, OpenTelemetry, stack)
 
-> Versione 1.0 — ultima revisione: 2026-11-22.
+> Versione 1.1 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md`. Estratto da `core.md` §5 («Operatività e CI», dove restano CI/CD e Git). Si carica sui file backend, Docker e `observability/`; un progetto senza backend dichiara il logging nel `CLAUDE.md`.
 

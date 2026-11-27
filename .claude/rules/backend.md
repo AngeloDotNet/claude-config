@@ -1,11 +1,17 @@
 ---
 paths:
   - "**/*.{cs,csproj,props}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
 ---
 
 # Regole Backend (.NET 10, Architettura & Dati)
 
-> Versione 1.12 — ultima revisione: 2026-11-27.
+> Versione 1.13 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md` (contratto con il frontend, licenze, workflow). Per la sicurezza vedi anche `security.md` e `security-backend.md`. Il modulo è diviso in tre file con la stessa intestazione `paths:`: questo (stack, regole comuni, mapping, convenzioni), `backend-architecture.md` (§2a Vertical Slice, §2b Clean Architecture, §2c accesso ai dati e pattern) e `backend-app.md` (§4 logica applicativa e infrastruttura). La numerazione dei paragrafi è rimasta quella storica.
 

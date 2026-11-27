@@ -1,6 +1,6 @@
 # Regole Core (sempre caricate)
 
-> Versione 4.2 — ultima revisione: 2026-11-27.
+> Versione 4.3 — ultima revisione: 2026-11-27.
 > Questo file contiene il minimo che vale in ogni progetto. Il profilo (`mini`, `standard`, `strutturato`) è dichiarato nel `CLAUDE.md`. Il resto sta nei moduli indicati qui sotto, con la stessa numerazione, e si carica nei profili `standard` e `strutturato`.
 > **Mappa:** §1 e §2 in `contratto.md`; §5 e §5a in `operativita.md`; §5b in `documentazione.md`; §5c in `git.md` e `git-flusso.md`; §6 punti 15, 16, 19, 21, 22 in `workflow.md` (profili `standard` e `strutturato`).
 
@@ -35,6 +35,7 @@ Regole minime in `git.md`; il flusso completo (branch, messaggi, integrazione Gi
 
 ## 6. Regole di Interazione con l'Utente (minime)
 Gli altri punti del §6 (15, 16, 19, 21, 22 e i restanti) stanno in `workflow.md` (profili `standard` e `strutturato`), con la stessa numerazione.
+**Pianificare con le regole:** prima di scrivere il piano (§6, punto 15), leggere i moduli delle aree coinvolte (backend, frontend, osservabilità, Docker se presenti), anche se i `paths:` non li hanno ancora caricati: in un progetto nuovo non ci sono ancora file che li attivino.
 
 5. **Nel dubbio, ferma e chiedi** (regola inviolabile in testa a questo file): per qualsiasi aspetto dello sviluppo (requisiti, dati, architettura, librerie, sicurezza, interfaccia, test, git, documentazione), se c'è un dubbio, un'ambiguità o più strade ragionevoli, Claude **non decide in autonomia e non procede per assunzione**. Si ferma e pone all'utente **domande precise, sempre una alla volta in tutto il workflow** (avvio, requisiti, piano, git, sicurezza, ogni altro punto): una sola domanda per messaggio e per decisione, e **attende la risposta prima di porre la successiva o di procedere**; mai elenchi di domande insieme, nemmeno quando sembrano indipendenti (se ne servono molte, le pone in sequenza, la più bloccante per prima), con il contesto minimo per rispondere e, quando utile, le opzioni con pro e contro e una raccomandazione motivata. Non scrive codice che dipende dalla risposta finché non l'ha ricevuta. Può invece proseguire con le parti non influenzate dal dubbio, dichiarando cosa ha lasciato in sospeso. Le risposte che valgono oltre il caso singolo vanno nel `CLAUDE.md` di progetto (come già per le scelte "chiesto, non presunto", elencate in `avvio-progetto.md` §1b). Non serve chiedere ciò che le regole o il `CLAUDE.md` già stabiliscono, né ciò che è ovvio e reversibile senza costi (es. il nome di una variabile locale). **Deroga approvata per il profilo `mini`:** le voci «chiesto, non presunto» del `CLAUDE.md` prendono il default dichiarato nel `CLAUDE.md` stesso (sezione «Progetto», riga «Default del profilo `mini`») senza domanda; restano da chiedere le voci elencate lì.
 7. **Verifica:** esegui build e test prima di dichiarare concluso un compito. Riporta gli errori così come sono, senza minimizzarli.

@@ -1,11 +1,17 @@
 ---
 paths:
   - "**/*.{cs,csproj,props}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
 ---
 
 # Regole Backend: architettura e accesso ai dati
 
-> Versione 1.2 — ultima revisione: 2026-11-26.
+> Versione 1.3 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md` e `backend.md` (stack, regole comuni, errori e convenzioni). Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §2a Vertical Slice, §2b Clean Architecture, §2c accesso ai dati e pattern; la numerazione dei paragrafi è quella storica di `backend.md`.
 

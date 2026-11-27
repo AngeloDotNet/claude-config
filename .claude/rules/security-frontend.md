@@ -3,11 +3,15 @@ paths:
   - "**/*.{ts,html,css,scss}"
   - "**/angular.json"
   - "**/tsconfig*.json"
+  - "**/package.json"
+  - "**/.npmrc"
+  - "**/.nvmrc"
+  - "**/eslint.config.*"
 ---
 
 # Sicurezza frontend
 
-> Versione 1.3 — ultima revisione: 2026-11-25.
+> Versione 1.4 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md` e `security.md`. Contiene le regole di sicurezza che valgono per il frontend Angular (`innerHTML`, storage, CSP, Trusted Types, `postMessage`, build e segreti, service worker). I principi comuni sono in `security.md`, `security-avanzata.md` e `security-strutturato.md`.
 
