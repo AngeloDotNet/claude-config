@@ -1,7 +1,7 @@
-# Sicurezza strutturata: ASVS, scansione, mobile, dati dettagliati
+# Sicurezza strutturata: ASVS, scansione, dati dettagliati
 
-> Versione 1.3 — ultima revisione: 2026-11-27.
-> Richiede `security.md`, `security-avanzata.md` e `core.md`. Contiene le sezioni solo del profilo `strutturato`: threat model, ASVS, mobile, scansione dinamica, test di sicurezza automatici e dati e segreti dettagliati. Supply chain, rotazione dei segreti e connessione al database stanno in `security-avanzata.md`, che si carica anche nel profilo `standard`. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
+> Versione 1.4 — ultima revisione: 2026-11-27.
+> Richiede `security.md`, `security-avanzata.md` e `core.md`. Contiene le sezioni solo del profilo `strutturato`: threat model, ASVS, scansione dinamica, test di sicurezza automatici e dati e segreti dettagliati. Supply chain, rotazione dei segreti e connessione al database stanno in `security-avanzata.md`, che si carica anche nel profilo `standard`. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
 
 ## Threat model
 - **Threat model leggero per le funzionalità sensibili:** prima di scrivere codice per una funzionalità che tocca autenticazione, dati personali, upload o integrazioni con servizi esterni, Claude redige un breve ADR in `docs/adr/` (formato di `core.md` §5b) con: asset da proteggere, attori (anonimo, utente, altro utente, amministratore, servizio esterno), abuse case (come un attore ostile userebbe la funzionalità: enumerazione, abuso di risorse, accesso ai dati altrui, replay) e mitigazione di ciascuno con il test che la verifica. Una pagina basta; non si scrive per modifiche che non toccano questi temi. L'ADR è un passo del piano (`core.md` §6, punto 15) e si approva con l'utente prima del codice.
@@ -34,17 +34,6 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 - **Livello 1:** le regole di questo file sono la base comune.
 - **Livello 2 (in più):** i controlli opzionali diventano da proporre sempre (MFA per tutti gli utenti con dati sensibili, ri-autenticazione per azioni sensibili, sessioni revocabili, DAST con ZAP in CI, alert su Grafana).
 - **Livello 3 (in più):** quanto sopra come obbligo, Argon2id come deroga da valutare, revisione di sicurezza del progetto da parte di una persona diversa dall'autore e controlli sulla build (provenienza attestata, build riproducibile dove possibile).
-
-
-## Mobile (sezione minima)
-Il kit non ha ancora moduli per il mobile (`core.md` §2): finché non esistono, queste sono le regole di base per un'app che parla con il backend; il riferimento completo è OWASP MASVS (gruppi di controlli: storage, crittografia, autenticazione, rete, piattaforma, codice, resilienza, privacy; elenco e versione da verificare alla fonte al primo uso, non a memoria).
-- **Storage:** token e segreti solo nel contenitore sicuro della piattaforma (Keychain su iOS, Keystore su Android, tramite il plugin del framework scelto), mai in preferenze, file o database in chiaro; nessun segreto del backend nell'app (il pacchetto è decompilabile).
-- **Rete:** solo HTTPS con verifica del certificato; il pinning del certificato o della chiave pubblica è una scelta da concordare per progetto (aumenta la sicurezza ma richiede un piano di rotazione, altrimenti l'app smette di funzionare).
-- **Autenticazione:** Authorization Code con PKCE tramite browser di sistema (mai credenziali in una WebView incorporata); token a vita breve e rinnovabili come da «Autenticazione e Autorizzazione» in `security-backend.md`; sblocco biometrico solo come comodità locale, mai come unico fattore lato server.
-- **Dati e log:** nessun dato personale o token nei log, negli screenshot di sistema o negli appunti; backup del dispositivo e anteprime dell'app valutati per i dati sensibili.
-- **Link e piattaforma:** deep link validati come ogni input esterno (`Open redirect` compreso); permessi richiesti al minimo.
-- **Build:** debug disattivato e codice offuscato dove la piattaforma lo prevede, build di release firmate. Il rilevamento di root o jailbreak non è un controllo di sicurezza affidabile: non si introduce di iniziativa.
-- **Test:** si estendono i test di input ostili alla superficie mobile; la scelta della tecnologia mobile e le sue regole dedicate si chiedono al progetto (`CLAUDE.md`, «Sviluppo mobile»).
 
 
 ## Scansione dinamica, segnalazioni e risposta agli incidenti

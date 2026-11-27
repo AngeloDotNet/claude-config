@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Regole mobile in un modulo opzionale (passo 5 di #128, parte 1)
+**Perché:** la sezione Mobile di `security-strutturato.md` si caricava sempre nel profilo `strutturato`, anche senza un client mobile; circa 2 KiB su un profilo che pesa 84 KiB.
+**Cosa:** le regole di base per un'app mobile passano in `.claude/rules-optional/mobile.md`, da attivare solo se il progetto ha un client mobile (`CLAUDE.md`, «Sviluppo mobile»). `security-strutturato.md` perde la sezione e il titolo «mobile». Il modulo è in elenco tra gli opzionali in `CLAUDE.md`, `avvio-progetto.md` e nel codice di `regole.mjs`. Misura (profili con i moduli sempre caricati): `mini` 14,8 KiB, `standard` 37,6 KiB, `strutturato` 84,0 → 82,1 KiB.
+**Dove:** `.claude/rules-optional/mobile.md` (nuovo, 1.0), `.claude/rules/security-strutturato.md` (1.4), `plugins/kit/scripts/regole.mjs`, `CLAUDE.md`, `_template/avvio-progetto.md`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
 ### Git in due moduli: flusso e regole minime (passo 4 di #128)
 **Perché:** Git stava in tre moduli (`git.md`, `git-flusso.md`, `git-avanzato.md`) e le regole minime, che valgono in ogni profilo, erano in un file che si doveva ricordare di caricare; `git-avanzato.md` era l'estratto di `git-flusso.md` con gli stessi titoli.
 **Cosa:** `git-avanzato.md` è unito in `git-flusso.md`, anche nella versione breve per lo standard. Le regole minime di `git.md` sono in `core.md` §5c. `git.md` e `git-avanzato.md` non esistono più: i riferimenti in regole, template, avvio, hook, skill, `CLAUDE.md` e ADR 0001 puntano alla nuova collocazione. Lo standard copia quattro moduli brevi, non cinque. `/kit:regole` dice dove è finito il contenuto dei due file rimossi e li rimuove, con `.bak` e con un solo ok, nei progetti che li hanno.
