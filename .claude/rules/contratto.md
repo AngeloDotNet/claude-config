@@ -1,11 +1,21 @@
 ---
 paths:
   - "**/*.{cs,csproj,props,ts,html,css,scss}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
+  - "**/package.json"
+  - "**/.npmrc"
+  - "**/.nvmrc"
+  - "**/eslint.config.*"
 ---
 
 # Contratto Frontend ↔ Backend e stack di riferimento
 
-> Versione 1.1 — ultima revisione: 2026-11-27.
+> Versione 1.2 — ultima revisione: 2026-11-27.
 > Estratto da `core.md` §1 e §2, con la stessa numerazione. Caricato sui file backend e frontend (`paths:`) nei profili standard e strutturato.
 
 ## 1. Contratto Frontend ↔ Backend (condiviso)

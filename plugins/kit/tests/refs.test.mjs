@@ -124,7 +124,7 @@ test("rileva le sezioni spostate o inesistenti", () => {
 
 test("rileva titoli, script e skill inesistenti", () => {
   assert.deepEqual(check("`git-flusso.md`, «Integrazione GitHub» e «Titolo che non esiste»"), ["git-flusso.md «Titolo che non esiste»"]);
-  assert.deepEqual(check("`git.md` («Titolo che non esiste»)"), ["git.md «Titolo che non esiste»"]);
+  assert.deepEqual(check("`git-flusso.md` («Titolo che non esiste»)"), ["git-flusso.md «Titolo che non esiste»"]);
   assert.deepEqual(check("node scripts/assente.mjs, poi /kit:assente"), ["scripts/assente.mjs", "/kit:assente"]);
   assert.deepEqual(check("scripts/regole.mjs e /kit:regole"), []);
 });

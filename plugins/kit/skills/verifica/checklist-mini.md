@@ -4,7 +4,7 @@ Si usa al posto di `qualita.md` §0b, che nel profilo `mini` non è caricato. Co
 
 - [ ] Nessuna decisione presa per assunzione (`core.md`, regola in testa).
 - [ ] Identificatori e messaggi di commit in inglese, commenti di codice e spiegazioni in italiano, salvo richiesta diversa (`core.md` §6, punto 9).
-- [ ] Conventional Commits, lavoro su un branch di lavoro, nessun `push --force` e nessun `--no-verify` (`git.md`).
+- [ ] Conventional Commits, lavoro su un branch di lavoro, nessun `push --force` e nessun `--no-verify` (`git-flusso.md`).
 - [ ] Nessun segreto nel repository: valori reali da variabili d'ambiente (`security.md`, «Dati e Segreti»).
 - [ ] Nessun dato personale né segreto nei log, che passano da `ILogger` nel backend .NET (`security.md`; `osservabilita.md`).
 - [ ] Build senza warning e test passati, con gli errori riportati così come sono; se il progetto non ha build o test, lo si dichiara (`core.md` §6, punto 7).

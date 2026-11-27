@@ -3,11 +3,15 @@ paths:
   - "**/*.{ts,html,css,scss}"
   - "**/angular.json"
   - "**/tsconfig*.json"
+  - "**/package.json"
+  - "**/.npmrc"
+  - "**/.nvmrc"
+  - "**/eslint.config.*"
 ---
 
 # Regole Frontend (Angular, TypeScript & UI)
 
-> Versione 1.15 — ultima revisione: 2026-11-26.
+> Versione 1.17 — ultima revisione: 2026-11-27.
 > Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md` e `security-frontend.md`.
 
 ## 1. Stack Frontend
@@ -48,7 +52,7 @@ paths:
 - **Compilatore (MUST):** in `tsconfig` abilita `strict`, `noImplicitOverride`, `noPropertyAccessFromIndexSignature`, `noFallthroughCasesInSwitch`; in `angularCompilerOptions` abilita `strictTemplates`, `strictInjectionParameters`, `strictInputAccessModifiers`.
 - **Struttura cartelle (MUST):** `core/` (singleton, interceptor, guard), `shared/` (componenti riusabili), `features/<nome>/` (lazy loaded). Niente cartelle per tipo tecnico (`components/`, `services/`) a livello radice. **Confini:** una feature non importa da un'altra feature; `core/` e `shared/` non importano da `features/`. Il codice usato da più feature si estrae in `shared/`. Il rispetto dei confini è verificato dal lint (regola ESLint, es. `no-restricted-imports`, configurata nel progetto) e una violazione fa fallire `npm run lint`.
 - **Cartella per elemento (MUST):** ogni componente (pagine incluse), servizio o altro file non di componente sta in una cartella con il nome dell'elemento (kebab-case), che contiene **tutti** i suoi file (`.ts`, `.spec.ts`, `.html`, `.css`), anche quando è l'unico elemento della feature. Esempi: `core/eventi-api/eventi-api.service.ts` e `core/eventi-api/eventi-api.service.spec.ts`, non i file sciolti direttamente in `core/`; `features/<area>/<pagina>/<pagina>.component.ts`, anche con una sola pagina nella feature. Le cartelle stanno dentro la feature (o in `core/`, `shared/`).
-  - **Progetti esistenti:** la regola vale anche per il codice già presente, ma lo spostamento dei file va proposto come passo di refactoring nel piano (issue padre), con conferma, e fatto con gli import aggiornati in un commit `refactor` a sé (`git.md`).
+  - **Progetti esistenti:** la regola vale anche per il codice già presente, ma lo spostamento dei file va proposto come passo di refactoring nel piano (issue padre), con conferma, e fatto con gli import aggiornati in un commit `refactor` a sé (`git-flusso.md`).
 - **Naming (MUST):** TypeScript camelCase per variabili/metodi e PascalCase per classi/interfacce. File in kebab-case. Per i servizi e gli altri file non di componente segui il default della CLI Angular installata.
 - **File di un componente (pagine e componenti riusabili) (MUST):** ogni componente ha il suffisso `.component` (pagine incluse) e **file separati** per logica, template e stili, con lo stesso nome base, nella stessa cartella: `nome-pagina.component.ts`, `nome-pagina.component.html`, `nome-pagina.component.css` (o `.scss` se il progetto lo usa) e, quando si scrivono gli unit test (§10), `nome-pagina.component.spec.ts`. Il `.ts` contiene solo la logica: vietati `template:` e `styles:` inline (anche per componenti piccoli), il decoratore usa `templateUrl: './nome-pagina.component.html'` e `styleUrl: './nome-pagina.component.css'` (singolare, stringa). Il file di stili si crea **solo se il componente ha stili propri**: niente file vuoti e niente `styleUrl` senza stili. Se la CLI installata genera nomi diversi, si rinominano i file generati. Una deroga, se serve, sta nel `CLAUDE.md`.
   - **Template inline da spostare** (codice esistente o refactoring): il contenuto del template non cambia nello spostamento in `.html`; con `<pre>` e `<textarea>` il cui contenuto sta tra i tag, dove l'indentazione conta, si controlla che il testo reso resti identico. Queste regole valgono sul codice nuovo come su migrazioni e refactoring.

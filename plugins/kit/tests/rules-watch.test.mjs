@@ -33,7 +33,7 @@ function write(file, text) {
 }
 
 /** Progetto finto con CLAUDE.md e le regole indicate ({ "core.md": "testo" }). */
-function makeProject(root, rules = { "core.md": "> Versione 3.20 — rev\n# core\n", "git.md": "# git\n" }) {
+function makeProject(root, rules = { "core.md": "> Versione 3.20 — rev\n# core\n", "git-flusso.md": "# git\n" }) {
   write(path.join(root, "CLAUDE.md"), "# progetto\n");
   for (const [name, text] of Object.entries(rules)) write(path.join(root, ".claude", "rules", name), text);
   return root;
@@ -74,7 +74,7 @@ function setup() {
   const home = path.join(base, "home");
   mkdirSync(path.join(home, ".claude"), { recursive: true });
   // Template finto alla stessa versione del progetto: silenzioso, salvo i test dedicati.
-  const template = makeProject(path.join(base, "template"), { "core.md": "> Versione 3.20 — rev\n# core\n", "git.md": "# git\n" });
+  const template = makeProject(path.join(base, "template"), { "core.md": "> Versione 3.20 — rev\n# core\n", "git-flusso.md": "# git\n" });
   const project = makeProject(path.join(base, "project"));
   return { base, home, template, project };
 }
@@ -111,10 +111,10 @@ describe("rules-watch: regole cambiate durante la sessione", () => {
   test("file modificato: lo nomina una volta sola", () => {
     const { home, template, project } = setup();
     run("prompt-start.mjs", { cwd: project, home, template });
-    writeFileSync(path.join(project, ".claude", "rules", "git.md"), "# git modificato\n");
+    writeFileSync(path.join(project, ".claude", "rules", "git-flusso.md"), "# git modificato\n");
     const out = run("prompt-start.mjs", { cwd: project, home, template });
     assert.match(out, /\[Regole cambiate durante la sessione\]/);
-    assert.match(out, /\.claude\/rules\/git\.md/);
+    assert.match(out, /\.claude\/rules\/git-flusso.md/);
     assert.equal(run("prompt-start.mjs", { cwd: project, home, template }), "");
   });
 
@@ -160,14 +160,14 @@ describe("diff con git (clone locale del repository)", () => {
 
   test("modifica non committata: il diff compare", () => {
     assert.equal(watch(), "");
-    writeFileSync(path.join(clone, ".claude", "rules", "git.md"), readFileSync(path.join(clone, ".claude", "rules", "git.md"), "utf8") + "- riga di prova A\n");
+    writeFileSync(path.join(clone, ".claude", "rules", "git-flusso.md"), readFileSync(path.join(clone, ".claude", "rules", "git-flusso.md"), "utf8") + "- riga di prova A\n");
     const out = watch();
     assert.match(out, /git diff/);
     assert.match(out, /^\+- riga di prova A$/m);
   });
 
   test("dopo un commit e una nuova modifica, il diff riguarda solo il file nuovo", () => {
-    git(clone, "add", ".claude/rules/git.md");
+    git(clone, "add", ".claude/rules/git-flusso.md");
     git(clone, "commit", "--quiet", "-m", "test: rule");
     writeFileSync(path.join(clone, ".claude", "rules", "core.md"), readFileSync(path.join(clone, ".claude", "rules", "core.md"), "utf8") + "- riga di prova B\n");
     const out = watch();
@@ -193,9 +193,9 @@ describe("diff con git (clone locale del repository)", () => {
   test("cartella senza git: solo l'elenco dei file", () => {
     const ctx = setup();
     run("prompt-start.mjs", { cwd: ctx.project, home: ctx.home, template: ctx.template });
-    writeFileSync(path.join(ctx.project, ".claude", "rules", "git.md"), "# cambiato\n");
+    writeFileSync(path.join(ctx.project, ".claude", "rules", "git-flusso.md"), "# cambiato\n");
     const out = run("prompt-start.mjs", { cwd: ctx.project, home: ctx.home, template: ctx.template });
-    assert.match(out, /git\.md/);
+    assert.match(out, /git-flusso.md/);
     assert.doesNotMatch(out, /git diff/);
   });
 });
@@ -246,7 +246,7 @@ describe("confronto con il template", () => {
 
   test("stessa versione o versione minore (3.9 contro 3.20): silenzio", () => {
     const { home, template, project } = setup();
-    write(path.join(template, ".claude", "rules", "git.md"), "# git diverso\n");
+    write(path.join(template, ".claude", "rules", "git-flusso.md"), "# git diverso\n");
     assert.equal(run("prompt-start.mjs", { cwd: project, home, template, session: "a" }), "");
     write(path.join(template, ".claude", "rules", "core.md"), "> Versione 3.9 — rev\n");
     assert.equal(run("prompt-start.mjs", { cwd: project, home, template, session: "b" }), "");

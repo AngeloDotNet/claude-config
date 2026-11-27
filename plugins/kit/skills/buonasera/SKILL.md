@@ -14,7 +14,7 @@ Rispondi in italiano. Non committare nulla (nemmeno la wiki).
    - **nessuna issue padre ma modifiche non committate:** prosegui senza i passi 3 e 4; nel riepilogo elenca le modifiche non committate come stato di ripartenza;
    - **issue padre con tutte le sub-issue chiuse:** non aggiornare la ripartenza; riepiloga cosa è stato fatto e chiedi con una sola domanda se chiudere la issue padre.
 3. Priorità, per questo progetto: leggi in `~/.claude/kit-progetti.json` la voce del progetto (chiave: il percorso assoluto della radice del repository, con `/` al posto di `\`). Se la voce `priorita` manca, chiedi una sola domanda: vuoi gestire le priorità in questo progetto (sì/no)? Salva la risposta nella voce del progetto; crea il file se non esiste e aggiorna solo quella voce, senza toccare le altre. Se `priorita: true`, ogni sub-issue aperta deve avere una sola etichetta `P1`, `P2` o `P3`: aggiungi quella mancante solo dopo aver chiesto all'utente (una domanda per volta).
-4. Aggiorna le issue (con `gh`, senza conferma, `git.md`):
+4. Aggiorna le issue (con `gh`, senza conferma, `git-flusso.md`):
    - **Sub-issue dei passi verificati** (build e test dove si applicano): chiudile con un commento che riporta l'esito della verifica. Non chiudere quelle non verificate.
    - **Ripartenza:** aggiungi alla issue padre un commento «Ripartenza» con: data, passo in corso, ultimo passo completato, prossimo passo, decisioni aperte, file toccati oggi, test rotti. Se il commento di ripartenza di oggi esiste già, aggiornalo invece di aggiungerne un altro.
    - **Problemi nuovi:** apri una issue per ciascuno, con titolo chiaro e corpo che dice cosa, dove e perché. Non chiudere né modificare quelle esistenti.

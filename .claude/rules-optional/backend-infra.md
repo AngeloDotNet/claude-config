@@ -1,6 +1,12 @@
 ---
 paths:
   - "**/*.{cs,csproj,props}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
 ---
 
 # Regole Backend — Messaggistica, Cache ed Eventi (modulo opzionale)

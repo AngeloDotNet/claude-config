@@ -1,14 +1,14 @@
-# Sicurezza strutturata: ASVS, scansione, mobile, dati dettagliati
+# Sicurezza strutturata: ASVS, scansione, dati dettagliati
 
-> Versione 1.2 — ultima revisione: 2026-11-27.
-> Richiede `security.md`, `security-avanzata.md` e `core.md`. Contiene le sezioni solo del profilo `strutturato`: threat model, ASVS, mobile, scansione dinamica, test di sicurezza automatici e dati e segreti dettagliati. Supply chain, rotazione dei segreti e connessione al database stanno in `security-avanzata.md`, che si carica anche nel profilo `standard`. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
+> Versione 1.5 — ultima revisione: 2026-11-27.
+> Richiede `security.md`, `security-avanzata.md` e `core.md`. Contiene le sezioni solo del profilo `strutturato`: threat model, ASVS, scansione dinamica, test di sicurezza automatici e dati e segreti dettagliati. Supply chain, rotazione dei segreti e connessione al database stanno in `security-avanzata.md`, che si carica anche nel profilo `standard`. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
 
 ## Threat model
 - **Threat model leggero per le funzionalità sensibili:** prima di scrivere codice per una funzionalità che tocca autenticazione, dati personali, upload o integrazioni con servizi esterni, Claude redige un breve ADR in `docs/adr/` (formato di `core.md` §5b) con: asset da proteggere, attori (anonimo, utente, altro utente, amministratore, servizio esterno), abuse case (come un attore ostile userebbe la funzionalità: enumerazione, abuso di risorse, accesso ai dati altrui, replay) e mitigazione di ciascuno con il test che la verifica. Una pagina basta; non si scrive per modifiche che non toccano questi temi. L'ADR è un passo del piano (`core.md` §6, punto 15) e si approva con l'utente prima del codice.
 
 
 ## Mappa ASVS 5.0 e livelli
-Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2026-11-04 su `github.com/OWASP/ASVS/tree/v5.0.0/5.0/en`. Il livello di ogni singolo requisito (L1/L2/L3) non è stato letto requisito per requisito: la tabella dice dove cercare e cosa il kit aggiunge per livello, non sostituisce il testo dell'ASVS, che si consulta per il livello scelto. Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
+Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli. La tabella dice dove cercare e cosa il kit aggiunge per livello; non sostituisce il testo dell'ASVS, che si consulta per il livello scelto (note di verifica in `docs/fonti.md`). Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
 
 | Capitolo ASVS | Dove nelle regole |
 |---|---|
@@ -36,22 +36,11 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 - **Livello 3 (in più):** quanto sopra come obbligo, Argon2id come deroga da valutare, revisione di sicurezza del progetto da parte di una persona diversa dall'autore e controlli sulla build (provenienza attestata, build riproducibile dove possibile).
 
 
-## Mobile (sezione minima)
-Il kit non ha ancora moduli per il mobile (`core.md` §2): finché non esistono, queste sono le regole di base per un'app che parla con il backend; il riferimento completo è OWASP MASVS (gruppi di controlli: storage, crittografia, autenticazione, rete, piattaforma, codice, resilienza, privacy; elenco e versione da verificare alla fonte al primo uso, non a memoria).
-- **Storage:** token e segreti solo nel contenitore sicuro della piattaforma (Keychain su iOS, Keystore su Android, tramite il plugin del framework scelto), mai in preferenze, file o database in chiaro; nessun segreto del backend nell'app (il pacchetto è decompilabile).
-- **Rete:** solo HTTPS con verifica del certificato; il pinning del certificato o della chiave pubblica è una scelta da concordare per progetto (aumenta la sicurezza ma richiede un piano di rotazione, altrimenti l'app smette di funzionare).
-- **Autenticazione:** Authorization Code con PKCE tramite browser di sistema (mai credenziali in una WebView incorporata); token a vita breve e rinnovabili come da «Autenticazione e Autorizzazione» in `security-backend.md`; sblocco biometrico solo come comodità locale, mai come unico fattore lato server.
-- **Dati e log:** nessun dato personale o token nei log, negli screenshot di sistema o negli appunti; backup del dispositivo e anteprime dell'app valutati per i dati sensibili.
-- **Link e piattaforma:** deep link validati come ogni input esterno (`Open redirect` compreso); permessi richiesti al minimo.
-- **Build:** debug disattivato e codice offuscato dove la piattaforma lo prevede, build di release firmate. Il rilevamento di root o jailbreak non è un controllo di sicurezza affidabile: non si introduce di iniziativa.
-- **Test:** si estendono i test di input ostili alla superficie mobile; la scelta della tecnologia mobile e le sue regole dedicate si chiedono al progetto (`CLAUDE.md`, «Sviluppo mobile»).
-
-
 ## Scansione dinamica, segnalazioni e risposta agli incidenti
-(Scelte del kit; OWASP ZAP è Apache-2.0, licenza verificata il 2026-11-04.)
+(Scelte del kit; OWASP ZAP è Apache-2.0.)
 - **DAST con OWASP ZAP baseline (opzionale):** scansione passiva contro un'istanza di prova avviata in CI (mai produzione), con report salvato come artefatto. Il progetto la attiva se ha un ambiente avviabile in CI e lo annota nel `CLAUDE.md`; i falsi positivi si gestiscono in un file di regole versionato, ognuno con il motivo, non si ignora l'intera scansione. Le action o le immagini usate sono fissate come in «Supply chain». Claude scrive il workflow; l'esecuzione è dell'utente.
 - **`SECURITY.md`:** nella root di ogni progetto, con come segnalare una vulnerabilità (canale privato, per esempio il reporting privato di GitHub o un indirizzo email), versioni supportate, tempi di risposta attesi e divieto di aprire issue pubbliche per falle non corrette. Contatti e tempi li fornisce l'utente: Claude non li inventa.
-- **Runbook minimo** in `docs/runbook-sicurezza.md`, breve e senza segreti, con i passi per: segreto trapelato (considerarlo bruciato, ruotarlo, verificare gli accessi, poi la pulizia della cronologia, come in `git.md`); account compromesso (revoca di sessioni e token, reset delle credenziali, controllo dei log di sicurezza, avviso al titolare); dipendenza vulnerabile (aggiornare o segnalare, `core.md` §3); violazione di dati personali (avviso al titolare del trattamento: il GDPR prevede la notifica al Garante entro 72 ore). Chi decide e chi esegue lo indica l'utente.
+- **Runbook minimo** in `docs/runbook-sicurezza.md`, breve e senza segreti, con i passi per: segreto trapelato (considerarlo bruciato, ruotarlo, verificare gli accessi, poi la pulizia della cronologia, come in `git-flusso.md`); account compromesso (revoca di sessioni e token, reset delle credenziali, controllo dei log di sicurezza, avviso al titolare); dipendenza vulnerabile (aggiornare o segnalare, `core.md` §3); violazione di dati personali (avviso al titolare del trattamento: il GDPR prevede la notifica al Garante entro 72 ore). Chi decide e chi esegue lo indica l'utente.
 
 
 ## Test di sicurezza automatici

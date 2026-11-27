@@ -1,11 +1,17 @@
 ---
 paths:
   - "**/*.{cs,csproj,props}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
 ---
 
 # Sicurezza backend (API, autenticazione, abuso, upload)
 
-> Versione 1.6 — ultima revisione: 2026-11-25.
+> Versione 1.7 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md` e `security.md`. Contiene le sezioni di sicurezza che valgono per progetti con backend: autenticazione e autorizzazione, chiavi e password (.NET), protezione dell'API, abuso di risorse, vulnerabilità applicative, upload. I principi comuni (mappa ASVS, crittografia, dati e segreti, log, fail closed, supply chain) sono in `security.md`, `security-avanzata.md` e `security-strutturato.md`.
 

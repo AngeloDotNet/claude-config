@@ -1,11 +1,17 @@
 ---
 paths:
   - "**/*.{cs,csproj,props}"
+  - "**/appsettings*.json"
+  - "**/NuGet.config"
+  - "**/.editorconfig"
+  - "**/global.json"
+  - "**/*.sln"
+  - "**/*.slnx"
 ---
 
 # Regole Backend: logica applicativa e infrastruttura
 
-> Versione 1.8 — ultima revisione: 2026-11-27.
+> Versione 1.11 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md` e `backend.md`. Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §4: errori e risposte API (4.1), concorrenza (4.2), paginazione (4.3), database ed EF Core (4.4), integration test (4.5), utente corrente e proprietà (4.6); la numerazione dei paragrafi è quella storica di `backend.md`.
 
@@ -43,8 +49,10 @@ paths:
 - **Dataset molto grandi:** valuta la keyset pagination.
 
 ### 4.4 Database ed EF Core
-- **Migrazioni:** sempre versionate; mai `EnsureCreated`; mai modificare migrazioni già applicate. Si applicano da codice all'avvio del container del backend (`Database.MigrateAsync()`), prima che l'app inizi a servire richieste; nessuno step dedicato di CI/CD né servizio one-shot nel compose (con Docker, vedi `docker.md`).
-- **Privilegi:** l'app serve le richieste con un utente a privilegi minimi (DML sì, DDL no); mai con il proprietario dello schema. Le migrazioni usano un **utente separato con DDL**, dal profilo `strutturato` (a prescindere dal livello ASVS, `docs/adr/0001-profili.md`): una seconda stringa di connessione (`ConnectionStrings:Migrations`, valore reale solo da variabile d'ambiente valorizzata da `.env`, voce in `.env.example`), usata solo da `Database.MigrateAsync()` all'avvio e mai per servire richieste.
+- **Migrazioni:** sempre versionate; mai `EnsureCreated`; mai modificare migrazioni già applicate. Si applicano con un **passo unico prima dell'avvio delle repliche**: il bundle generato in build (`dotnet ef migrations bundle`) eseguito come job one-shot che termina prima che l'app inizi a servire richieste, non da ogni replica al proprio avvio (con Docker, vedi `docker.md`; ADR 0003). Il lock che EF Core 9 o successivo applica in `MigrateAsync` è una protezione in più, non sostituisce il passo unico.
+- **Migrazioni compatibili con la versione precedente (expand/contract, MUST):** durante un rilascio la versione precedente dell'app può ancora girare sullo schema nuovo. Per questo si procede in tre fasi: **expand** (aggiungere tabelle o colonne nullable o con default, senza togliere nulla), poi il codice che usa il nuovo schema, poi **contract** (rimuovere colonne o tabelle non più usate) in un rilascio successivo. Mai rinominare o eliminare una colonna nello stesso rilascio che smette di usarla.
+- **Rollback del rilascio:** prima del rilascio si decide come tornare indietro. Il codice precedente deve poter leggere lo schema nuovo (per questo expand/contract). Una migrazione già applicata non si modifica: si annulla con una migrazione nuova (`lavoro.md`, «Imprevisti e rollback»).
+- **Privilegi:** l'app serve le richieste con un utente a privilegi minimi (DML sì, DDL no); mai con il proprietario dello schema. Le migrazioni usano un **utente separato con DDL**, dal profilo `strutturato` (a prescindere dal livello ASVS, `docs/adr/0001-profili.md`): una seconda stringa di connessione (`ConnectionStrings:Migrations`, valore reale solo da variabile d'ambiente valorizzata da `.env`, voce in `.env.example`), usata solo dal job di migrazione (il bundle) e mai per servire richieste.
 - **Letture:** `AsNoTracking` e proiezioni con `Select` verso DTO. Vietato N+1; indici definiti esplicitamente.
 - **Query raw:** solo parametrizzate.
 - **Log di EF Core:** `EnableSensitiveDataLogging` (che scrive nei log i valori dei parametri) e `EnableDetailedErrors` solo in Development, mai in produzione: i valori possono essere dati personali o segreti (`security.md`, «Dati e Segreti»).
