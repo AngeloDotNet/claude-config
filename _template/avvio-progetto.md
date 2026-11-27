@@ -81,12 +81,12 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | Limiti, paginazione e rate limiting | «Limiti e rate limiting» | `security-backend.md`, «Abuso di risorse» |
 | CSP della SPA statica | «CSP della SPA statica» | `security-backend.md`, «Protezione dell'API» |
 | Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security-strutturato.md`, «Log di sicurezza e allerta» |
-| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security-strutturato.md`, «Supply chain» |
+| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security-avanzata.md`, «Supply chain» |
 | Logging (provider, sink, formato, livelli) | «Logging» | `osservabilita.md` |
 | Osservabilità | «Osservabilità» | `osservabilita.md` |
 | Cache | «Cache» | `backend-infra.md` |
 | File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend.md` §2 e §5, moduli opzionali |
-| Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security-strutturato.md` |
+| Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security-strutturato.md` (backup, RPO/RTO), `security-avanzata.md` (rotazione) |
 | Lingua di README e CHANGELOG | «Lingua della documentazione» | `core.md` §5b |
 | Fine riga del repository | «Fine riga» | `git-flusso.md`, «Repository, fine riga e hook» |
 | GitHub CLI installata | «Eccezioni alle regole globali» | `git-flusso.md`, «Integrazione GitHub» |

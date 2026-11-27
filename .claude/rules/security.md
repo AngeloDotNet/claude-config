@@ -1,6 +1,6 @@
-# Sicurezza: segreti e principi minimi (profilo mini)
+# Sicurezza: segreti e principi minimi (base)
 
-> Versione 3.1 — ultima revisione: 2026-11-25.
+> Versione 3.2 — ultima revisione: 2026-11-27.
 > Richiede `core.md`. Sono le regole minime per ogni progetto. Il resto (OWASP Top 10 e ASVS, progettazione sicura, crittografia, supply chain, log di sicurezza) è in `security-avanzata.md` (standard e strutturato) e in `security-strutturato.md` (solo strutturato); le regole backend e frontend in `security-backend.md` e `security-frontend.md`.
 
 ## Dati e Segreti

@@ -1,6 +1,6 @@
-# Regole Git (profilo mini)
+# Regole Git (base)
 
-> Versione 3.0 — ultima revisione: 2026-11-23.
+> Versione 3.1 — ultima revisione: 2026-11-27.
 > Richiede `core.md`. Sono le regole minime per ogni progetto versionato. Il dettaglio (branch, messaggi, granularità, integrazione GitHub, repository e hook) è in `git-flusso.md`; pull request, rilascio e skill in `git-avanzato.md`. Entrambi si caricano nei profili standard e strutturato.
 
 - **Branch (git flow):** `develop` è obbligatorio. Mai commit diretti su `main` o `develop`; il lavoro sta su `feature/`, `bugfix/` o `release/` (da `develop`) e `hotfix/` (da `main`). Il branch di lavoro lo crea Claude senza chiedere conferma.

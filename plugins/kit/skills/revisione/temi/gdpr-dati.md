@@ -3,7 +3,7 @@
 
 Rispondi in italiano. Una sola domanda per messaggio.
 
-Questa skill revisiona gli aspetti tecnici del trattamento dei dati personali nel backend. Non è consulenza legale: le basi giuridiche, la valutazione d'impatto e gli obblighi verso gli interessati si decidono con il titolare del trattamento. Le regole di base stanno in `security.md` («Dati e Segreti») e `osservabilita.md`; il dettaglio è in `security-strutturato.md` («Dati e Segreti», da leggere in `.claude/rules-optional/` se il profilo non lo carica).
+Questa skill revisiona gli aspetti tecnici del trattamento dei dati personali nel backend. Non è consulenza legale: le basi giuridiche, la valutazione d'impatto e gli obblighi verso gli interessati si decidono con il titolare del trattamento. Le regole di base stanno in `security.md` («Dati e Segreti») e `osservabilita.md`; il dettaglio è in `security-avanzata.md` («Database, rotazione e dati personali») e in `security-strutturato.md` («Dati e Segreti», da leggere in `.claude/rules-optional/` se il profilo non lo carica).
 
 1. **Mappa dei dati.** Individua i modelli e i campi che contengono dati personali (nome, email, indirizzo, identificativi, dati di pagamento, dati sanitari, geolocalizzazione). Se il progetto non lo dichiara, chiedi una sola domanda: quali categorie di dati personali tratta.
 2. **Minimizzazione.** Per ogni campo verifica che serva a una finalità dichiarata. I DTO di richiesta accettano solo i campi necessari, e le risposte non espongono campi che il chiamante non usa.

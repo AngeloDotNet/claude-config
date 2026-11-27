@@ -1,7 +1,7 @@
 # Sicurezza avanzata: progettazione, crittografia e test di input
 
-> Versione 2.2 — ultima revisione: 2026-11-25.
-> Richiede `security.md` e `core.md`. Estratto da `security.md` con gli stessi titoli di sezione. Caricato nei profili standard e strutturato. Le sezioni ASVS, supply chain, scansione dinamica, mobile, test di sicurezza automatici, threat model e dettaglio di dati e segreti sono in `security-strutturato.md` (solo profilo strutturato).
+> Versione 2.3 — ultima revisione: 2026-11-27.
+> Richiede `security.md` e `core.md`. Estratto da `security.md` con gli stessi titoli di sezione. Caricato nei profili standard e strutturato. Contiene anche supply chain, rotazione dei segreti, connessione al database e dati personali (base, valgono da `standard`). Le sezioni ASVS, scansione dinamica, mobile, threat model e test di sicurezza automatici sono in `security-strutturato.md` (solo profilo strutturato).
 
 ## Progettazione sicura e fail closed
 (OWASP Top 10 2025: A06 «Insecure Design» e A10 «Mishandling of Exceptional Conditions».)
@@ -20,3 +20,19 @@
 ## Test di sicurezza automatici (minimo)
 Si scrivono nel progetto `IntegrationTests` (vedi `backend-app.md` §4.5) e fanno fallire la build.
 - **Input malevoli (obbligatori per ogni modifica che tocca input, autenticazione o dati):** ogni endpoint o validatore nuovo o modificato ha test con payload ostili: frammenti SQL/XSS/path traversal nei campi, stringhe oltre i limiti, caratteri di controllo e a capo, JSON malformato o con tipi errati, overposting (campi non ammessi come `Role`, `OwnerId`, `TenantId`), identificatori di altri utenti. L'esito atteso è un rifiuto controllato (400, 404, 413 o 422 con `ProblemDetails`), mai un 500 né il dato elaborato. Gli unit test coprono i validatori, gli integration test l'endpoint.
+
+## Supply chain
+- Audit delle dipendenze, SAST, secret scanning, scansione immagini e SBOM: vedi `core.md` (§3 e §5). I controlli concreti sono qui sotto (OWASP Top 10 2025, A03 «Software Supply Chain Failures»).
+- **NuGet, package source mapping:** il `NuGet.config` nella root dichiara `<packageSourceMapping>` con una sola fonte per ogni pacchetto (`nuget.org` per `*`; un feed privato, se c'è, per i suoi prefissi), così un pacchetto con lo stesso nome su un'altra fonte non viene scaricato al suo posto (dependency confusion). Vale per tutti i pacchetti, anche transitivi; richiede NuGet 6.0 o successivo e il mapping non si applica ai pacchetti già nella cartella globale (`dotnet list package --vulnerable` interroga comunque tutte le fonti).
+- **npm, script di installazione:** `npm ci --ignore-scripts` è la regola, nel Dockerfile, in locale e in CI. Un pacchetto che ne ha davvero bisogno (es. il download dei browser di Playwright) è un'eccezione elencata nel `CLAUDE.md` con il motivo e lo script lanciato esplicitamente a parte.
+- **Bot delle dipendenze, attesa sulle versioni nuove:** Dependabot/Renovate propongono una versione solo dopo 7 giorni dalla pubblicazione (`cooldown` di Dependabot; l'equivalente in Renovate); gli aggiornamenti di sicurezza non aspettano (per Dependabot il `cooldown` non li riguarda). Il valore si tiene nella configurazione del bot, non nel codice.
+- **GitHub Actions:** ogni action di terze parti fissata al commit SHA completo (preso dal repository originale, non da un fork) con la versione in commento; `permissions:` dichiarati in ogni workflow, di default in sola lettura (`contents: read`) con permessi in più solo sul job che li richiede; nessun segreto esposto ai workflow delle PR da fork.
+- **Repository (a cura dell'utente):** protezione del branch `main` e di `develop` (PR obbligatoria, controlli CI richiesti, nessun push diretto) e `CODEOWNERS` per `.github/`, `security.md` e i file di dipendenze. Claude scrive `CODEOWNERS` e i workflow se richiesto; la configurazione su GitHub è dell'utente.
+- **Immagine di release:** SBOM già previsto in `core.md` §5; in più, attestazione di provenienza della build (strumento e licenza da verificare al primo uso, `core.md` §3).
+- **Controllo licenze:** la regola "solo licenze permissive" (`core.md` §3) si verifica con uno strumento gratuito, non a memoria: per npm `license-checker-rseidelsohn` (BSD-3-Clause, versione 5.x; il progetto passerà a `@lizenz/checker`, oggi ancora pre-1.0: valutarlo quando esce la 1.0), per NuGet `nuget-license` di sensslen (Apache-2.0, dotnet tool `nuget-license`; non confonderlo con il vecchio `dotnet-project-licenses`, abbandonato). Licenze degli strumenti verificate il 2026-10-25; per qualunque altro strumento verifica la licenza prima di proporlo. Il comando e la lista di licenze ammesse stanno nel `CLAUDE.md` o nella CI; una licenza non ammessa o sconosciuta fa fallire il controllo e viene segnalata, non ignorata.
+
+
+## Database, rotazione e dati personali
+- Rotazione dei segreti: i segreti hanno una data di scadenza o rotazione dichiarata nel `CLAUDE.md` di progetto; un segreto compromesso o finito per errore nel repository si considera bruciato e va sostituito, non solo rimosso.
+- **Database e canali interni:** il database si raggiunge con connessione cifrata e certificato verificato (SQL Server `Encrypt=True` con `TrustServerCertificate=False`; PostgreSQL `SslMode=VerifyFull`); se il server usa un certificato proprio, la CA fidata si concorda per progetto (host gestito dall'utente). Utente applicativo senza DDL e utente separato per le migrazioni: vedi `backend-app.md` §4.4. Redis e RabbitMQ richiedono sempre autenticazione (segreti da variabili d'ambiente valorizzate da `.env`) e non espongono porte sull'host in produzione (con Docker, `docker.md`); se il traffico esce dalla rete interna del compose, passa su TLS. Nessun servizio interno (database, cache, broker, pannelli di gestione) è raggiungibile da Internet.
+- Dati personali: minimizzazione, cifratura dei campi sensibili, retention e diritto all'oblio (GDPR).

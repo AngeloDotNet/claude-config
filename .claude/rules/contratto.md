@@ -5,7 +5,7 @@ paths:
 
 # Contratto Frontend ↔ Backend e stack di riferimento
 
-> Versione 1.0 — ultima revisione: 2026-11-23.
+> Versione 1.1 — ultima revisione: 2026-11-27.
 > Estratto da `core.md` §1 e §2, con la stessa numerazione. Caricato sui file backend e frontend (`paths:`) nei profili standard e strutturato.
 
 ## 1. Contratto Frontend ↔ Backend (condiviso)
@@ -23,6 +23,6 @@ Queste regole valgono per entrambi i lati e non vanno reinterpretate.
 ## 2. Stack di Riferimento
 - **Frontend:** Angular + TypeScript strict + PrimeNG (dettagli in `frontend.md`). Angular è il default, ma la tecnologia (Angular o Blazor) e l'eventuale sviluppo mobile (e con quale tecnologia) si chiedono a ogni progetto, vedi `avvio-progetto.md` §1; per Blazor e per il mobile non esistono ancora regole.
 - **Backend:** .NET 10 / C# 14 + EF Core 10 (default; Dapper è l'alternativa da valutare ogni volta, non scontata) su SQL Server o PostgreSQL, da chiedere ogni volta (dettagli in `backend.md`).
-- **Test:** xUnit (backend; integration test in un progetto dedicato con database reale di prova, vedi §4 e `backend-app.md` §4.5), Vitest + Playwright (frontend); dettagli nel §4. Non usare Jest né Karma/Jasmine nei nuovi progetti.
+- **Test:** xUnit (backend; integration test in un progetto dedicato con database reale di prova, vedi `qualita.md` §4 e `backend-app.md` §4.5), Vitest + Playwright (frontend); dettagli in `qualita.md` §4. Non usare Jest né Karma/Jasmine nei nuovi progetti.
 - **Infrastruttura di riferimento:** database a scelta per progetto (SQL Server o PostgreSQL), già presente e gestito sul server (se si usa Docker, mai nel compose: `docker.md`), Redis (solo cache e solo se un L2 è stato approvato, non presunto) e RabbitMQ (solo messaggistica), questi ultimi in container.
 
