@@ -1,6 +1,6 @@
 # Sicurezza strutturata: ASVS, scansione, dati dettagliati
 
-> Versione 1.5 — ultima revisione: 2026-11-27.
+> Versione 1.6 — ultima revisione: 2026-11-27.
 > Richiede `security.md`, `security-avanzata.md` e `core.md`. Contiene le sezioni solo del profilo `strutturato`: threat model, ASVS, scansione dinamica, test di sicurezza automatici e dati e segreti dettagliati. Supply chain, rotazione dei segreti e connessione al database stanno in `security-avanzata.md`, che si carica anche nel profilo `standard`. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
 
 ## Threat model
@@ -8,7 +8,7 @@
 
 
 ## Mappa ASVS 5.0 e livelli
-Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli. La tabella dice dove cercare e cosa il kit aggiunge per livello; non sostituisce il testo dell'ASVS, che si consulta per il livello scelto (note di verifica in `docs/fonti.md`). Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
+Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli. La tabella dice dove cercare e cosa il kit aggiunge per livello; non sostituisce il testo dell'ASVS, che si consulta per il livello scelto (note di verifica in `docs/fonti.md`). Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `frontend.md` §9.
 
 | Capitolo ASVS | Dove nelle regole |
 |---|---|

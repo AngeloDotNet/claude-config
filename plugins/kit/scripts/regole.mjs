@@ -128,7 +128,6 @@ function copyPlan(template, options) {
     if (options["sicurezza-estesa"]) {
       names.push("security-avanzata", "security-strutturato");
       if (options.backend) names.push("security-backend");
-      if (options.frontend) names.push("security-frontend");
     }
     for (const name of names) {
       const folder = expectedFolder(name, profile);
