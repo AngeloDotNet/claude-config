@@ -11,6 +11,81 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Verifica:** nessun file di regole toccato; nessun codice toccato.
 **Note:** il comportamento del hook `guard-commands` su push e tag non è stato verificato in questo intervento.
 
+### Test sui rimandi tra regole, skill, script e documentazione
+**Perché:** le sezioni spostate lasciavano rimandi sbagliati che nessun controllo intercettava.
+**Cosa:** nuovo test che controlla i rimandi «file.md §N» e «file.md «Titolo»», i percorsi `scripts/*.mjs` e i nomi `/kit:` delle skill. Corretti i rimandi trovati: `core.md` §9, che non esiste, diventa `core.md` §6.9; un commento di `session-close.mjs` puntava ancora a `core.md` §0b invece che a `qualita.md`. `documentazione.md`, completo e breve, passa alla versione 1.1.
+**Dove:** `plugins/kit/tests/refs.test.mjs`, `.claude/rules/documentazione.md`, `.claude/rules/frontend.md`, `.claude/rules/qualita.md`, `_template/rules-standard/documentazione.md`, `plugins/kit/scripts/session-close.mjs`.
+**Verifica:** test del plugin 170/170, compresi i casi con errori inseriti di proposito; `git diff --check` pulito.
+**Note:** il test non controlla i rimandi senza il nome del file; per i titoli basta che un titolo o un testo in grassetto del file citato contenga il testo. Non gira ancora su GitHub.
+
+### Script per le operazioni sui file di /kit:regole
+**Perché:** copie, spostamenti, aggiornamenti e cancellazioni per profilo erano descritti a parole e affidati a Claude.
+**Cosa:** il nuovo script `regole.mjs` copia, confronta, aggiorna, sposta e rimuove i file di regole. Salva una copia `.bak` prima di sostituire o cancellare, non sposta un file sopra un altro e rifiuta i percorsi fuori dai file di regole e di consultazione. A Claude restano domande, conferme, conflitti e l'allineamento del `CLAUDE.md` durante l'aggiornamento. Nella prima copia il `CLAUDE.md` mancante si copia senza chiedere; dopo l'anteprima (`--dry-run`) la copia parte senza altre conferme.
+**Dove:** `plugins/kit/scripts/regole.mjs`, `plugins/kit/tests/regole.test.mjs`, `plugins/kit/skills/regole/SKILL.md`, `README.md`.
+**Verifica:** 14 test nuovi; test del plugin verdi (166/166 a fine passo); prova dello script in una cartella temporanea con profilo standard fullstack, senza file diversi, rimossi, fuori posto o obbligatori mancanti.
+**Note:** la skill non è stata eseguita.
+
+### Avvio di un progetto in un percorso unico
+**Perché:** servivano `/kit:avvia-progetto`, `/kit:regole` e la frase «Applica le regole di questo progetto».
+**Cosa:** `/kit:avvia-progetto` fa le domande, copia le regole senza ripeterle e compila il `CLAUDE.md`, sezione «Regole» compresa; usa il modello `sonnet`. `backend-email.md` e `backend-infra.md` non si chiedono all'avvio. La conferma del riepilogo vale per tutto l'avvio, senza ok a ogni punto. Con il profilo `mini` il piano di avvio resta in chat: non servono issue né il repository remoto su GitHub.
+**Dove:** `plugins/kit/skills/avvia-progetto/SKILL.md`, `_template/avvio-progetto.md`, `.claude/rules/workflow.md`, `README.md`, `docs/skill.md`.
+**Verifica:** test del plugin 166/166, `git diff --check` pulito.
+**Note:** né la skill né la procedura sono state eseguite.
+
+### commit-passo apre le issue solo per le serie di almeno tre commit
+**Perché:** la skill apriva una issue padre e una sub-issue per commit anche nel profilo `mini` o per un solo commit.
+**Cosa:** se il lavoro ha già una issue padre, a fine serie la commenta con hash e oggetto dei commit; altrimenti apre le issue solo fuori da `mini`, con almeno tre commit e con `gh` disponibile; negli altri casi il piano resta in chat.
+**Dove:** `plugins/kit/skills/commit-passo/SKILL.md`, `.claude/rules/git-flusso.md`, `.claude/rules/git-avanzato.md`, `_template/rules-standard/git-flusso.md`, `README.md`, `docs/skill.md`.
+**Verifica:** test del plugin 152/152, `git diff --check` pulito.
+**Note:** la skill non è stata eseguita.
+
+### security.md si copia in ogni profilo
+**Perché:** l'avvio permetteva di escludere `security.md`, ma segreti e security review valgono anche nel profilo `mini`, la cui checklist rimanda a quel file.
+**Cosa:** `security.md` si copia sempre, tranne in modalità solo Git. La domanda facoltativa riguarda solo le regole di sicurezza estese; in aggiornamento `/kit:regole` propone `security.md` se manca.
+**Dove:** `_template/avvio-progetto.md`, `plugins/kit/skills/regole/SKILL.md`, `.claude/rules/frontend.md`, `CLAUDE.md`.
+**Verifica:** test del plugin 152/152, `git diff --check` pulito.
+**Note:** né `/kit:regole` né la procedura di avvio sono state eseguite.
+
+### Promemoria sul piano solo dove le regole lo chiedono
+**Perché:** il promemoria a ogni prompt chiedeva la issue padre anche nel profilo `mini`, per le modifiche piccole e nei progetti senza il kit.
+**Cosa:** il richiamo a piano e issue compare solo nei progetti con il kit e con profilo diverso da `mini` (senza un profilo leggibile vale `strutturato`) e precisa che riguarda il lavoro non piccolo. Il richiamo alla domanda unica resta.
+**Dove:** `plugins/kit/scripts/prompt-start.mjs`, `plugins/kit/scripts/lib/text.mjs`, `plugins/kit/tests/prompt-start.test.mjs`, `README.md`.
+**Verifica:** 3 test nuovi, visti fallire prima della modifica; test del plugin 152/152; hook provato da una sottocartella del repository.
+
+### La pulizia dopo il merge di pr-main si può lanciare
+**Perché:** al rilancio la skill terminava per mancanza di commit nuovi e non raggiungeva la pulizia dei branch.
+**Cosa:** nuovo argomento `pulizia` (`/kit:pr-main pulizia`): non apre una PR, individua la PR sorgente con `gh` e si ferma senza cancellare nulla se non risulta mergiata.
+**Dove:** `plugins/kit/skills/pr-main/SKILL.md`, `.claude/rules/git-avanzato.md`, `_template/rules-standard/git-avanzato.md`, `README.md`, `docs/skill.md`.
+**Verifica:** test del plugin verdi (170/170 al controllo finale), `git diff --check` pulito.
+**Note:** la skill non è stata eseguita.
+
+### Ordine delle domande di avvio e moduli aggiornati
+**Perché:** il profilo si chiedeva prima di sapere se il progetto è solo Git, e la panoramica dei moduli era superata.
+**Cosa:** la domanda «solo Git» viene prima di quella sul profilo, con la numerazione invariata; panoramica allineata al `CLAUDE.md`, `lavoro.md` aggiunto alla tabella dei moduli e corretto l'elenco della variante solo Git.
+**Dove:** `_template/avvio-progetto.md`, `plugins/kit/skills/avvia-progetto/SKILL.md`.
+**Verifica:** test del plugin 149/149, `git diff --check` pulito.
+**Note:** la procedura non è stata eseguita.
+
+### verifica controlla anche il frontend nei progetti fullstack
+**Perché:** i controlli del frontend partivano solo se la cartella indicata era un frontend Angular.
+**Cosa:** con un argomento la skill controlla quella cartella; senza argomento decidono i file toccati, anche nei commit del branch. Nei progetti fullstack esegue backend e poi frontend, con un esito unico. L'argomento è `[cartella]`.
+**Dove:** `plugins/kit/skills/verifica/SKILL.md`, `README.md`, `docs/skill.md`.
+**Verifica:** test del plugin 149/149, `git diff --check` pulito.
+**Note:** la skill non è stata eseguita.
+
+### buongiorno riconosce la issue padre con le sub-issue tutte chiuse
+**Perché:** la skill considerava padre solo una issue con sub-issue aperte, diversamente da `/kit:buonasera`.
+**Cosa:** vale come padre anche una issue aperta con le sub-issue tutte chiuse, dopo quelle con sub-issue aperte; la skill indica come leggerle, tiene valido il commento più recente e, senza punti da fare, chiede se chiudere la padre.
+**Dove:** `plugins/kit/skills/buongiorno/SKILL.md`, `README.md`, `docs/skill.md`.
+**Verifica:** test del plugin 149/149, `git diff --check` pulito, comando di lettura delle sub-issue provato su un repository reale.
+**Note:** la skill non è stata eseguita.
+
+### Rimandi superati e refusi
+**Perché:** dopo lo spostamento di alcune sezioni restavano rimandi ai vecchi file, e la documentazione aveva due imprecisioni.
+**Cosa:** i rimandi a checklist e test puntano a `qualita.md`; i messaggi di `guard-commands` indicano `git-flusso.md` o `git-avanzato.md` dove sta la sezione; corretta la descrizione di `/kit:verifica` e tolto un doppione di `/kit:regole` nel README.
+**Dove:** `.claude/rules/`, `plugins/kit/scripts/`, `docs/skill.md`, `README.md`.
+**Verifica:** test del plugin 149/149, `git diff --check` pulito.
+
 ## 2026-11-24
 
 ### Rilascio 3.1.0
