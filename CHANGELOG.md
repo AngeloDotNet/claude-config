@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### CI: controlli obbligatori, cache e release (passo 6 di #128, voce 5)
+**Perché:** la regola CI diceva «build, test, lint» senza elencare cosa blocca una PR né come si avvia una release; il template `_template/ci/ci.yml` non era collegato alle regole. Decisione dell'utente: opzione 1.
+**Cosa:** `operativita.md` §5 elenca i controlli obbligatori per ogni PR (build senza avvisi, test, lint, formattazione, audit), la cache legata al lock file, la pipeline di release con conferma per ogni esecuzione, e `_template/ci/ci.yml` come punto di partenza con le action fissate al commit SHA.
+**Dove:** `.claude/rules/operativita.md` (1.4).
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Il template non è stato eseguito su una PR reale: la verifica sulla CI resta da fare in un progetto di prova.
+
 ### Test di contratto sullo schema OpenAPI (passo 6 di #128, voce 4)
 **Perché:** «lo schema è versionato e la CI fallisce» non diceva come verificarlo: dove sta lo schema, cosa confronta la CI, quali modifiche sono incompatibili.
 **Cosa:** lo schema generato dalla build è committato (per esempio in `docs/openapi/`); la CI lo confronta con quello attuale e fallisce su una modifica incompatibile (endpoint o campo rimosso, tipo cambiato, campo obbligatorio aggiunto). Lo strumento di confronto si sceglie per progetto e se ne verifica la licenza. Decisione dell'utente: opzione 1.

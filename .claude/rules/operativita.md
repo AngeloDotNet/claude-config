@@ -5,13 +5,17 @@ paths:
 
 # Operatività, Docker e CI
 
-> Versione 1.3 — ultima revisione: 2026-11-27.
+> Versione 1.4 — ultima revisione: 2026-11-27.
 > Estratto da `core.md` §5 e §5a, con la stessa numerazione. Caricato nei profili standard e strutturato solo quando si toccano file sotto `.github/` (`paths:`).
 
 ## 5. Operatività e CI
 - **Logging, shutdown, più container, OpenTelemetry e stack di osservabilità:** in `osservabilita.md`, caricato sui file backend, Docker e `observability/`.
 - **Docker (opzionale):** le regole sono in `docker.md`, attivo solo su richiesta esplicita dell'utente (§5a). Server, host e orchestrazione sono gestiti dall'utente e fuori dallo scopo di Claude.
 - **CI/CD:** build, test, lint, scansione vulnerabilità e formattazione a ogni PR. Supply chain: SAST (CodeQL), secret scanning (gitleaks), scansione delle immagini Docker (Trivy) e SBOM generato a ogni release. Claude può scrivere e committare i file di pipeline (workflow YAML, configurazione Dependabot/Renovate); l'avvio di una pipeline segue `git-flusso.md` («Integrazione GitHub») e la gestione dei segreti della CI resta all'utente.
+  - **Controlli obbligatori per ogni PR (MUST):** build con avvisi trattati come errori (`TreatWarningsAsErrors` nel backend), test, lint, formattazione (`dotnet format --verify-no-changes --no-restore`, `npx prettier --check .`), audit dei pacchetti (`dotnet list package --vulnerable --include-transitive`, `npm audit --audit-level=high`). Un controllo rosso blocca la PR.
+  - **Cache:** cache delle dipendenze (NuGet, npm) con chiave legata al lock file, così una modifica delle dipendenze invalida la cache.
+  - **Pipeline di release:** si avvia solo con una conferma esplicita per ogni esecuzione (`git-flusso.md`, «Integrazione GitHub»); produce l'immagine e l'SBOM, e il bundle di migrazione del passo unico (ADR 0003).
+  - **Punto di partenza:** `_template/ci/ci.yml`, da adattare a cartelle e comandi della tabella «Comandi» del `CLAUDE.md`. Le action restano fissate al commit SHA (`security-avanzata.md`, «Supply chain»).
 - **Git:** vedi `git-flusso.md`.
 
 ---
