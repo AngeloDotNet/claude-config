@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Test del plugin kit eseguiti su GitHub (#121)
+**Perché:** i 173 test di `plugins/kit` giravano solo in locale: una modifica rotta al plugin poteva arrivare su `develop` o `main` senza che nessuno se ne accorgesse.
+**Cosa:** nuovo workflow `plugin-tests` che lancia `node --test plugins/kit/tests/*.test.mjs` su Node 24, a ogni pull request e a ogni push su `develop` e `main`. Le action sono fissate al commit SHA, come in `_template/ci/ci.yml`, con `permissions: contents: read`.
+**Dove:** `.github/workflows/plugin-tests.yml` (nuovo).
+**Verifica:** il comando lanciato in locale dà 173/173. Il workflow su GitHub si verifica con la PR di questo cambio.
+**Note:** il workflow copre solo i test del plugin; build, lint e audit dei progetti restano nel template `_template/ci/ci.yml`.
+
 ### Descrizione del plugin: push e tag con il via dell'utente (#148)
 **Perché:** la descrizione di `kit` diceva «push e tag sempre consentiti», in contrasto con `git-flusso.md` (push e tag con il via dell'utente, decisione del 2026-11-26).
 **Cosa:** la descrizione dice che push e tag richiedono il via dell'utente e che l'hook blocca solo i comandi distruttivi e il tag fuori da `main`. Nessun cambio di comportamento dell'hook.
