@@ -1,7 +1,7 @@
 # Sicurezza: segreti e principi minimi (base)
 
-> Versione 3.2 — ultima revisione: 2026-11-27.
-> Richiede `core.md`. Sono le regole minime per ogni progetto. Il resto (OWASP Top 10 e ASVS, progettazione sicura, crittografia, supply chain, log di sicurezza) è in `security-avanzata.md` (standard e strutturato) e in `security-strutturato.md` (solo strutturato); le regole backend e frontend in `security-backend.md` e `security-frontend.md`.
+> Versione 3.3 — ultima revisione: 2026-11-27.
+> Richiede `core.md`. Sono le regole minime per ogni progetto. Il resto (OWASP Top 10 e ASVS, progettazione sicura, crittografia, supply chain, log di sicurezza) è in `security-avanzata.md` (standard e strutturato) e in `security-strutturato.md` (solo strutturato); le regole backend in `security-backend.md` e quelle frontend in `frontend.md` §9.
 
 ## Dati e Segreti
 ▲ Verificato dal plugin `kit`: hook `guard-secrets` (valori reali in `appsettings*.json`, password in chiaro in compose e Dockerfile, chiavi PEM, token JWT bloccati).

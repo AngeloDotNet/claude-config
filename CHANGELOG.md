@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Sicurezza frontend nel modulo frontend (passo 7 di #128, fusione facoltativa)
+**Perché:** le regole di sicurezza frontend stavano in `security-frontend.md`, che si caricava solo con la «sicurezza estesa». Un progetto frontend senza quella scelta non le vedeva, anche con `innerHTML`, storage e CSP in gioco. Decisione dell'utente: fondere il modulo (analisi di #132, «sarei favorevole»).
+**Cosa:** le regole di `security-frontend.md` sono nella sezione 9 di `frontend.md`, che si carica sempre sui file frontend in ogni profilo. `security-frontend.md` non esiste più; i riferimenti in regole, `CLAUDE.md`, `avvio-progetto.md`, hook (`check-write`), skill `sicurezza` e script `regole.mjs` puntano a `frontend.md` §9. Conseguenza: il progetto frontend riceve le regole di sicurezza anche senza la sicurezza estesa, come previsto nell'analisi.
+**Dove:** `.claude/rules/frontend.md` (1.18), `.claude/rules/security.md` (3.3), `.claude/rules/security-strutturato.md` (1.6), `CLAUDE.md`, `_template/avvio-progetto.md`, `plugins/kit/scripts/check-write.mjs`, `plugins/kit/scripts/regole.mjs`, `plugins/kit/skills/revisione/temi/sicurezza.md`, `plugins/kit/tests/regole.test.mjs`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
 ### CI: controlli obbligatori, cache e release (passo 6 di #128, voce 5)
 **Perché:** la regola CI diceva «build, test, lint» senza elencare cosa blocca una PR né come si avvia una release; il template `_template/ci/ci.yml` non era collegato alle regole. Decisione dell'utente: opzione 1.
 **Cosa:** `operativita.md` §5 elenca i controlli obbligatori per ogni PR (build senza avvisi, test, lint, formattazione, audit), la cache legata al lock file, la pipeline di release con conferma per ogni esecuzione, e `_template/ci/ci.yml` come punto di partenza con le action fissate al commit SHA.
