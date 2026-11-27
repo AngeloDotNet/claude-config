@@ -2,7 +2,13 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
-## 2026-11-26
+## 2026-11-27
+
+### Rilascio 3.2.0
+**Aggiunto:** script `regole.mjs` per copia, confronto, aggiornamento, spostamento e rimozione dei file di regole (con `.bak` prima di ogni sostituzione); skill `/kit:regole` e `/kit:verifica` che seguono il profilo dichiarato nel `CLAUDE.md`; `checklist-mini.md` per il profilo `mini`; test `regole.test.mjs` e `refs.test.mjs` (copia per profilo e rimandi tra regole, skill e script).
+**Modificato:** il profilo `standard` non richiede più il threat model (vedi ADR 0001 e `security-strutturato.md`). I progetti già avviati restano sul profilo dichiarato nel loro `CLAUDE.md`.
+**Corretto:** rimandi incoerenti tra moduli di regole e nei messaggi degli hook (nomi di modulo e di sezione aggiornati al testo attuale).
+**Note:** `/kit:regole` e `/kit:verifica` non sono state provate su un progetto di prova.
 
 ### Push e tag restano con il via dell'utente
 **Perché:** le voci del 2026-11-08 («Push, tag, PR e rilasci consentiti sempre» e «Tag e pubblicazione del rilascio senza approvazione per progetto») descrivevano una riscrittura di `git.md` §Integrazione GitHub che non risulta nelle regole attuali: `git-flusso.md` e `git.md` dicono ancora che push, PR, tag e rilasci vanno eseguiti con il via dell'utente. Su decisione dell'utente (2026-11-26) vale il testo attuale: push e tag restano con il via dell'utente.
