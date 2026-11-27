@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Hook PreToolUse su Bash e PowerShell: blocca (exit 2, motivo su stderr) i comandi che
-// le regole vietano a Claude (core.md §6.11, git.md). Il blocco è assoluto: se serve
+// le regole vietano a Claude (core.md §6.11, git-flusso.md). Il blocco è assoluto: se serve
 // davvero, il comando lo esegue l'utente (prefisso "!") oppure si disattiva l'hook.
 // Sempre bloccati: git push --force (e varianti), cancellazione di branch remoti che non siano di lavoro
 // (consentita solo per feature/, bugfix/, release/, hotfix/: mai main, develop o altro; la conferma dell'utente
@@ -11,9 +11,9 @@
 // manca), qualunque --no-verify, rm -rf (e gli
 // equivalenti PowerShell, es. Remove-Item -Recurse -Force), git add -A / --all / . (e i file sensibili: .env,
 // secrets.json, chiavi e certificati), git commit con messaggio non Conventional Commits
-// (git.md: tipo(scope): descrizione con tipo ammesso; letto da -m o da heredoc). Maiuscola, punto finale e
+// (git-flusso.md: tipo(scope): descrizione con tipo ammesso; letto da -m o da heredoc). Maiuscola, punto finale e
 // lunghezza dell'oggetto restano regole scritte, non controllate dall'hook; git init non è bloccato (regola scritta).
-// git tag (creazione): solo con nome X.Y.Z (senza v) e dal branch main (git-avanzato.md, «Rilascio»); il via
+// git tag (creazione): solo con nome X.Y.Z (senza v) e dal branch main (git-flusso.md, «Rilascio»); il via
 // dell'utente non è verificabile dall'hook ed è una regola scritta. Sempre consentiti: git push (normale),
 // elenco e cancellazione dei tag. gh issue create/edit/close/reopen/comment, gh pr create e gh release
 // create/delete/upload/edit passano solo se la GitHub CLI è installata sul PC: lo dice la riga
@@ -172,7 +172,7 @@ function developExists(dir) {
   }
 }
 
-// Instruction for Claude when a commit is blocked on a protected branch (git.md: git flow with develop).
+// Instruction for Claude when a commit is blocked on a protected branch (git-flusso.md: git flow with develop).
 let blockHint = null;
 
 function isForcedRecursiveRemove(args) {
@@ -202,9 +202,9 @@ function analyzeGitAdd(rest) {
   const paths = rest.filter((t) => !isFlag(t)).map((t) => t.text);
   const broad =
     rest.some((t) => !t.quoted && (t.text === "-A" || t.text === "--all")) || paths.some((p) => p === "." || p === "./" || p === ":/");
-  if (broad) return "git add -A / --all o git add . (aggiungi i file per nome: git.md)";
+  if (broad) return "git add -A / --all o git add . (aggiungi i file per nome: git-flusso.md)";
   const sensitive = paths.find((p) => SENSITIVE_PATH.test(p));
-  return sensitive ? `git add di un file sensibile (${sensitive}): segreti e chiavi non entrano nel repository (git.md)` : null;
+  return sensitive ? `git add di un file sensibile (${sensitive}): segreti e chiavi non entrano nel repository (git-flusso.md)` : null;
 }
 
 /** Oggetto del messaggio di commit, se leggibile: heredoc (`cat <<'EOF'`), poi -m / --message / -m"...". */
@@ -217,7 +217,7 @@ function commitSubject(rest) {
   return inline ? inline.text.slice(2).split("\n")[0].trim() : null;
 }
 
-/** Controllo Conventional Commits (git.md). Restituisce il problema, o null se il messaggio è valido o non leggibile. */
+/** Controllo Conventional Commits (git-flusso.md). Restituisce il problema, o null se il messaggio è valido o non leggibile. */
 function analyzeCommitMessage(rest) {
   const subject = commitSubject(rest);
   if (!subject) return null;
@@ -226,7 +226,7 @@ function analyzeCommitMessage(rest) {
   if (!m) problem = `"${subject}" non segue tipo(scope): descrizione`;
   if (!problem) return null;
   blockHint =
-    "Riscrivi il messaggio in inglese, Conventional Commits (git.md): tipo(scope): descrizione, minuscolo, senza punto finale, " +
+    "Riscrivi il messaggio in inglese, Conventional Commits (git-flusso.md): tipo(scope): descrizione, minuscolo, senza punto finale, " +
     "oggetto di al massimo 72 caratteri; nel corpo spiega il perché.";
   return `messaggio di commit non conforme: ${problem}`;
 }
@@ -239,7 +239,7 @@ const TAG_READ_FLAGS = new Set([
 // Opzioni di git tag che consumano il valore successivo.
 const TAG_VALUE_FLAGS = new Set(["-m", "--message", "-F", "--file", "-u", "--local-user", "--cleanup"]);
 
-/** Creazione di un tag (git-avanzato.md, «Rilascio»): nome X.Y.Z senza `v`, solo dal branch main (dopo il merge). */
+/** Creazione di un tag (git-flusso.md, «Rilascio»): nome X.Y.Z senza `v`, solo dal branch main (dopo il merge). */
 function analyzeGitTag(rest, dir) {
   if (rest.some((t) => !t.quoted && (TAG_READ_FLAGS.has(t.text) || t.text.startsWith("--sort=") || t.text.startsWith("--format=")))) return null;
   let name = null;
@@ -253,16 +253,16 @@ function analyzeGitTag(rest, dir) {
   if (name === null) return null;
   if (!/^\d+\.\d+\.\d+$/.test(name)) {
     blockHint =
-      "Il tag di rilascio ha il formato X.Y.Z, senza prefisso v (git-avanzato.md, «Rilascio»), uguale alla versione nel file di versione e " +
+      "Il tag di rilascio ha il formato X.Y.Z, senza prefisso v (git-flusso.md, «Rilascio»), uguale alla versione nel file di versione e " +
       "nel CHANGELOG.md. Chiedi all'utente il via con UNA SOLA domanda prima di crearlo.";
     return `nome del tag "${name}" non nel formato X.Y.Z`;
   }
   const branch = currentBranch(dir);
   if (branch !== "main") {
     blockHint =
-      "Il tag si crea solo dopo il merge su main, dal branch main e sul commit di merge (git-avanzato.md, «Rilascio»). " +
+      "Il tag si crea solo dopo il merge su main, dal branch main e sul commit di merge (git-flusso.md, «Rilascio»). " +
       "Chiedi all'utente il via con UNA SOLA domanda dopo aver verificato il merge.";
-    return `git tag dal branch "${branch || "sconosciuto"}" (git-avanzato.md: il tag si crea solo da main, dopo il merge)`;
+    return `git tag dal branch "${branch || "sconosciuto"}" (git-flusso.md: il tag si crea solo da main, dopo il merge)`;
   }
   return null;
 }
@@ -336,10 +336,10 @@ function analyzeGit(allArgs, cwd) {
         blockHint = developExists(dir)
           ? "Non committare qui. Crea tu il branch di lavoro, senza chiedere conferma, nel formato tipo/descrizione-breve " +
             "(feature/, bugfix/ o release/ da develop; hotfix/ da main), con git switch -c, e committa lì."
-          : 'Il branch "develop" non esiste ed è obbligatorio (git flow completo, git.md). Non partire da main. Chiedi all\'utente, ' +
+          : 'Il branch "develop" non esiste ed è obbligatorio (git flow completo, git-flusso.md). Non partire da main. Chiedi all\'utente, ' +
             "con UNA SOLA domanda, se puoi crearlo da main (branch locale); dopo la risposta crea tu il branch di lavoro " +
             "(per esempio feature/nome-breve) a partire da develop, senza altre conferme.";
-        return `git commit sul branch "${branch}" (git.md: mai commit diretti su main/develop)`;
+        return `git commit sul branch "${branch}" (git-flusso.md: mai commit diretti su main/develop)`;
       }
       return analyzeCommitMessage(rest);
     }
@@ -443,7 +443,7 @@ process.stdin.on("end", () => {
     process.exit(0);
   }
   if (reason) {
-    const tail = blockHint ?? "Le regole (core.md §6.11, git.md) vietano a Claude questa operazione: la esegue l'utente.";
+    const tail = blockHint ?? "Le regole (core.md §6.11, git-flusso.md) vietano a Claude questa operazione: la esegue l'utente.";
     process.stderr.write(`Bloccato dall'hook guard-commands: ${reason}. ${tail}\n`);
     process.exit(2);
   }

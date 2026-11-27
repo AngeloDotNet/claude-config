@@ -4,6 +4,85 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Rilascio 3.3.0
+**Aggiunto:** modulo opzionale `mobile.md` (regole di base per un'app mobile, da attivare solo se il progetto ha un client mobile); `docs/fonti.md` (date di verifica delle fonti, fuori dal caricamento); sezione «GDPR operativo lato server» in `security-avanzata.md` (inventario, retention, cancellazione, esportazione); procedura del test di contratto OpenAPI; ADR 0003 (migrazioni come passo unico prima delle repliche); servizio `migrate` nella sezione Docker.
+**Modificato:** Git in due moduli: `git-flusso.md` (anche PR e rilascio) e `core.md` §5c (regole minime). `git.md` e `git-avanzato.md` non esistono più: `/kit:regole` li rimuove nei progetti che li hanno, con `.bak` e un solo ok. Il profilo `standard` copia quattro moduli brevi. `operativita.md` si carica solo sui file `.github/**`. **Le migrazioni non si applicano più all'avvio di ogni container ma con un passo unico prima delle repliche (ADR 0003): i progetti che le applicavano all'avvio devono cambiare.** I moduli sempre caricati sono più leggeri (profilo `strutturato`: 84 → 82 KiB).
+**Corretto:** contraddizioni tra moduli su branch, commit, push e bump; titoli duplicati; rimandi per profilo (nuovo test); file di configurazione e pacchetti nei `paths:`.
+**Sicurezza:** nessuna regola indebolita. Aggiunti: GDPR operativo lato server; utente DDL usato solo dal job di migrazione.
+**Note:** `/kit:regole` (rimozione dei due file vecchi), il servizio `migrate` del compose e il template CI non sono stati provati su un progetto di prova.
+
+### CI: controlli obbligatori, cache e release (passo 6 di #128, voce 5)
+**Perché:** la regola CI diceva «build, test, lint» senza elencare cosa blocca una PR né come si avvia una release; il template `_template/ci/ci.yml` non era collegato alle regole. Decisione dell'utente: opzione 1.
+**Cosa:** `operativita.md` §5 elenca i controlli obbligatori per ogni PR (build senza avvisi, test, lint, formattazione, audit), la cache legata al lock file, la pipeline di release con conferma per ogni esecuzione, e `_template/ci/ci.yml` come punto di partenza con le action fissate al commit SHA.
+**Dove:** `.claude/rules/operativita.md` (1.4).
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Il template non è stato eseguito su una PR reale: la verifica sulla CI resta da fare in un progetto di prova.
+
+### Test di contratto sullo schema OpenAPI (passo 6 di #128, voce 4)
+**Perché:** «lo schema è versionato e la CI fallisce» non diceva come verificarlo: dove sta lo schema, cosa confronta la CI, quali modifiche sono incompatibili.
+**Cosa:** lo schema generato dalla build è committato (per esempio in `docs/openapi/`); la CI lo confronta con quello attuale e fallisce su una modifica incompatibile (endpoint o campo rimosso, tipo cambiato, campo obbligatorio aggiunto). Lo strumento di confronto si sceglie per progetto e se ne verifica la licenza. Decisione dell'utente: opzione 1.
+**Dove:** `.claude/rules/qualita.md` (1.3), `_template/rules-standard/qualita.md` (1.3).
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Nessuno strumento è stato scelto né provato su un progetto: la scelta resta per progetto.
+
+### GDPR operativo lato server (passo 6 di #128, voce 3)
+**Perché:** l'inventario dei dati personali, la retention, la cancellazione e l'esportazione erano una riga, e valeva solo nel profilo `strutturato`. Un dato personale attiva le sue regole in ogni profilo (ADR 0001, regola 3). Decisione dell'utente: opzione 1.
+**Cosa:** `security-avanzata.md` ha una sezione «GDPR operativo lato server»: inventario, retention dichiarata nel `CLAUDE.md`, cancellazione o anonimizzazione (anche nei log e con la scadenza dei backup), esportazione all'interessato autenticato. Le basi giuridiche restano al titolare del trattamento. La skill `gdpr-dati` rimanda alla nuova sezione.
+**Dove:** `.claude/rules/security-avanzata.md` (2.5), `plugins/kit/skills/revisione/temi/gdpr-dati.md`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
+### Migrazioni come passo unico prima delle repliche (passo 6 di #128, voce 2)
+**Perché:** con più repliche, la migrazione all'avvio di ogni container può far girare le migrazioni in parallelo. La documentazione EF Core (lock dal EF Core 9, con provider diversi) consiglia un passo di deploy separato quando contano rollout coordinato e alta disponibilità. Decisione dell'utente: opzione 1, documentata in ADR 0003.
+**Cosa:** `backend-app.md` §4.4 dice che le migrazioni si applicano con un passo unico (bundle come job one-shot) prima delle repliche, non da ogni container all'avvio. `docker.md` descrive il servizio `migrate` del compose e la dipendenza di `api` da `migrate`. La stringa di connessione DDL è usata solo dal job. Il lock di EF Core è una protezione in più. La segnalazione su Npgsql 11 non è stata confermata e non è stata usata per la regola.
+**Dove:** `.claude/rules/backend-app.md` (1.11), `.claude/rules-optional/docker.md` (1.8), `docs/adr/0003-migrazioni-passo-unico.md` (nuovo).
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Il passo di migrazione in Docker non è stato eseguito su un compose: va verificato in un progetto di prova.
+
+### Migrazioni expand/contract e rollback (passo 6 di #128, voce 1)
+**Perché:** durante un rilascio la versione precedente dell'app può girare sullo schema nuovo; senza una regola, una migrazione che rinomina o elimina una colonna rompe il rollback. Approvato dall'utente (priorità alta).
+**Cosa:** `backend-app.md` §4.4 ha due punti: migrazioni compatibili con la versione precedente (expand, poi codice, poi contract in un rilascio successivo) e rollback del rilascio (il codice precedente legge lo schema nuovo; una migrazione applicata non si modifica, si annulla con una nuova).
+**Dove:** `.claude/rules/backend-app.md` (1.10).
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
+### Riduzione dei moduli caricati: note, duplicati e paragrafi (passo 5 di #128, parte 2)
+**Perché:** i moduli sempre caricati contenevano date di lettura delle fonti, ripetizioni della verifica di licenza, voci duplicate (più container, shutdown) e paragrafi molto lunghi, che pesano nel contesto senza servire ogni volta.
+**Cosa:** le note di verifica (date e fonti) passano in `docs/fonti.md`, che non si carica; la regola «verifica versione e licenza» è detta una volta in `core.md` §3 e tolta dai moduli backend e sicurezza. «Shutdown» e «Più container» vanno da `osservabilita.md` a `backend.md` §5b, dove ci sono già le regole sui più container; `docker.md` punta lì. Il paragrafo OpenAPI e quello su C# 14 di `backend.md` sono divisi in sotto-punti, senza cambiare le regole. Non cambiate per scelta: la regola inviolabile (in testa a `core.md` e nel punto 5 del §6, più dettagliato) e i punti 20-21 del §6, che rimandano al punto 15.
+**Dove:** `docs/fonti.md` (nuovo), `.claude/rules/core.md` (4.5), `.claude/rules/backend.md` (1.15), `.claude/rules/osservabilita.md` (1.2), `.claude/rules/security-avanzata.md` (2.4), `.claude/rules/security-strutturato.md` (1.5), `.claude/rules-optional/docker.md` (1.7).
+**Misura** (moduli sempre caricati): `mini` 14,8 → 15,0 KiB (cresce per la regola unica sulla licenza e le regole minime di Git spostate in `core.md` §5c); `standard` 37,6 KiB; `strutturato` 84,0 → 81,9 KiB.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
+### Regole mobile in un modulo opzionale (passo 5 di #128, parte 1)
+**Perché:** la sezione Mobile di `security-strutturato.md` si caricava sempre nel profilo `strutturato`, anche senza un client mobile; circa 2 KiB su un profilo che pesa 84 KiB.
+**Cosa:** le regole di base per un'app mobile passano in `.claude/rules-optional/mobile.md`, da attivare solo se il progetto ha un client mobile (`CLAUDE.md`, «Sviluppo mobile»). `security-strutturato.md` perde la sezione e il titolo «mobile». Il modulo è in elenco tra gli opzionali in `CLAUDE.md`, `avvio-progetto.md` e nel codice di `regole.mjs`. Misura (profili con i moduli sempre caricati): `mini` 14,8 KiB, `standard` 37,6 KiB, `strutturato` 84,0 → 82,1 KiB.
+**Dove:** `.claude/rules-optional/mobile.md` (nuovo, 1.0), `.claude/rules/security-strutturato.md` (1.4), `plugins/kit/scripts/regole.mjs`, `CLAUDE.md`, `_template/avvio-progetto.md`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
+### Git in due moduli: flusso e regole minime (passo 4 di #128)
+**Perché:** Git stava in tre moduli (`git.md`, `git-flusso.md`, `git-avanzato.md`) e le regole minime, che valgono in ogni profilo, erano in un file che si doveva ricordare di caricare; `git-avanzato.md` era l'estratto di `git-flusso.md` con gli stessi titoli.
+**Cosa:** `git-avanzato.md` è unito in `git-flusso.md`, anche nella versione breve per lo standard. Le regole minime di `git.md` sono in `core.md` §5c. `git.md` e `git-avanzato.md` non esistono più: i riferimenti in regole, template, avvio, hook, skill, `CLAUDE.md` e ADR 0001 puntano alla nuova collocazione. Lo standard copia quattro moduli brevi, non cinque. `/kit:regole` dice dove è finito il contenuto dei due file rimossi e li rimuove, con `.bak` e con un solo ok, nei progetti che li hanno.
+**Dove:** `.claude/rules/core.md` (4.4), `.claude/rules/git-flusso.md` (1.2), `_template/rules-standard/git-flusso.md` (1.2), `.claude/rules/lavoro.md` (1.6), `.claude/rules/frontend.md` (1.17), `.claude/rules/documentazione.md` (1.2), `.claude/rules/security-strutturato.md` (1.3), `.claude/rules/operativita.md` (1.3), `_template/avvio-progetto.md`, `CLAUDE.md`, `docs/adr/0001-profili.md`, `plugins/kit/scripts/regole.mjs`, `plugins/kit/scripts/guard-commands.mjs`, `plugins/kit/skills/regole/SKILL.md` e le altre skill che citavano i due file, test `regole.test.mjs`, `profili.test.mjs`, `rules-watch.test.mjs`, `refs.test.mjs`, `github.test.mjs`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Nessuna build (solo regole e codice del plugin, testati).
+
+### Moduli caricati su configurazione, pacchetti e CI (passo 3 di #128)
+**Perché:** modificando `appsettings.json`, `NuGet.config`, `package.json` o un workflow CI, le regole pertinenti non si caricavano perché i `paths:` coprivano solo i sorgenti; `operativita.md` (CI) si caricava sempre nei profili `standard` e `strutturato`, anche quando non serviva; in un progetto nuovo non ci sono ancora file che attivino i moduli da leggere prima del piano.
+**Cosa:** i `paths:` di backend, frontend, contratto, osservabilità, sicurezza e moduli opzionali collegati includono i file di configurazione e dei pacchetti (`appsettings*.json`, `NuGet.config`, `.editorconfig`, `global.json`, `*.sln`/`*.slnx`, `package.json`, `.npmrc`, `.nvmrc`, `eslint.config.*`). `operativita.md` si carica solo sui file `.github/**`. `core.md` (§6) chiede di leggere i moduli delle aree coinvolte prima di scrivere il piano.
+**Dove:** `.claude/rules/backend.md` (1.13), `backend-architecture.md` (1.3), `backend-app.md` (1.9), `security-backend.md` (1.7), `osservabilita.md` (1.1), `frontend.md` (1.16), `security-frontend.md` (1.4), `contratto.md` (1.2), `operativita.md` (1.2), `core.md` (4.3), e i moduli opzionali `backend-email.md`, `backend-infra.md`, `feature-workflow.md`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Nessuna build (solo regole).
+
+### Titoli, versioni brevi e rimandi per profilo (passo 2 di #128, parte 2)
+**Perché:** due titoli erano duplicati («Dati e Segreti», «Test di sicurezza automatici») e i rimandi per profilo non erano controllati; la versione breve di `qualita` per lo standard mancava di regole presenti nel testo completo (test di contratto, SQLite, isolamento tra utenti, architettura); l'80% di copertura è del profilo `strutturato` (ADR 0001) ma nel testo completo non lo diceva.
+**Cosa:** in `security-strutturato.md` la sezione «Dati e Segreti» diventa «Dati e Segreti (dettaglio)»; in `security-avanzata.md` «Test di sicurezza automatici (minimo)» diventa «Test di sicurezza di base»; i rimandi sono aggiornati. La versione breve `qualita.md` per lo standard aggiunge xUnit v3, il test di contratto, la regola sul database nei test, la struttura dei progetti di test, il controllo di isolamento tra utenti e di architettura. Il testo completo dichiara la copertura dell'80% dal profilo `strutturato`. Nuovo test `plugins/kit/tests/profili.test.mjs`: per ogni profilo, un rimando a un modulo non caricato nel profilo deve dichiararlo sulla stessa riga (profilo, «solo», «su richiesta»); `core.md` e `lavoro.md` dichiarano il profilo nei rimandi che non lo indicavano.
+**Dove:** `.claude/rules/security-strutturato.md`, `.claude/rules/security-avanzata.md`, `.claude/rules/qualita.md` (versione 1.2), `_template/rules-standard/qualita.md` (versione 1.2), `.claude/rules/core.md` (versione 4.2), `.claude/rules/lavoro.md` (versione 1.5), `plugins/kit/skills/revisione/temi/gdpr-dati.md`, `plugins/kit/skills/revisione/temi/qualita-test.md`, `plugins/kit/skills/revisione/temi/sicurezza.md`, `plugins/kit/tests/profili.test.mjs`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Il controllo per profilo accetta una riga che dichiara il profilo: non verifica che la dichiarazione sia corretta nel merito.
+
+### Base di sicurezza nel profilo standard (passo 2 di #128, parte 1)
+**Perché:** supply chain, connessione cifrata al database, rotazione dei segreti e dati personali valgono solo nel profilo `strutturato`, ma moduli come `core.md` e `qualita.md` li citavano come se fossero sempre presenti: un progetto `standard` non li avrebbe mai letti. Scelta dell'utente (opzione b): stanno in `security-avanzata.md`, che si carica in `standard` e `strutturato`.
+**Cosa:** le sezioni «Supply chain» e «Database, rotazione e dati personali» passano da `security-strutturato.md` a `security-avanzata.md`. I rimandi in regole, avvio, skill, hook, ci e `CLAUDE.md` puntano alla nuova collocazione. `git.md` e `security.md` non si intitolano più «profilo mini», perché valgono sempre. Il commento XML rimanda a `documentazione.md` §5b, e il «§4» di `contratto.md` è `qualita.md` §4.
+**Dove:** `.claude/rules/security-avanzata.md` (versione 2.3), `.claude/rules/security-strutturato.md` (versione 1.2), `.claude/rules/core.md`, `.claude/rules/qualita.md` (versione 1.2), `.claude/rules/backend.md` (versione 1.12), `.claude/rules/contratto.md` (versione 1.1), `.claude/rules/git.md` (versione 3.1), `.claude/rules/security.md` (versione 3.2), `.claude/rules-optional/backend-email.md`, `_template/avvio-progetto.md`, `_template/ci/ci.yml`, `plugins/kit/scripts/guard-write.mjs`, `plugins/kit/skills/revisione/temi/gdpr-dati.md`, `plugins/kit/skills/verifica/frontend.md`, `CLAUDE.md`.
+**Verifica:** test del plugin 170/170; `git diff --check` pulito. Restano aperti in #130: versioni brevi divergenti (B.4) e test dei rimandi per profilo (B.5).
+
+### Contraddizioni tra moduli di regole (passo 1 di #128)
+**Perché:** alcune regole si contraddicevano tra moduli: branch e commit chiesti all'utente in `feature-workflow.md` e `avvio-progetto.md`, ma creati senza conferma in `git-flusso.md`; il commit di bump richiesto in `git-avanzato.md` ma non come negli altri commit; obblighi dei profili in disaccordo tra ADR 0001 e moduli; `contratto.md` dato come sempre presente anche in modalità solo Git.
+**Cosa:** branch di lavoro e commit creati senza conferma, push e tag con il via dell'utente, in `feature-workflow.md` e `avvio-progetto.md`. Il commit di bump richiede l'ok dell'utente, come da `git-avanzato.md`. Le caselle di `PIANO.md` diventano sub-issue chiuse in `workflow.md` (§6.21) e `git-avanzato.md`. Gli obblighi del profilo `strutturato` (utenti del database separati) valgono solo da quel profilo, come da ADR 0001, in `backend-app.md` §4.4. `contratto.md` si carica solo sui file backend e frontend, non in solo Git. Nell'ADR 0001 i commenti XML sono in italiano.
+**Dove:** `.claude/rules-optional/feature-workflow.md`, `_template/avvio-progetto.md`, `.claude/rules/git-avanzato.md` (versione 1.2), `.claude/rules/workflow.md`, `.claude/rules/backend-app.md` (versione 1.8), `docs/adr/0001-profili.md`.
+**Verifica:** test del plugin 170/170; `git diff --check` pulito. Nessuna build (solo testo).
 ### Rilascio 3.2.0
 **Aggiunto:** script `regole.mjs` per copia, confronto, aggiornamento, spostamento e rimozione dei file di regole (con `.bak` prima di ogni sostituzione); skill `/kit:regole` e `/kit:verifica` che seguono il profilo dichiarato nel `CLAUDE.md`; `checklist-mini.md` per il profilo `mini`; test `regole.test.mjs` e `refs.test.mjs` (copia per profilo e rimandi tra regole, skill e script).
 **Modificato:** il profilo `standard` non richiede più il threat model (vedi ADR 0001 e `security-strutturato.md`). I progetti già avviati restano sul profilo dichiarato nel loro `CLAUDE.md`.

@@ -106,13 +106,13 @@ const RULES = [
     id: "npm-install",
     files: /(^|[\\/])Dockerfile[^\\/]*$/i,
     re: /\bnpm\s+(?:install|i)\b|\bnpm\s+ci\b(?![^\n]*--ignore-scripts)/,
-    why: "installazione npm non conforme (security-strutturato.md, Supply chain: npm ci --ignore-scripts)",
+    why: "installazione npm non conforme (security-avanzata.md, Supply chain: npm ci --ignore-scripts)",
   },
   {
     id: "tls-disattivato",
     files: /(^|[\\/])appsettings[^\\/]*\.json$/i,
     re: /TrustServerCertificate\s*=\s*true|SslMode\s*=\s*(?:Disable|Prefer|Allow)\b|Encrypt\s*=\s*(?:false|no)\b/i,
-    why: "connessione al database senza cifratura o senza verifica del certificato (security-strutturato.md, Dati e Segreti)",
+    why: "connessione al database senza cifratura o senza verifica del certificato (security-avanzata.md, Database, rotazione e dati personali)",
   },
   {
     id: "catch-vuoto",

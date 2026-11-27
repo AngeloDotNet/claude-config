@@ -1,4 +1,4 @@
-// Test di guard-commands per le operazioni GitHub (git.md, «Integrazione GitHub»): push sempre
+// Test di guard-commands per le operazioni GitHub (git-flusso.md, «Integrazione GitHub»): push sempre
 // consentito; la creazione di un tag solo con nome X.Y.Z e dal branch main; gh pr e gh release
 // richiedono la riga «GitHub CLI (gh) installata» nel CLAUDE.md.
 // Ogni caso usa una cartella temporanea con (o senza) CLAUDE.md. Il hook è un processo con input JSON su stdin.
@@ -208,7 +208,7 @@ test("gh di sola lettura passa sempre", () => {
   });
 });
 
-// --- la riga gh viene letta dalla radice del repository (git.md) ---
+// --- la riga gh viene letta dalla radice del repository (git-flusso.md) ---
 
 test("gh da una sottocartella: la riga nella radice del repository vale", () => {
   project(ghLine("sì"), (dir) => {
