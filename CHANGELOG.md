@@ -76,6 +76,11 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Cosa:** branch di lavoro e commit creati senza conferma, push e tag con il via dell'utente, in `feature-workflow.md` e `avvio-progetto.md`. Il commit di bump richiede l'ok dell'utente, come da `git-avanzato.md`. Le caselle di `PIANO.md` diventano sub-issue chiuse in `workflow.md` (§6.21) e `git-avanzato.md`. Gli obblighi del profilo `strutturato` (utenti del database separati) valgono solo da quel profilo, come da ADR 0001, in `backend-app.md` §4.4. `contratto.md` si carica solo sui file backend e frontend, non in solo Git. Nell'ADR 0001 i commenti XML sono in italiano.
 **Dove:** `.claude/rules-optional/feature-workflow.md`, `_template/avvio-progetto.md`, `.claude/rules/git-avanzato.md` (versione 1.2), `.claude/rules/workflow.md`, `.claude/rules/backend-app.md` (versione 1.8), `docs/adr/0001-profili.md`.
 **Verifica:** test del plugin 170/170; `git diff --check` pulito. Nessuna build (solo testo).
+### Rilascio 3.2.0
+**Aggiunto:** script `regole.mjs` per copia, confronto, aggiornamento, spostamento e rimozione dei file di regole (con `.bak` prima di ogni sostituzione); skill `/kit:regole` e `/kit:verifica` che seguono il profilo dichiarato nel `CLAUDE.md`; `checklist-mini.md` per il profilo `mini`; test `regole.test.mjs` e `refs.test.mjs` (copia per profilo e rimandi tra regole, skill e script).
+**Modificato:** il profilo `standard` non richiede più il threat model (vedi ADR 0001 e `security-strutturato.md`). I progetti già avviati restano sul profilo dichiarato nel loro `CLAUDE.md`.
+**Corretto:** rimandi incoerenti tra moduli di regole e nei messaggi degli hook (nomi di modulo e di sezione aggiornati al testo attuale).
+**Note:** `/kit:regole` e `/kit:verifica` non sono state provate su un progetto di prova.
 
 ### Push e tag restano con il via dell'utente
 **Perché:** le voci del 2026-11-08 («Push, tag, PR e rilasci consentiti sempre» e «Tag e pubblicazione del rilascio senza approvazione per progetto») descrivevano una riscrittura di `git.md` §Integrazione GitHub che non risulta nelle regole attuali: `git-flusso.md` e `git.md` dicono ancora che push, PR, tag e rilasci vanno eseguiti con il via dell'utente. Su decisione dell'utente (2026-11-26) vale il testo attuale: push e tag restano con il via dell'utente.
