@@ -1,6 +1,6 @@
 # Regole Git avanzate: pull request, rilascio e skill (versione standard)
 
-> Versione 1.0 — ultima revisione: 2026-11-23.
+> Versione 1.1 — ultima revisione: 2026-11-26.
 > Versione breve per il profilo `standard`. Il testo completo è in `.claude/rules-optional/dettaglio/git-avanzato.md`, da leggere su richiesta. Richiede `git-flusso.md` e `core.md`.
 
 ## Pull Request
@@ -22,4 +22,4 @@
 ## Skill del plugin `kit`
 - `/kit:commit-passo`: commit locali in sequenza, senza conferme intermedie, sul branch di lavoro.
 - `/kit:pr-develop`: PR da `feature/*` o `bugfix/*` verso `develop`; prerequisito `gh` installata e autenticata.
-- `/kit:pr-main`: PR da `develop` (o `release/*`, `hotfix/*`) verso `main`; dopo il merge, pulizia dei branch di lavoro confermati e allineamento con `git pull --ff-only`.
+- `/kit:pr-main`: PR da `develop` (o `release/*`, `hotfix/*`) verso `main`; dopo il merge, con `/kit:pr-main pulizia`, pulizia dei branch di lavoro con PR mergiata e allineamento con `git pull --ff-only`.

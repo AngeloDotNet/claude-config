@@ -7,9 +7,9 @@ paths:
 
 # Sicurezza frontend
 
-> Versione 1.2 — ultima revisione: 2026-11-13.
+> Versione 1.3 — ultima revisione: 2026-11-25.
 
-> Richiede `core.md` e `security.md`. Contiene le regole di sicurezza che valgono per il frontend Angular (`innerHTML`, storage, CSP, Trusted Types, `postMessage`, build e segreti, service worker). I principi comuni sono in `security.md`.
+> Richiede `core.md` e `security.md`. Contiene le regole di sicurezza che valgono per il frontend Angular (`innerHTML`, storage, CSP, Trusted Types, `postMessage`, build e segreti, service worker). I principi comuni sono in `security.md`, `security-avanzata.md` e `security-strutturato.md`.
 
 ## Frontend
 - Vietati `innerHTML` e `bypassSecurityTrust*` senza sanitizzazione e motivazione esplicita. ▲ Avviso `check-quality` del plugin.
