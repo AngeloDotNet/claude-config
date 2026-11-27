@@ -14,7 +14,7 @@ paths:
 - Se il frontend del progetto non è Angular (nessun modulo di regole, vedi `avvio-progetto.md` §1), la fase 3 non si esegue con queste regole: Claude si ferma e chiede come procedere.
 
 ## 1. Prima di iniziare (fase 0)
-1. **Branch:** conferma tipo, nome e branch di partenza con l'utente (`git.md`).
+1. **Branch:** Claude crea il branch di lavoro da `develop` senza chiedere conferma (`git-flusso.md`, «Branch di lavoro, senza conferma»).
 2. **Requisiti:** se c'è un dubbio, Claude si ferma e fa domande precise, senza decidere in autonomia (`core.md` §6.5). Chiarisci almeno: campi e vincoli dell'entità, relazioni, regole di business, chi può leggere/scrivere (autorizzazione), se serve ricerca/paginazione/ordinamento, e le scelte del `CLAUDE.md` che la toccano (soft delete, multi-tenancy, audit).
 3. **Entità di riferimento:** il `CLAUDE.md` dichiara un'entità già completata da usare come **spunto di configurazione**, non come modello da clonare. Le entità successive hanno proprietà, relazioni e regole proprie: Claude non copia l'entità né i suoi campi, ma ne **riprende le convenzioni**, per esempio:
    - interfacce e classi base del dominio (gestione dell'id, audit `CreatedAt`/`UpdatedAt`/utente, soft delete, tenant, concorrenza ottimistica);
@@ -60,7 +60,7 @@ Ordine interno, ciascun passo che builda e passa i test:
 4. Aggiornamento della **checklist di consegna** (`qualita.md` §0b) e controllo finale: nessun segreto, nessun file generato non voluto, `git status` pulito dai file estranei.
 
 ## 6. Sequenza dei commit
-Segue `git.md` (serie di commit piccoli, ciascuno che builda e passa i test, test in commit `test(scope)` separati). Con più commit si usa il flusso "piano e passo-passo" di `git.md`: elenco dei commit, uno alla volta, conferma dopo ciascuno (con `/kit:commit-passo` il lancio è il via libera e i commit partono in sequenza). Ordine tipico:
+Segue `git.md` (serie di commit piccoli, ciascuno che builda e passa i test, test in commit `test(scope)` separati). Con più commit si usa il flusso "piano e passo-passo" di `git.md`: elenco dei commit, creati uno alla volta senza chiedere conferma per ciascuno (`git-flusso.md`, «Commit multipli»; con `/kit:commit-passo` il lancio è il via libera). Ordine tipico:
 1. `feat(scope)`: entità, configurazione EF e migrazione (+ servizio, se piccolo);
 2. `feat(scope)`: DTO, validatori, endpoint e il servizio (se non già nel commit 1);
 3. `test(scope)`: test backend (unit, integrazione nel progetto `IntegrationTests`, isolamento);
@@ -68,7 +68,7 @@ Segue `git.md` (serie di commit piccoli, ciascuno che builda e passa i test, tes
 5. `feat(scope)`: servizio dati, componenti e pagine, con le chiavi di traduzione dell'interfaccia;
 6. `test(scope)`: test frontend (unit, E2E, accessibilità);
 7. `docs(scope)`: README e CHANGELOG, ADR se serve.
-Il push è dell'utente: i punti naturali per un push intermedio sono la fine della fase 1 (backend verde) e la fine della fase 3.
+Il push richiede il via dell'utente (`git-flusso.md`, «Integrazione GitHub»): i punti naturali per un push intermedio sono la fine della fase 1 (backend verde) e la fine della fase 3.
 
 ## 7. Cosa non fare
 - Non clonare l'entità di riferimento (campi, nomi, regole di business): se ne riprendono solo le convenzioni comuni, confermate con l'utente.

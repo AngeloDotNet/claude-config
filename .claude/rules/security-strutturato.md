@@ -1,7 +1,7 @@
-# Sicurezza strutturata: ASVS, supply chain, scansione, mobile, dati dettagliati
+# Sicurezza strutturata: ASVS, scansione, mobile, dati dettagliati
 
-> Versione 1.1 — ultima revisione: 2026-11-25.
-> Richiede `security.md` e `core.md`. Estratto da `security-avanzata.md` con gli stessi titoli di sezione. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
+> Versione 1.2 — ultima revisione: 2026-11-27.
+> Richiede `security.md`, `security-avanzata.md` e `core.md`. Contiene le sezioni solo del profilo `strutturato`: threat model, ASVS, mobile, scansione dinamica, test di sicurezza automatici e dati e segreti dettagliati. Supply chain, rotazione dei segreti e connessione al database stanno in `security-avanzata.md`, che si carica anche nel profilo `standard`. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
 
 ## Threat model
 - **Threat model leggero per le funzionalità sensibili:** prima di scrivere codice per una funzionalità che tocca autenticazione, dati personali, upload o integrazioni con servizi esterni, Claude redige un breve ADR in `docs/adr/` (formato di `core.md` §5b) con: asset da proteggere, attori (anonimo, utente, altro utente, amministratore, servizio esterno), abuse case (come un attore ostile userebbe la funzionalità: enumerazione, abuso di risorse, accesso ai dati altrui, replay) e mitigazione di ciascuno con il test che la verifica. Una pagina basta; non si scrive per modifiche che non toccano questi temi. L'ADR è un passo del piano (`core.md` §6, punto 15) e si approva con l'utente prima del codice.
@@ -23,10 +23,10 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 | V9 Self-contained Tokens | JWT (punto 3b: validazione, algoritmi, claim) |
 | V10 OAuth and OIDC | provider esterno (punto 4), Authorization Code + PKCE |
 | V11 Cryptography | «Crittografia»; hashing delle password in `security-backend.md`, «Chiavi e password (.NET)» |
-| V12 Secure Communication | HTTPS, HSTS, «Database e canali interni» |
-| V13 Configuration | «Dati e Segreti», «Configurazione e superficie esposta», «Supply chain» |
-| V14 Data Protection | «Dati e Segreti» (dati personali, backup, `no-store`) |
-| V15 Secure Coding and Architecture | «Progettazione sicura e fail closed», «Supply chain» |
+| V12 Secure Communication | HTTPS, HSTS, «Database e canali interni» (`security-avanzata.md`) |
+| V13 Configuration | «Dati e Segreti (dettaglio)», «Configurazione e superficie esposta», «Supply chain» (`security-avanzata.md`) |
+| V14 Data Protection | «Dati e Segreti (dettaglio)» (backup, `no-store`), «Database, rotazione e dati personali» (`security-avanzata.md`) |
+| V15 Secure Coding and Architecture | «Progettazione sicura e fail closed», «Supply chain» (`security-avanzata.md`) |
 | V16 Security Logging and Error Handling | «Log di sicurezza e allerta», voce «Errori» (`security-backend.md`), fail closed |
 | V17 WebRTC | nessuna regola: se il progetto lo usa, si chiede e si scrive una regola dedicata |
 
@@ -45,17 +45,6 @@ Il kit non ha ancora moduli per il mobile (`core.md` §2): finché non esistono,
 - **Link e piattaforma:** deep link validati come ogni input esterno (`Open redirect` compreso); permessi richiesti al minimo.
 - **Build:** debug disattivato e codice offuscato dove la piattaforma lo prevede, build di release firmate. Il rilevamento di root o jailbreak non è un controllo di sicurezza affidabile: non si introduce di iniziativa.
 - **Test:** si estendono i test di input ostili alla superficie mobile; la scelta della tecnologia mobile e le sue regole dedicate si chiedono al progetto (`CLAUDE.md`, «Sviluppo mobile»).
-
-
-## Supply chain
-- Audit delle dipendenze, SAST, secret scanning, scansione immagini e SBOM: vedi `core.md` (§3 e §5). I controlli concreti sono qui sotto (OWASP Top 10 2025, A03 «Software Supply Chain Failures»).
-- **NuGet, package source mapping:** il `NuGet.config` nella root dichiara `<packageSourceMapping>` con una sola fonte per ogni pacchetto (`nuget.org` per `*`; un feed privato, se c'è, per i suoi prefissi), così un pacchetto con lo stesso nome su un'altra fonte non viene scaricato al suo posto (dependency confusion). Vale per tutti i pacchetti, anche transitivi; richiede NuGet 6.0 o successivo e il mapping non si applica ai pacchetti già nella cartella globale (`dotnet list package --vulnerable` interroga comunque tutte le fonti).
-- **npm, script di installazione:** `npm ci --ignore-scripts` è la regola, nel Dockerfile, in locale e in CI. Un pacchetto che ne ha davvero bisogno (es. il download dei browser di Playwright) è un'eccezione elencata nel `CLAUDE.md` con il motivo e lo script lanciato esplicitamente a parte.
-- **Bot delle dipendenze, attesa sulle versioni nuove:** Dependabot/Renovate propongono una versione solo dopo 7 giorni dalla pubblicazione (`cooldown` di Dependabot; l'equivalente in Renovate); gli aggiornamenti di sicurezza non aspettano (per Dependabot il `cooldown` non li riguarda). Il valore si tiene nella configurazione del bot, non nel codice.
-- **GitHub Actions:** ogni action di terze parti fissata al commit SHA completo (preso dal repository originale, non da un fork) con la versione in commento; `permissions:` dichiarati in ogni workflow, di default in sola lettura (`contents: read`) con permessi in più solo sul job che li richiede; nessun segreto esposto ai workflow delle PR da fork.
-- **Repository (a cura dell'utente):** protezione del branch `main` e di `develop` (PR obbligatoria, controlli CI richiesti, nessun push diretto) e `CODEOWNERS` per `.github/`, `security.md` e i file di dipendenze. Claude scrive `CODEOWNERS` e i workflow se richiesto; la configurazione su GitHub è dell'utente.
-- **Immagine di release:** SBOM già previsto in `core.md` §5; in più, attestazione di provenienza della build (strumento e licenza da verificare al primo uso, `core.md` §3).
-- **Controllo licenze:** la regola "solo licenze permissive" (`core.md` §3) si verifica con uno strumento gratuito, non a memoria: per npm `license-checker-rseidelsohn` (BSD-3-Clause, versione 5.x; il progetto passerà a `@lizenz/checker`, oggi ancora pre-1.0: valutarlo quando esce la 1.0), per NuGet `nuget-license` di sensslen (Apache-2.0, dotnet tool `nuget-license`; non confonderlo con il vecchio `dotnet-project-licenses`, abbandonato). Licenze degli strumenti verificate il 2026-10-25; per qualunque altro strumento verifica la licenza prima di proporlo. Il comando e la lista di licenze ammesse stanno nel `CLAUDE.md` o nella CI; una licenza non ammessa o sconosciuta fa fallire il controllo e viene segnalata, non ignorata.
 
 
 ## Scansione dinamica, segnalazioni e risposta agli incidenti
@@ -78,14 +67,11 @@ Si scrivono nel progetto `IntegrationTests` (vedi `backend-app.md` §4.5) e fann
 
 
 
-## Dati e Segreti
+## Dati e Segreti (dettaglio)
 ▲ Verificato dal plugin `kit`: hook `guard-secrets` (valori reali in `appsettings*.json`, password in chiaro in compose e Dockerfile, chiavi PEM, token JWT bloccati) e `check-quality` (avvisi).
 - Data Protection di ASP.NET Core e hashing delle password: regole in `security-backend.md`, «Chiavi e password (.NET)».
-- Rotazione dei segreti: i segreti hanno una data di scadenza o rotazione dichiarata nel `CLAUDE.md` di progetto; un segreto compromesso o finito per errore nel repository si considera bruciato e va sostituito, non solo rimosso.
 - Nessun segreto nel repository: User Secrets in sviluppo; in produzione variabili d'ambiente valorizzate da `.env` fuori dal repository (mai servizi cloud a pagamento come Azure Key Vault o AWS Secrets Manager).
-- **Database e canali interni:** il database si raggiunge con connessione cifrata e certificato verificato (SQL Server `Encrypt=True` con `TrustServerCertificate=False`; PostgreSQL `SslMode=VerifyFull`); se il server usa un certificato proprio, la CA fidata si concorda per progetto (host gestito dall'utente). Utente applicativo senza DDL e utente separato per le migrazioni: vedi `backend-app.md` §4.4. Redis e RabbitMQ richiedono sempre autenticazione (segreti da variabili d'ambiente valorizzate da `.env`) e non espongono porte sull'host in produzione (con Docker, `docker.md`); se il traffico esce dalla rete interna del compose, passa su TLS. Nessun servizio interno (database, cache, broker, pannelli di gestione) è raggiungibile da Internet.
 - Le password non sono mai in chiaro, né nei log.
-- Dati personali: minimizzazione, cifratura dei campi sensibili, retention e diritto all'oblio (GDPR).
 - Dati di test: mai dati reali di produzione in sviluppo o test; usa dati sintetici o anonimizzati.
 - Backup e ripristino: backup automatici del database con ripristino testato periodicamente. RPO/RTO e retention si dichiarano nel `CLAUDE.md` di progetto; con Docker, gli artefatti di backup sono descritti in `docker.md`.
 - Log di sicurezza: registra login riusciti e falliti, lockout, cambi di ruolo/permessi, accessi negati (401/403) e modifiche a dati critici; il contenuto dei messaggi segue la regola «Log: injection e contenuto» (vedi «Vulnerabilità applicative ricorrenti»).

@@ -22,7 +22,7 @@ Le regole sono il punto di partenza: si applicano per intero, senza deroghe pree
 1. Domande del §1 (una per volta, ciascuna con risposta a scelta, attendendo la risposta prima della successiva).
 2. Piano di avvio (§2b): issue padre con le sub-issue come passi e ok dell'utente a ogni punto; con il profilo `mini` resta in chat, con una sola conferma.
 3. Pulizia della copia del template (§2): spostamento dei moduli non scelti da `.claude/rules/` a `.claude/rules-optional/`, attivazione di quelli opzionali confermati, compilazione del `CLAUDE.md` (§3), rimozione di tutto il materiale del template (§3, punto 5: `_template/`, `.claude-plugin/`, `plugins/`): le scelte "chiesto, non presunto" si chiedono quando diventano rilevanti.
-4. Verifica con `/context` e, se il repository esiste, commit `chore(rules)` su branch confermato. Se git non è inizializzato Claude lo segnala, non esegue `git init`.
+4. Verifica con `/context` e, se il repository esiste, commit `chore(rules)` sul branch di lavoro creato senza conferma (`git-flusso.md`). Se git non è inizializzato Claude lo segnala, non esegue `git init`.
 5. Da qui si sviluppa seguendo le regole; nessuna ispezione del codice (non c'è).
 
 ### B. Progetto esistente (codice già presente)
@@ -30,7 +30,7 @@ Le regole si **integrano** senza stravolgere ciò che c'è: Claude rileva, mostr
 1. Domande del §1, una per volta (tipo, sicurezza, stato = esistente; tecnologia frontend, mobile e ORM si **rilevano** dal codice e si fanno confermare, non si chiedono da zero).
 2. **Ispezioni in sola lettura:** git e cronologia (§3b), poi scelte già presenti nel codice (§3c). Nessuna modifica in questa fase.
 3. **Riepilogo delle differenze** rispetto alle regole e, **una domanda per volta**, la decisione per ciascuna: *deroga* nel `CLAUDE.md` di quel progetto (la scelta esistente resta) oppure *adeguamento* con refactoring a parte, con un proprio piano.
-4. Piano di integrazione (§2b), poi copia dei moduli in `.claude/rules/`, `CLAUDE.md` (campi noti compilati, gli altri `[..]`; se esiste già, anche perché copiato come modello o preesistente del progetto, lo **allinea e completa** senza sostituirlo né perdere il contenuto del progetto) e commit `chore(rules)` su branch confermato.
+4. Piano di integrazione (§2b), poi copia dei moduli in `.claude/rules/`, `CLAUDE.md` (campi noti compilati, gli altri `[..]`; se esiste già, anche perché copiato come modello o preesistente del progetto, lo **allinea e completa** senza sostituirlo né perdere il contenuto del progetto) e commit `chore(rules)` sul branch di lavoro creato senza conferma (`git-flusso.md`).
 5. Vincoli: la cronologia git esistente non si riscrive mai; non si migra a zoneless né si ristruttura senza chiedere; le regole valgono per il codice **nuovo** dal punto concordato in poi.
 6. **Solo Git:** variante minima del percorso B, con i soli moduli della «Modalità solo Git» (§2).
 7. **Frontend Blazor da sostituire con Angular:** caso particolare del percorso B, con procedura propria al §3d.
@@ -81,12 +81,12 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | Limiti, paginazione e rate limiting | «Limiti e rate limiting» | `security-backend.md`, «Abuso di risorse» |
 | CSP della SPA statica | «CSP della SPA statica» | `security-backend.md`, «Protezione dell'API» |
 | Allerta sugli eventi di sicurezza e retention dei log di audit | «Allerta sugli eventi di sicurezza» | `security-strutturato.md`, «Log di sicurezza e allerta» |
-| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security-strutturato.md`, «Supply chain» |
+| Eccezioni a `npm ci --ignore-scripts` | «Eccezioni a `npm ci --ignore-scripts`» | `security-avanzata.md`, «Supply chain» |
 | Logging (provider, sink, formato, livelli) | «Logging» | `osservabilita.md` |
 | Osservabilità | «Osservabilità» | `osservabilita.md` |
 | Cache | «Cache» | `backend-infra.md` |
 | File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend.md` §2 e §5, moduli opzionali |
-| Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security-strutturato.md` |
+| Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security-strutturato.md` (backup, RPO/RTO), `security-avanzata.md` (rotazione) |
 | Lingua di README e CHANGELOG | «Lingua della documentazione» | `core.md` §5b |
 | Fine riga del repository | «Fine riga» | `git-flusso.md`, «Repository, fine riga e hook» |
 | GitHub CLI installata | «Eccezioni alle regole globali» | `git-flusso.md`, «Integrazione GitHub» |
@@ -100,7 +100,7 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 | `core.md` | sempre |
 | `lavoro.md` | sempre |
 | `git.md` | sempre |
-| `contratto.md` | sempre; si carica solo sui file backend e frontend (`paths:`) |
+| `contratto.md` | solo quando si tocca un file backend o frontend (`paths:`); non si copia nella modalità solo Git |
 | `workflow.md`, `qualita.md`, `git-flusso.md`, `git-avanzato.md`, `documentazione.md`, `operativita.md`, `security-avanzata.md` | profili standard e strutturato: in `.claude/rules/`. Profilo `mini` (domanda 0): in `.claude/rules-optional/`. `security-avanzata.md` solo con le regole di sicurezza estese (domanda 2). In modalità solo Git si copia solo `workflow.md`, `git-flusso.md` e `git-avanzato.md` (vedi sotto) |
 | `security-strutturato.md` | solo profilo `strutturato`: in `.claude/rules/`. Profili `standard` e `mini`: in `.claude/rules-optional/`. Solo con le regole di sicurezza estese (domanda 2) |
 | `backend.md`, `backend-architecture.md`, `backend-app.md`, `osservabilita.md` | solo API o fullstack (i tre moduli backend vanno sempre insieme; `osservabilita.md` si copia con il backend) |
@@ -135,7 +135,7 @@ Dopo le domande del §1 (e, per un progetto esistente, dopo le ispezioni in sola
 4b. **File di configurazione .NET (domanda 9):** nel progetto nuovo `NuGet.config` e `.editorconfig` sono già nella copia del template: Claude elimina quelli che l'utente non vuole e, per `NuGet.config`, segnala il contenuto che ha rilevanza di sicurezza (sorgenti NuGet interne, flag `allowInsecureConnections` per sorgenti HTTP, mappatura dei pacchetti), così l'utente decide con cognizione; per `.editorconfig` verifica la coerenza con `.gitattributes` (fine riga, vedi `git.md`) e con l'impostazione `root = true`. Nel progetto esistente copia `NuGet.config` e/o `.editorconfig` dalla radice del template nella root del progetto, **tali e quali**; se il file esiste già non lo sovrascrive: mostra le differenze e chiede (adeguare, tenere il proprio con una deroga nel `CLAUDE.md`, o unire). Se il file sorgente non esiste, lo segnala e prosegue. Le scelte si registrano nel `CLAUDE.md` (sezione "Nomi e struttura") e i file copiati si aggiungono al commit `chore(rules)`.
 4c. **`.gitignore` (progetto nuovo):** il `.gitignore` del template copre Visual Studio, .NET, Angular e i file locali di Claude Code. In base al tipo di progetto (domanda 1) Claude **propone** di togliere le sezioni che non servono (per esempio .NET e Visual Studio in un progetto solo frontend, Angular/Node in un progetto solo API) e **chiede conferma, una domanda sola**; le voci per i file locali di Claude Code e per segreti e `.env` restano sempre. Senza conferma il file resta com'è. Nel progetto esistente non lo sostituisce: se manca o va integrato, mostra le differenze e chiede (vedi §3b). La scelta si annota nel `CLAUDE.md` (sezione "Note per Claude") e il file entra nel commit `chore(rules)`.
 5. Progetto nuovo: elimina tutto ciò che appartiene al template e non al progetto: `_template/` (questo file compreso), `.claude-plugin/` e `plugins/` (marketplace e plugin `kit`, che si installano una volta per macchina, non per progetto). **Restano** `.claude/rules/` e `.claude/rules-optional/`, anche a progetto avviato, così Claude può aggiornare, aggiungere o rimuovere regole durante la vita del progetto, non solo all'avvio. `README.md` e `CHANGELOG.md` del template non restano: si sostituiscono con quelli del progetto (`core.md` §5b). Verifica che `.claude/rules/` contenga solo regole e invita l'utente a controllare con `/context`.
-6. Se il repository esiste, propone, dopo aver confermato il branch con l'utente (`git.md`), un commit `chore(rules): add Claude rules` con i file creati (aggiunti per nome). Commit locale: **push, PR, tag e rilasci restano all'utente**.
+6. Se il repository esiste, propone, sul branch di lavoro creato senza conferma (`git-flusso.md`), un commit `chore(rules): add Claude rules` con i file creati (aggiunti per nome). Commit locale: **push, PR, tag e rilasci restano all'utente**.
 
 ## 3b. Progetto esistente già versionato (anche in modalità solo Git)
 Se il progetto esiste già e ha un repository git con cronologia non gestita da Claude, prima di creare il `CLAUDE.md` (passo 4 del §3):
@@ -173,7 +173,7 @@ Caso di un progetto esistente con frontend Blazor che l'utente vuole sostituire 
    4. a copertura completa, e solo con l'ok dell'utente: rimuovere pagine, progetti e pacchetti Blazor (compresa la libreria UI), ripulire configurazione e file statici, far diventare `Web` un host solo API;
    5. aggiornare `CLAUDE.md` (campi "Tecnologia frontend", cartelle, comandi), README e CHANGELOG, e togliere dal `CLAUDE.md` la deroga transitoria.
 4. **Deroghe transitorie:** finché Blazor è presente, nel `CLAUDE.md` del progetto si registra come deroga, con il criterio di rimozione (la tecnologia frontend in uso è doppia). Il codice Blazor non si modifica se non per ciò che serve alla coesistenza o a fix urgenti concordati.
-5. **Git:** branch dedicato confermato con l'utente (`git.md`, tipo `feature/`); commit piccoli con il flusso "piano e passo-passo"; la rimozione di Blazor è un commit (o una serie) separato dalle migrazioni delle pagine. Il push resta all'utente; punti sensati per un push intermedio: a fine predisposizione API e a fine di ogni area migrata.
+5. **Git:** branch dedicato creato senza conferma (`git-flusso.md`, tipo `feature/`); commit piccoli con il flusso "piano e passo-passo"; la rimozione di Blazor è un commit (o una serie) separato dalle migrazioni delle pagine. Il push resta all'utente; punti sensati per un push intermedio: a fine predisposizione API e a fine di ogni area migrata.
 6. **Uscita:** nessun riferimento residuo a Blazor (progetti, pacchetti, route, risorse), build e test verdi, flussi principali verificati end-to-end in Angular.
 
 ## 4. Dopo l'avvio
@@ -187,4 +187,4 @@ Caso di un progetto esistente con frontend Blazor che l'utente vuole sostituire 
 ## 5. Divieti
 - Nessun percorso assoluto della macchina nei file del progetto né nei moduli.
 - Nessuna modifica al template sorgente quando si lavora su un progetto esistente.
-- Nessun `push`, PR, tag, rilascio o pipeline: sono dell'utente.
+- Nessun `push`, PR, tag, rilascio o pipeline senza il via dell'utente (`git-flusso.md`, «Integrazione GitHub»).
