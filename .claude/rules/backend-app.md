@@ -5,7 +5,7 @@ paths:
 
 # Regole Backend: logica applicativa e infrastruttura
 
-> Versione 1.6 — ultima revisione: 2026-11-17.
+> Versione 1.7 — ultima revisione: 2026-11-25.
 
 > Richiede `core.md` e `backend.md`. Si carica insieme a `backend.md` sui file `*.cs`, `*.csproj`, `*.props`. Contiene §4: errori e risposte API (4.1), concorrenza (4.2), paginazione (4.3), database ed EF Core (4.4), integration test (4.5), utente corrente e proprietà (4.6); la numerazione dei paragrafi è quella storica di `backend.md`.
 
@@ -38,7 +38,7 @@ paths:
 
 ### 4.3 Paginazione, Filtri e Ordinamento
 - **Modello unificato (query string):** parametri e risposta come da `core.md` §1; `sortDirection` accetta ASC/DESC; i filtri seguono una convenzione unica.
-- **Limiti:** `pageSize` ha un valore predefinito e un massimo imposti dal server (valori in configurazione, per esempio 20 e 100); un valore sopra il massimo o minore di 1 è rifiutato con 400 (o ridotto al massimo, scelta unica per progetto), mai usato così com'è. Anche `pageNumber` ha un tetto ragionevole, e un `totalCount` costoso su tabelle grandi si valuta (keyset). Altri abusi di risorse: `security.md`, «Abuso di risorse».
+- **Limiti:** `pageSize` ha un valore predefinito e un massimo imposti dal server (valori in configurazione, per esempio 20 e 100); un valore sopra il massimo o minore di 1 è rifiutato con 400 (o ridotto al massimo, scelta unica per progetto), mai usato così com'è. Anche `pageNumber` ha un tetto ragionevole, e un `totalCount` costoso su tabelle grandi si valuta (keyset). Altri abusi di risorse: `security-backend.md`, «Abuso di risorse».
 - **Sicurezza:** `sortBy` e i campi filtro passano da una allow-list, mai usati direttamente in query dinamiche.
 - **Dataset molto grandi:** valuta la keyset pagination.
 
@@ -53,7 +53,7 @@ paths:
 
 ### 4.5 Integration test e database di prova
 - **Niente Testcontainers né tecnologie simili:** gli integration test non avviano container né orchestrano risorse da codice; usano l'istanza di database di prova descritta sotto.
-- **Progetto dedicato:** `[Solution].IntegrationTests` (xUnit), separato dai progetti di unit test (`[Solution].UnitTests.<Livello>`, `core.md` §4); referenzia l'`Api` e usa `WebApplicationFactory<Program>` (vedi §2, `Program` accessibile).
+- **Progetto dedicato:** `[Solution].IntegrationTests` (xUnit), separato dai progetti di unit test (`[Solution].UnitTests.<Livello>`, `qualita.md` §4); referenzia l'`Api` e usa `WebApplicationFactory<Program>` (vedi §2, `Program` accessibile).
 - **Database reale di prova:** stesso motore del progetto, su un'istanza locale già esistente (o server di prova indicato dall'utente). La connection string arriva da User Secrets o dalla variabile `ConnectionStrings__Test`, mai dal repository né da `appsettings.json` con valori reali. Mai il database di sviluppo né di produzione.
 - **Isolamento:** a ogni esecuzione dei test si crea un database con nome univoco (es. suffisso `Guid`), si applicano le migrazioni e a fine esecuzione lo si elimina (anche in caso di fallimento: fixture di collezione/assembly con `IAsyncLifetime`). I test dentro la stessa esecuzione non condividono dati: ognuno crea i propri (builder/fixture, id e tenant univoci) e non dipende dall'ordine.
 - **Privilegi:** l'utente usato dai test può creare ed eliminare database; è distinto dall'utente applicativo (privilegi minimi, §4.4) e non è mai usato fuori dai test.

@@ -1,12 +1,12 @@
 # Operatività, Docker e CI
 
-> Versione 1.0 — ultima revisione: 2026-11-23.
+> Versione 1.1 — ultima revisione: 2026-11-25.
 > Estratto da `core.md` §5 e §5a, con la stessa numerazione. Caricato nei profili standard e strutturato.
 
 ## 5. Operatività e CI
 - **Logging, shutdown, più container, OpenTelemetry e stack di osservabilità:** in `osservabilita.md`, caricato sui file backend, Docker e `observability/`.
 - **Docker (opzionale):** le regole sono in `docker.md`, attivo solo su richiesta esplicita dell'utente (§5a). Server, host e orchestrazione sono gestiti dall'utente e fuori dallo scopo di Claude.
-- **CI/CD:** build, test, lint, scansione vulnerabilità e formattazione a ogni PR. Supply chain: SAST (CodeQL), secret scanning (gitleaks), scansione delle immagini Docker (Trivy) e SBOM generato a ogni release. Claude può scrivere e committare i file di pipeline (workflow YAML, configurazione Dependabot/Renovate); l'avvio di una pipeline segue `git.md` («Integrazione GitHub») e la gestione dei segreti della CI resta all'utente.
+- **CI/CD:** build, test, lint, scansione vulnerabilità e formattazione a ogni PR. Supply chain: SAST (CodeQL), secret scanning (gitleaks), scansione delle immagini Docker (Trivy) e SBOM generato a ogni release. Claude può scrivere e committare i file di pipeline (workflow YAML, configurazione Dependabot/Renovate); l'avvio di una pipeline segue `git-flusso.md` («Integrazione GitHub») e la gestione dei segreti della CI resta all'utente.
 - **Git:** vedi `git.md`.
 
 ---

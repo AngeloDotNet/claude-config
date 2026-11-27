@@ -25,4 +25,4 @@ Questa skill applica le regole di `backend-app.md` §4.4 (database ed EF Core) e
 12. **Trappole comuni.** Tracking con più contesti, uso incoerente di async, `.Result` o `.Wait()` su operazioni di I/O. N+1 e query dentro i cicli sono già al punto 8: non ripeterli.
 13. **Esito.** Chiudi con l'elenco dei punti trovati, per gravità (bloccante, importante, suggerimento: `lavoro.md`, «Gravità dei rilievi»), con file e riga. Le modifiche al codice si propongono e si applicano con una richiesta separata.
 
-Riferimenti: `backend-app.md` §4.1, §4.2, §4.4 e §4.6; `backend.md` §8 (performance); `backend-architecture.md` §2c; `core.md` §4.
+Riferimenti: `backend-app.md` §4.1, §4.2, §4.4 e §4.6; `backend.md` §8 (performance); `backend-architecture.md` §2c; `qualita.md` §4.

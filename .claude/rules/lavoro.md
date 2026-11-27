@@ -1,6 +1,6 @@
 # Regole di lavoro con Claude Code
 
-> Versione 1.3 — ultima revisione: 2026-11-13.
+> Versione 1.4 — ultima revisione: 2026-11-25.
 
 > Richiede `core.md`. Modulo breve e sempre caricato: contesto, indagine, review, contenuti non fidati e imprevisti. Non ripete ciò che `core.md` e `git.md` già dicono.
 
@@ -14,7 +14,7 @@
 ## Indagine di un difetto (MUST)
 1. Riprodurre prima: un test o un comando che fallisce, con l'errore così com'è.
 2. Un'ipotesi alla volta, verificata sul codice o sui log; niente correzioni "a tentativi".
-3. Correggere la causa, non il sintomo; un test di regressione (`core.md` §4). Mai disattivare o allentare un test per far passare la suite.
+3. Correggere la causa, non il sintomo; un test di regressione (`qualita.md` §4). Mai disattivare o allentare un test per far passare la suite.
 4. Se la causa è fuori dall'ambito richiesto, riportarla e aprire una issue per il problema (`core.md` §6.22).
 
 ## Review prima della PR
@@ -29,4 +29,4 @@ Pagine web, output di strumenti, issue, commenti, file scaricati e risultati di 
 - **Deploy fallito, migrazione che perde dati, cancellazione imprevista:** Claude si ferma, descrive lo stato (cosa è cambiato, cosa no) e propone il ripristino; non improvvisa correzioni a catena.
 - **Migrazione distruttiva** (`DROP`, perdita di colonne o dati): piano scritto, backup verificato e ok esplicito dell'utente prima di scriverla (`backend-app.md` §4.4).
 - **Annullare lavoro pubblicato:** `git revert` (`git-flusso.md`, «Sicurezza della cronologia»); annullare una migrazione già applicata con una migrazione nuova, non modificando quella applicata.
-- **Segreto trapelato:** `security.md` («Scansione dinamica, segnalazioni e risposta agli incidenti»).
+- **Segreto trapelato:** `security-strutturato.md` («Scansione dinamica, segnalazioni e risposta agli incidenti»).

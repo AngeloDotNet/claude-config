@@ -30,7 +30,7 @@ Ordine interno, ciascun passo che builda e passa i test:
 2. **Contratti:** `record` DTO di richiesta e risposta (mai entità esposte), validatori `FluentValidation` con **chiavi** di traduzione, mapping manuale con metodi di estensione.
 3. **Servizio/handler:** logica di business che restituisce il tipo di risultato della libreria scelta; errori di business come chiavi (`ERROR_<ENTITY>_NOT_FOUND`) con parametri nel campo separato, e il risultato segue la tabella risultato → HTTP di `backend-app.md` §4.1. Per ogni risorsa di un utente il servizio usa `ICurrentUser` e filtra per proprietario o tenant (`backend-app.md` §4.6). Clean → in `Application`. Il service implementa la sua interfaccia (in `Interfaces/`) e si registra in DI con entrambi i tipi, con Scrutor se i service con lo stesso lifetime sono più di uno (`backend.md` §2, "Service e interfacce" e "Registrazione in blocco con Scrutor").
 4. **Endpoint:** Minimal API raggruppati con `MapGroup`, commenti XML, autorizzazione esplicita, paginazione/ordinamento dove serve. Clean → in `Api`.
-5. **Test:** unit test su validatori e logica; integration test sull'endpoint, nel progetto `IntegrationTests` (`backend-app.md` §4.5); test di isolamento tra utenti/tenant, obbligatorio per ogni risorsa di un utente o tenant (`core.md` §0b); in Clean, test di architettura verdi; un test per ogni bug (`core.md` §4).
+5. **Test:** unit test su validatori e logica; integration test sull'endpoint, nel progetto `IntegrationTests` (`backend-app.md` §4.5); test di isolamento tra utenti/tenant, obbligatorio per ogni risorsa di un utente o tenant (`qualita.md` §0b); in Clean, test di architettura verdi; un test per ogni bug (`qualita.md` §4).
 6. **Seed delle chiavi di errore** del backend (IT/EN) con la fase, in script idempotente (`backend.md` §7, voce «Seeding»).
 
 **Uscita dalla fase:** build senza warning, test verdi, migrazione inclusa, endpoint raggiungibili e documentati in OpenAPI. Se l'entità tocca autorizzazione o dati personali, security review eseguita (`security.md`, "Regola operativa") e risultato riportato nella consegna.
@@ -57,7 +57,7 @@ Ordine interno, ciascun passo che builda e passa i test:
 1. **Chiavi complete:** nessuna chiave mancante in IT/EN, sia quelle del backend (errori) sia quelle dell'interfaccia; il test sulle chiavi mancanti passa.
 2. **README.md** (funzionalità, se rilevante) e **CHANGELOG.md** (voce dell'intervento, più recente in alto, nella lingua scelta per il progetto), come da `core.md` §5b.
 3. **ADR** in `docs/adr/` solo se la feature ha richiesto una decisione che devia dalle regole.
-4. Aggiornamento della **checklist di consegna** (`core.md` §0b) e controllo finale: nessun segreto, nessun file generato non voluto, `git status` pulito dai file estranei.
+4. Aggiornamento della **checklist di consegna** (`qualita.md` §0b) e controllo finale: nessun segreto, nessun file generato non voluto, `git status` pulito dai file estranei.
 
 ## 6. Sequenza dei commit
 Segue `git.md` (serie di commit piccoli, ciascuno che builda e passa i test, test in commit `test(scope)` separati). Con più commit si usa il flusso "piano e passo-passo" di `git.md`: elenco dei commit, uno alla volta, conferma dopo ciascuno (con `/kit:commit-passo` il lancio è il via libera e i commit partono in sequenza). Ordine tipico:

@@ -1,6 +1,6 @@
 # Regole di qualità e checklist di consegna (versione standard)
 
-> Versione 1.0 — ultima revisione: 2026-11-23.
+> Versione 1.1 — ultima revisione: 2026-11-25.
 > Versione breve per il profilo `standard`, estratto di `core.md` §0b e §4. Il testo completo è in `.claude/rules-optional/dettaglio/qualita.md`, da leggere su richiesta. Richiede `core.md`.
 
 ## 0b. Checklist di consegna
@@ -15,7 +15,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti si ign
 - [ ] Lint e formattazione puliti; nessun `any`, nessuna stringa o colore hardcoded (frontend).
 - [ ] Chiavi di traduzione IT/EN fornite.
 - [ ] Endpoint protetti, input validati lato server, controlli di proprietà (anti-IDOR).
-- [ ] Security review per autenticazione, autorizzazione, upload, URL esterni o dati personali (`security-avanzata.md`).
+- [ ] Security review per autenticazione, autorizzazione, upload, URL esterni o dati personali (`security.md`, «Regola operativa»).
 - [ ] Migrazione EF inclusa, se il modello è cambiato.
 - [ ] Nessuna dipendenza non dichiarata; solo software gratuito con licenza permissiva.
 - [ ] Nessun valore reale in `appsettings.json`: solo segnaposto, valori reali da variabili d'ambiente.

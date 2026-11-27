@@ -13,14 +13,14 @@
 // secrets.json, chiavi e certificati), git commit con messaggio non Conventional Commits
 // (git.md: tipo(scope): descrizione con tipo ammesso; letto da -m o da heredoc). Maiuscola, punto finale e
 // lunghezza dell'oggetto restano regole scritte, non controllate dall'hook; git init non è bloccato (regola scritta).
-// git tag (creazione): solo con nome X.Y.Z (senza v) e dal branch main (git.md, «Rilascio»); il via
+// git tag (creazione): solo con nome X.Y.Z (senza v) e dal branch main (git-avanzato.md, «Rilascio»); il via
 // dell'utente non è verificabile dall'hook ed è una regola scritta. Sempre consentiti: git push (normale),
 // elenco e cancellazione dei tag. gh issue create/edit/close/reopen/comment, gh pr create e gh release
 // create/delete/upload/edit passano solo se la GitHub CLI è installata sul PC: lo dice la riga
-// «GitHub CLI (gh) installata» nel CLAUDE.md della radice del repository (git.md), scritta una volta
+// «GitHub CLI (gh) installata» nel CLAUDE.md della radice del repository (git-flusso.md), scritta una volta
 // per progetto dopo la domanda dell'utente. Fuori da un repository, vale il CLAUDE.md della cartella del comando.
 // Senza riga, o con riga non valida, queste operazioni sono bloccate (fail closed).
-// Sempre bloccati (git.md, «Integrazione GitHub»): gestione del repository (gh repo create/delete/edit/...,
+// Sempre bloccati (git-flusso.md, «Integrazione GitHub»): gestione del repository (gh repo create/delete/edit/...,
 // gh secret, gh variable, gh ruleset, gh api in scrittura su impostazioni e accessi), gh pr merge e gh issue delete.
 // Consentiti i comandi di sola lettura (git status/log/diff, git tag -l, gh issue view, gh pr view...).
 // Il comando è cercato solo in posizione di comando: testo dentro virgolette, heredoc
@@ -38,9 +38,9 @@ const PROTECTED_BRANCHES = new Set(["main", "develop"]);
 const WRAPPERS = new Set(["sudo", "command", "env", "time", "exec", "nohup", "call", "builtin", "nice"]);
 const SHELLS = new Set(["bash", "sh", "zsh", "dash", "pwsh", "powershell", "cmd"]);
 const REMOVERS = new Set(["rm", "rmdir", "remove-item", "ri", "del", "erase", "rd"]);
-// File che non devono entrare nel repository (git.md, «Cosa non entra mai»). .env.example è consentito.
+// File che non devono entrare nel repository (git-flusso.md, «Cosa non entra mai»). .env.example è consentito.
 const SENSITIVE_PATH = /(^|[\\/])(\.env(\.(?!example$)[\w.-]+)?|secrets\.json)$|\.(pfx|p12|key|pem|jks)$/i;
-// Branch remoti che si possono cancellare con git push --delete (git.md, «Branch»).
+// Branch remoti che si possono cancellare con git push --delete (git-flusso.md, «Branch»).
 const WORK_BRANCH = /^(feature|bugfix|release|hotfix)\/\w[\w./-]*$/;
 const COMMIT_TYPES = "feat|fix|refactor|perf|test|docs|build|ci|chore|revert";
 
@@ -49,7 +49,7 @@ const isFlag = (t) => !t.quoted && t.text.startsWith("-");
 // Flag corta che contiene la lettera `ch` (es. -f, -fu): `--long` non conta.
 const shortHas = (t, ch) => !t.quoted && /^-[A-Za-z]+$/.test(t.text) && t.text.includes(ch);
 
-// Riga della GitHub CLI (git.md, «Integrazione GitHub»). Formato fisso; la data è facoltativa.
+// Riga della GitHub CLI (git-flusso.md, «Integrazione GitHub»). Formato fisso; la data è facoltativa.
 // Una riga con altro formato non vale come «sì».
 const GH_LINE = /^- \*\*GitHub CLI \(gh\) installata:\*\* (s[ìi]|no)(?: \(\d{4}-\d{2}-\d{2}\))?\s*$/im;
 
@@ -239,7 +239,7 @@ const TAG_READ_FLAGS = new Set([
 // Opzioni di git tag che consumano il valore successivo.
 const TAG_VALUE_FLAGS = new Set(["-m", "--message", "-F", "--file", "-u", "--local-user", "--cleanup"]);
 
-/** Creazione di un tag (git.md, «Rilascio»): nome X.Y.Z senza `v`, solo dal branch main (dopo il merge). */
+/** Creazione di un tag (git-avanzato.md, «Rilascio»): nome X.Y.Z senza `v`, solo dal branch main (dopo il merge). */
 function analyzeGitTag(rest, dir) {
   if (rest.some((t) => !t.quoted && (TAG_READ_FLAGS.has(t.text) || t.text.startsWith("--sort=") || t.text.startsWith("--format=")))) return null;
   let name = null;
@@ -253,16 +253,16 @@ function analyzeGitTag(rest, dir) {
   if (name === null) return null;
   if (!/^\d+\.\d+\.\d+$/.test(name)) {
     blockHint =
-      "Il tag di rilascio ha il formato X.Y.Z, senza prefisso v (git.md, «Rilascio»), uguale alla versione nel file di versione e " +
+      "Il tag di rilascio ha il formato X.Y.Z, senza prefisso v (git-avanzato.md, «Rilascio»), uguale alla versione nel file di versione e " +
       "nel CHANGELOG.md. Chiedi all'utente il via con UNA SOLA domanda prima di crearlo.";
     return `nome del tag "${name}" non nel formato X.Y.Z`;
   }
   const branch = currentBranch(dir);
   if (branch !== "main") {
     blockHint =
-      "Il tag si crea solo dopo il merge su main, dal branch main e sul commit di merge (git.md, «Rilascio»). " +
+      "Il tag si crea solo dopo il merge su main, dal branch main e sul commit di merge (git-avanzato.md, «Rilascio»). " +
       "Chiedi all'utente il via con UNA SOLA domanda dopo aver verificato il merge.";
-    return `git tag dal branch "${branch || "sconosciuto"}" (git.md: il tag si crea solo da main, dopo il merge)`;
+    return `git tag dal branch "${branch || "sconosciuto"}" (git-avanzato.md: il tag si crea solo da main, dopo il merge)`;
   }
   return null;
 }
@@ -348,7 +348,7 @@ function analyzeGit(allArgs, cwd) {
   }
 }
 
-// Gestione del repository: mai di Claude (git.md, «Integrazione GitHub»). Blocco assoluto, senza gate.
+// Gestione del repository: mai di Claude (git-flusso.md, «Integrazione GitHub»). Blocco assoluto, senza gate.
 const GH_REPO_MANAGEMENT = new Set(["create", "delete", "edit", "archive", "unarchive", "rename", "transfer", "set-default"]);
 const GH_ALWAYS_BLOCKED_AREAS = new Set(["secret", "variable", "ruleset"]);
 // Impostazioni e accessi del repository via gh api: scritture su questi percorsi sono bloccate.
@@ -363,10 +363,10 @@ function analyzeGh(args, cwd) {
     else if (!isFlag(args[k])) positional.push(args[k].text);
   }
   const [area, action] = positional;
-  if (area === "repo" && GH_REPO_MANAGEMENT.has(action)) return `gh repo ${action} (gestione del repository: non di Claude, git.md)`;
-  if (GH_ALWAYS_BLOCKED_AREAS.has(area)) return `gh ${area} (impostazioni e segreti del repository: non di Claude, git.md)`;
-  if (area === "pr" && action === "merge") return "gh pr merge (il merge di PR resta all'utente, git.md)";
-  if (area === "issue" && action === "delete") return "gh issue delete (cancellazione: non di Claude, git.md)";
+  if (area === "repo" && GH_REPO_MANAGEMENT.has(action)) return `gh repo ${action} (gestione del repository: non di Claude, git-flusso.md)`;
+  if (GH_ALWAYS_BLOCKED_AREAS.has(area)) return `gh ${area} (impostazioni e segreti del repository: non di Claude, git-flusso.md)`;
+  if (area === "pr" && action === "merge") return "gh pr merge (il merge di PR resta all'utente, git-flusso.md)";
+  if (area === "issue" && action === "delete") return "gh issue delete (cancellazione: non di Claude, git-flusso.md)";
   if (area === "api") {
     // Scrittura: campi (-f, -F, ...) che fanno passare la richiesta a POST, oppure un metodo di scrittura esplicito.
     const hasFields = args.some((t) => !t.quoted && ["-f", "-F", "--field", "--raw-field", "--input"].includes(t.text));
@@ -374,7 +374,7 @@ function analyzeGh(args, cwd) {
     const method = methodIndex >= 0 ? (args[methodIndex + 1]?.text || "") : (args.find((t) => /^--method=/i.test(t.text))?.text.split("=")[1] || "");
     const write = hasFields || GH_API_WRITE_METHODS.has(method.toUpperCase());
     const target = args.find((t) => /repos\//.test(t.text));
-    if (write && target && GH_API_SETTINGS.test(target.text)) return "gh api in scrittura su impostazioni o accessi del repository (non di Claude, git.md)";
+    if (write && target && GH_API_SETTINGS.test(target.text)) return "gh api in scrittura su impostazioni o accessi del repository (non di Claude, git-flusso.md)";
     return null;
   }
   const gated = (area === "pr" && action === "create") || (area === "release" && ["create", "delete", "upload", "edit", "delete-asset"].includes(action)) ||
@@ -420,9 +420,9 @@ function check(command, cwd, depth = 0) {
       if (ghInstalled(found.dir)) continue;
       blockHint =
         "Chiedi all'utente, con UNA SOLA domanda, se su questo PC è installata la GitHub CLI (gh). Con la risposta scrivi nel " +
-        "CLAUDE.md (sezione «Eccezioni alle regole globali») la riga «GitHub CLI (gh) installata: sì/no (AAAA-MM-GG)» (git.md). " +
+        "CLAUDE.md (sezione «Eccezioni alle regole globali») la riga «GitHub CLI (gh) installata: sì/no (AAAA-MM-GG)» (git-flusso.md). " +
         "Senza gh installata, issue, PR e rilasci li esegue l'utente.";
-      return `${found.text} richiede la GitHub CLI, non ancora registrata per questo progetto (git.md, «Integrazione GitHub»)`;
+      return `${found.text} richiede la GitHub CLI, non ancora registrata per questo progetto (git-flusso.md, «Integrazione GitHub»)`;
     }
     return null;
   } finally {

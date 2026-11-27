@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 // Hook PostToolUse su Write, Edit e MultiEdit: unisce due controlli sul testo appena scritto.
-// - check-quality (docker.md, core.md §3, frontend.md, core.md §0b): avvisi non bloccanti su Docker
+// - check-quality (docker.md, core.md §3, frontend.md, qualita.md §0b): avvisi non bloccanti su Docker
 //   (tag `latest` o assente, porte host di database e broker), dipendenze (range `*`, `latest`, `[`)
 //   e promemoria di audit, frontend (`any`, `innerHTML`, `bypassSecurityTrust*`, colori esadecimali).
-// - check-practice (core.md §4, §5b; osservabilita.md; security.md; backend-architecture.md §2c): avvisi non bloccanti
+// - check-practice (qualita.md §4; core.md §5b; osservabilita.md; security.md; backend-architecture.md §2c): avvisi non bloccanti
 //   su scrittura in blocco, soppressioni, attese arbitrarie nei test, NoWarn di progetto, AllowAnonymous, Regex senza timeout, log diretti, membri
 //   pubblici senza ///, file di servizio nuovi senza test. Attivo solo nei progetti con il kit.
 // Gli avvisi di check-quality e check-practice escono in un unico JSON (systemMessage e
@@ -53,7 +53,7 @@ function qualityFindings(file, text) {
   }
 
   // Frontend
-  if (/\.ts$/i.test(base) && /(?::\s*|\bas\s+|<)any(?![\w$])/.test(text)) out.push("uso di `any` (core.md §0b: nessun any)");
+  if (/\.ts$/i.test(base) && /(?::\s*|\bas\s+|<)any(?![\w$])/.test(text)) out.push("uso di `any` (qualita.md §0b: nessun any)");
   if (/\.(ts|html)$/i.test(base)) {
     if (/\binnerHTML\b/.test(text)) out.push("uso di innerHTML (security-frontend.md: vietato senza sanitizzazione)");
     if (/\bbypassSecurityTrust\w*/.test(text)) out.push("uso di bypassSecurityTrust* (security-frontend.md: vietato senza motivazione)");
@@ -109,19 +109,19 @@ const PRACTICE_RULES = [
     id: "soppressione",
     files: /\.(cs|ts|js)$/i,
     re: /#pragma\s+warning\s+disable|\[SuppressMessage\(|eslint-disable|@ts-ignore|@ts-expect-error/,
-    why: "soppressione di un controllo (security.md, Crittografia: serve un motivo e l'approvazione dell'utente)",
+    why: "soppressione di un controllo (security-avanzata.md, Crittografia: serve un motivo e l'approvazione dell'utente)",
   },
   {
     id: "attesa-test",
     files: TEST_FILE_ALL,
     re: /\bTask\.Delay\s*\(|\bThread\.Sleep\s*\(/,
-    why: "attesa arbitraria nel test (core.md §4: i test instabili si correggono alla causa, non con attese o sleep)",
+    why: "attesa arbitraria nel test (qualita.md §4: i test instabili si correggono alla causa, non con attese o sleep)",
   },
   {
     id: "nowarn",
     files: /\.(csproj|props)$/i,
     re: /<NoWarn>[^<]*<\/NoWarn>/i,
-    why: "soppressione di warning a livello di progetto (core.md §4: build senza warning; un NoWarn va motivato)",
+    why: "soppressione di warning a livello di progetto (qualita.md §4: build senza warning; un NoWarn va motivato)",
   },
   {
     id: "anonimo",
@@ -205,19 +205,19 @@ function findFile(dir, name, budget = { n: 5000 }) {
   return false;
 }
 
-/** Nuovo file di servizio senza test (core.md §4). Solo per le scritture di file nuovi (tool Write). */
+/** Nuovo file di servizio senza test (qualita.md §4). Solo per le scritture di file nuovi (tool Write). */
 function missingTest(file, cwd) {
   const base = path.basename(file);
   const cs = /^(\w*(?:Service|Handler|Validator))\.cs$/.exec(base);
   if (cs) {
     const found = findFile(cwd, `${cs[1]}Tests.cs`) || findFile(cwd, `${cs[1]}Test.cs`);
-    return found ? null : `nessun test ${cs[1]}Tests.cs per il file nuovo (core.md §4)`;
+    return found ? null : `nessun test ${cs[1]}Tests.cs per il file nuovo (qualita.md §4)`;
   }
   const ts = /^([\w-]+)\.(service|component|pipe)\.ts$/.exec(base);
   if (ts) {
     return existsSync(path.join(path.dirname(file), `${ts[1]}.${ts[2]}.spec.ts`))
       ? null
-      : `nessun ${ts[1]}.${ts[2]}.spec.ts accanto al file nuovo (core.md §4)`;
+      : `nessun ${ts[1]}.${ts[2]}.spec.ts accanto al file nuovo (qualita.md §4)`;
   }
   return null;
 }

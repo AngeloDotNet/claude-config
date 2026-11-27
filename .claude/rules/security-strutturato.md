@@ -1,7 +1,11 @@
 # Sicurezza strutturata: ASVS, supply chain, scansione, mobile, dati dettagliati
 
-> Versione 1.0 — ultima revisione: 2026-11-23.
+> Versione 1.1 — ultima revisione: 2026-11-25.
 > Richiede `security.md` e `core.md`. Estratto da `security-avanzata.md` con gli stessi titoli di sezione. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
+
+## Threat model
+- **Threat model leggero per le funzionalità sensibili:** prima di scrivere codice per una funzionalità che tocca autenticazione, dati personali, upload o integrazioni con servizi esterni, Claude redige un breve ADR in `docs/adr/` (formato di `core.md` §5b) con: asset da proteggere, attori (anonimo, utente, altro utente, amministratore, servizio esterno), abuse case (come un attore ostile userebbe la funzionalità: enumerazione, abuso di risorse, accesso ai dati altrui, replay) e mitigazione di ciascuno con il test che la verifica. Una pagina basta; non si scrive per modifiche che non toccano questi temi. L'ADR è un passo del piano (`core.md` §6, punto 15) e si approva con l'utente prima del codice.
+
 
 ## Mappa ASVS 5.0 e livelli
 Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2026-11-04 su `github.com/OWASP/ASVS/tree/v5.0.0/5.0/en`. Il livello di ogni singolo requisito (L1/L2/L3) non è stato letto requisito per requisito: la tabella dice dove cercare e cosa il kit aggiunge per livello, non sostituisce il testo dell'ASVS, che si consulta per il livello scelto. Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
@@ -28,7 +32,7 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 
 **Cosa cambia con il livello** (scelta del kit, proposta e mai introdotta di iniziativa, `core.md` §6.18):
 - **Livello 1:** le regole di questo file sono la base comune.
-- **Livello 2 (in più):** i controlli opzionali diventano da proporre sempre (MFA per tutti gli utenti con dati sensibili, ri-autenticazione per azioni sensibili, sessioni revocabili, threat model ADR per ogni funzionalità sensibile, DAST con ZAP in CI, alert su Grafana).
+- **Livello 2 (in più):** i controlli opzionali diventano da proporre sempre (MFA per tutti gli utenti con dati sensibili, ri-autenticazione per azioni sensibili, sessioni revocabili, DAST con ZAP in CI, alert su Grafana).
 - **Livello 3 (in più):** quanto sopra come obbligo, Argon2id come deroga da valutare, revisione di sicurezza del progetto da parte di una persona diversa dall'autore e controlli sulla build (provenienza attestata, build riproducibile dove possibile).
 
 
@@ -66,7 +70,7 @@ Si scrivono nel progetto `IntegrationTests` (vedi `backend-app.md` §4.5) e fann
 - **Endpoint protetti di default:** un test enumera gli endpoint e verifica che senza credenziali rispondano 401, tranne una lista esplicita di endpoint `AllowAnonymous` motivati; un nuovo endpoint pubblico fa fallire il test finché non viene dichiarato nella lista.
 - **Ruoli e policy:** per ogni endpoint con ruolo o policy, un test con un utente senza il permesso (403) e uno con il permesso (successo).
 - **Proprietà e tenant:** regola e test in `backend-app.md` §4.6 (database di prova e isolamento: §4.5).
-- **Frontend:** test sul rendering di input ostili (payload XSS mostrati come testo, mai interpretati); header di sicurezza e CSP verificati sulla risposta reale (test lato server o E2E). Le regole generali dei test frontend sono in `frontend.md` e `core.md` §4.
+- **Frontend:** test sul rendering di input ostili (payload XSS mostrati come testo, mai interpretati); header di sicurezza e CSP verificati sulla risposta reale (test lato server o E2E). Le regole generali dei test frontend sono in `frontend.md` e `qualita.md` §4.
 - **Header e CORS:** un test verifica la presenza degli header di sicurezza sulle risposte e che CORS accetti solo le origini in whitelist.
 - **Fail closed:** un test rende irraggiungibile o fallimentare la dipendenza da cui dipende un controllo (servizio di autorizzazione, provider, cache) e verifica che la richiesta sia negata e non servita; un altro avvia l'app con una configurazione di sicurezza a segnaposto in un ambiente non di sviluppo e verifica che l'avvio fallisca.
 - **File ostili:** per ogni endpoint di upload, test con file di tipo falsificato (estensione e contenuto in contrasto), nome con percorso o doppia estensione, file oltre i limiti, archivio con voci che escono dalla cartella o con rapporto di compressione eccessivo, SVG con script e XML con entità esterne; esito atteso: rifiuto controllato (400, 413 o 422 con `ProblemDetails`), mai file salvato o elaborato.

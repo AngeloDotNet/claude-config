@@ -1,6 +1,6 @@
 # Regole Git: flusso, commit e integrazione GitHub (versione standard)
 
-> Versione 1.0 — ultima revisione: 2026-11-23.
+> Versione 1.1 — ultima revisione: 2026-11-26.
 > Versione breve per il profilo `standard`, sintesi di `git.md` (sezioni di flusso). Il testo completo è in `.claude/rules-optional/dettaglio/git-flusso.md`, da leggere su richiesta. Pull request, rilascio e skill: `git-avanzato.md`.
 
 ## Integrazione GitHub
@@ -31,7 +31,7 @@
 - Si riscrive solo un commit proprio non ancora pubblicato.
 
 ## Commit multipli
-- Il piano della serie è una issue padre con una sub-issue per commit; ogni sub-issue si chiude dopo il commit.
+- Piano della serie: se il lavoro ha già una issue padre, la si commenta con gli hash; altrimenti con almeno tre commit si apre una issue padre con una sub-issue per commit, chiusa dopo ogni commit; con uno o due commit, o senza `gh`, il piano resta in chat.
 - Un commit alla volta: file per nome, `git status` e `git diff --staged` controllati, build e test verdi.
 - Se un file ha modifiche destinate a commit diversi, Claude chiede come separarle prima di committare.
 - Se un hook fallisce o un test è rosso, Claude corregge la causa e ricrea il commit; non passa al successivo.

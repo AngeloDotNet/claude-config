@@ -2,7 +2,8 @@
 // Hook UserPromptSubmit: unisce due controlli che aggiungono testo al contesto di Claude a ogni messaggio.
 // Lo stdout di un hook UserPromptSubmit viene aggiunto al contesto di Claude.
 // - ask-one-question: ricorda la regola inviolabile di core.md ("nel dubbio, una domanda alla volta").
-//   Il testo qui sotto va tenuto allineato a core.md.
+//   Il testo qui sotto va tenuto allineato a core.md. Sulla stessa riga, solo nei progetti con il kit e
+//   con un profilo diverso da `mini`, richiama il piano e le issue (core.md §6.15c; ADR 0001).
 // - rules-watch: confronta le impronte di CLAUDE.md e .claude/rules/*.md con quelle salvate in
 //   ~/.claude/session-rules-state.json. Se qualcosa è cambiato
 //   durante la sessione (per esempio dopo un `git pull`), ordina di rileggere i file cambiati e allega
@@ -20,9 +21,18 @@
 import { headKey, loadState, projectKey, recordSnapshot, ruleFingerprints, rulesDiff, saveState } from "./lib/rules.mjs";
 import { templateSection } from "./lib/template.mjs";
 import { pluginVersionSection } from "./lib/plugin-version.mjs";
-import { siteQuestion } from "./lib/sito.mjs";
+import { repoRoot, siteQuestion } from "./lib/sito.mjs";
+import { projectProfile, projectUsesKit } from "./lib/text.mjs";
 
-const REMINDER = `[Regola inviolabile, sempre attiva] Se hai un dubbio, un'ambiguità o più strade ragionevoli, NON decidere in autonomia e NON procedere per assunzione: fermati, poni UNA SOLA domanda (anche con AskUserQuestion: una domanda per chiamata, mai più insieme) e attendi la risposta prima di fare altro che ne dipenda. Dettagli: core.md, sezione in testa e §6 punto 5. Prima di modificare codice tieni il piano nella issue padre (con le conclusioni dell'analisi); i problemi trovati lavorando diventano issue senza interrompere il lavoro (core.md §6 punti 20-22).`;
+const REMINDER = `[Regola inviolabile, sempre attiva] Se hai un dubbio, un'ambiguità o più strade ragionevoli, NON decidere in autonomia e NON procedere per assunzione: fermati, poni UNA SOLA domanda (anche con AskUserQuestion: una domanda per chiamata, mai più insieme) e attendi la risposta prima di fare altro che ne dipenda. Dettagli: core.md, sezione in testa e §6 punto 5.`;
+
+const PLAN_REMINDER = ` Per il lavoro non piccolo (workflow.md §6 punto 15c) tieni il piano nella issue padre, con le conclusioni dell'analisi, prima di modificare codice; i problemi trovati lavorando diventano issue senza interrompere il lavoro (workflow.md §6 punti 20-22).`;
+
+/** Promemoria di una sola riga: la parte su piano e issue solo dove il profilo la prevede. */
+function reminder(cwd) {
+  const root = repoRoot(cwd);
+  return projectUsesKit(root) && projectProfile(root) !== "mini" ? REMINDER + PLAN_REMINDER : REMINDER;
+}
 
 // `state` è lo stato letto una sola volta da main: le sezioni lo modificano, main lo salva.
 function rulesChangedSection(cwd, state) {
@@ -66,6 +76,11 @@ process.stdin.on("end", () => {
       sessionId = typeof input?.session_id === "string" ? input.session_id : "";
     } catch {
       // stdin non JSON: si usa la cartella corrente
+    }
+    try {
+      parts[0] = reminder(cwd);
+    } catch {
+      // resta la sola regola della domanda unica
     }
     const state = loadState();
     const before = JSON.stringify(state);
