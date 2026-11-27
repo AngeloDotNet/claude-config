@@ -27,7 +27,7 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Piano come issue padre con sub-issue per il lavoro non piccolo | `core.md` §6.15 | standard (sotto la soglia di §6.15c: nessun piano) |
 | Problemi trovati lavorando come issue, una per problema | `core.md` §6.22 | standard |
 | Test per ogni funzionalità nuova; test con input malevoli su input, auth e dati | `qualita.md` (§4), `security-avanzata.md` | standard |
-| Commenti XML in inglese sui membri pubblici | `core.md` §5b | standard |
+| Commenti XML in italiano sui membri pubblici | `core.md` §5b | standard |
 | Audit dei pacchetti (`npm audit`, `dotnet list package --vulnerable`) | `core.md` §3 | standard |
 | Analyzer di sicurezza Roslyn, algoritmi crittografici moderni | `security-avanzata.md`, «Crittografia» | standard |
 | Migrazione EF inclusa quando il modello cambia | `qualita.md` §0b | standard |

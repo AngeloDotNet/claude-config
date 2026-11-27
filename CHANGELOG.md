@@ -2,7 +2,13 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto.
 
-## 2026-11-26
+## 2026-11-27
+
+### Contraddizioni tra moduli di regole (passo 1 di #128)
+**Perché:** alcune regole si contraddicevano tra moduli: branch e commit chiesti all'utente in `feature-workflow.md` e `avvio-progetto.md`, ma creati senza conferma in `git-flusso.md`; il commit di bump richiesto in `git-avanzato.md` ma non come negli altri commit; obblighi dei profili in disaccordo tra ADR 0001 e moduli; `contratto.md` dato come sempre presente anche in modalità solo Git.
+**Cosa:** branch di lavoro e commit creati senza conferma, push e tag con il via dell'utente, in `feature-workflow.md` e `avvio-progetto.md`. Il commit di bump richiede l'ok dell'utente, come da `git-avanzato.md`. Le caselle di `PIANO.md` diventano sub-issue chiuse in `workflow.md` (§6.21) e `git-avanzato.md`. Gli obblighi del profilo `strutturato` (utenti del database separati) valgono solo da quel profilo, come da ADR 0001, in `backend-app.md` §4.4. `contratto.md` si carica solo sui file backend e frontend, non in solo Git. Nell'ADR 0001 i commenti XML sono in italiano.
+**Dove:** `.claude/rules-optional/feature-workflow.md`, `_template/avvio-progetto.md`, `.claude/rules/git-avanzato.md` (versione 1.2), `.claude/rules/workflow.md`, `.claude/rules/backend-app.md` (versione 1.8), `docs/adr/0001-profili.md`.
+**Verifica:** test del plugin 170/170; `git diff --check` pulito. Nessuna build (solo testo).
 
 ### Push e tag restano con il via dell'utente
 **Perché:** le voci del 2026-11-08 («Push, tag, PR e rilasci consentiti sempre» e «Tag e pubblicazione del rilascio senza approvazione per progetto») descrivevano una riscrittura di `git.md` §Integrazione GitHub che non risulta nelle regole attuali: `git-flusso.md` e `git.md` dicono ancora che push, PR, tag e rilasci vanno eseguiti con il via dell'utente. Su decisione dell'utente (2026-11-26) vale il testo attuale: push e tag restano con il via dell'utente.
