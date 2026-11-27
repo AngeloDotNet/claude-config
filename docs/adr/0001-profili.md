@@ -18,7 +18,7 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Obbligo | Fonte | Profilo minimo |
 |---|---|---|
 | Lingua: codice e commit in inglese, spiegazioni in italiano | `core.md` §6.9 | mini |
-| Conventional Commits, branch di lavoro, nessun `push --force`, nessun `--no-verify` | `git.md` | mini |
+| Conventional Commits, branch di lavoro, nessun `push --force`, nessun `--no-verify` | `core.md` §5c | mini |
 | Nessun segreto nel repository, valori reali da variabili d'ambiente | `security.md`, «Dati e Segreti» | mini |
 | Build e test verdi prima di dichiarare chiuso un passo | `core.md` §6.7, §6.21 | mini |
 | Dipendenze gratuite con licenza permissiva; lock file committato | `core.md` §3 | mini |

@@ -16,8 +16,8 @@ const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..",
 const RULES = ".claude/rules";
 const SHORT = "_template/rules-standard";
 
-const MINI = ["core", "lavoro", "git", "security"];
-const STANDARD = [...MINI, "workflow", "qualita", "git-flusso", "git-avanzato", "documentazione", "operativita", "security-avanzata"];
+const MINI = ["core", "lavoro", "security"];
+const STANDARD = [...MINI, "workflow", "qualita", "git-flusso", "documentazione", "operativita", "security-avanzata"];
 const STRUTTURATO = [...STANDARD, "security-strutturato"];
 const PROFILI = { mini: MINI, standard: STANDARD, strutturato: STRUTTURATO };
 

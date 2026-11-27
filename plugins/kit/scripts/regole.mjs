@@ -15,10 +15,10 @@ import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameS
 import path from "node:path";
 import { compareVersions, ruleVersion } from "./lib/template.mjs";
 
-const ALWAYS = ["core", "lavoro", "git", "security", "contratto"];
-const SHORTABLE = ["git-flusso", "git-avanzato", "workflow", "qualita", "documentazione"];
+const ALWAYS = ["core", "lavoro", "security", "contratto"];
+const SHORTABLE = ["git-flusso", "workflow", "qualita", "documentazione"];
 const PROFILED = [...SHORTABLE, "operativita"];
-const SOLO_GIT = ["core", "lavoro", "git", "git-flusso", "git-avanzato", "workflow"];
+const SOLO_GIT = ["core", "lavoro", "git-flusso", "workflow"];
 const BACKEND = ["backend", "backend-architecture", "backend-app", "osservabilita"];
 const OPTIONAL = ["feature-workflow", "backend-email", "backend-infra"];
 const PROFILES = ["strutturato", "standard", "mini"];

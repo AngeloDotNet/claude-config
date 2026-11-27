@@ -16,7 +16,7 @@ paths:
 
 # Regole di flusso per entità (backend → frontend)
 
-> Richiede `core.md` e `backend.md` e `frontend.md` (progetti fullstack); per i commit `git.md`. **Modulo opzionale**: solo per progetti fullstack, e solo se l'utente conferma di volerlo usare. Vale per Vertical Slice e per Clean Architecture. Descrive **in che ordine** si sviluppa una nuova entità (o funzionalità CRUD) e cosa va verificato a ogni fase; il *come* sta nei moduli richiamati.
+> Richiede `core.md` e `backend.md` e `frontend.md` (progetti fullstack); per i commit `git-flusso.md`. **Modulo opzionale**: solo per progetti fullstack, e solo se l'utente conferma di volerlo usare. Vale per Vertical Slice e per Clean Architecture. Descrive **in che ordine** si sviluppa una nuova entità (o funzionalità CRUD) e cosa va verificato a ogni fase; il *come* sta nei moduli richiamati.
 
 ## 0. Quando si usa
 - Per ogni nuova entità o funzionalità che attraversa più strati (dati, API, interfaccia). Per un fix o una modifica locale basta il piano normale (`core.md` §6.15).
@@ -70,7 +70,7 @@ Ordine interno, ciascun passo che builda e passa i test:
 4. Aggiornamento della **checklist di consegna** (`qualita.md` §0b) e controllo finale: nessun segreto, nessun file generato non voluto, `git status` pulito dai file estranei.
 
 ## 6. Sequenza dei commit
-Segue `git.md` (serie di commit piccoli, ciascuno che builda e passa i test, test in commit `test(scope)` separati). Con più commit si usa il flusso "piano e passo-passo" di `git.md`: elenco dei commit, creati uno alla volta senza chiedere conferma per ciascuno (`git-flusso.md`, «Commit multipli»; con `/kit:commit-passo` il lancio è il via libera). Ordine tipico:
+Segue `git-flusso.md` (serie di commit piccoli, ciascuno che builda e passa i test, test in commit `test(scope)` separati). Con più commit si usa il flusso "piano e passo-passo" di `git-flusso.md`: elenco dei commit, creati uno alla volta senza chiedere conferma per ciascuno (`git-flusso.md`, «Commit multipli»; con `/kit:commit-passo` il lancio è il via libera). Ordine tipico:
 1. `feat(scope)`: entità, configurazione EF e migrazione (+ servizio, se piccolo);
 2. `feat(scope)`: DTO, validatori, endpoint e il servizio (se non già nel commit 1);
 3. `test(scope)`: test backend (unit, integrazione nel progetto `IntegrationTests`, isolamento);

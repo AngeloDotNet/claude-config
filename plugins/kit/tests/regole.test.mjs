@@ -44,8 +44,8 @@ const names = (dir, ...parts) => {
 const read = (...parts) => readFileSync(path.join(...parts), "utf8").replace(/\r\n/g, "\n");
 const sorted = (list) => [...list].sort();
 
-const ALWAYS = ["core", "lavoro", "git", "security", "contratto"];
-const SHORTABLE = ["workflow", "qualita", "git-flusso", "git-avanzato", "documentazione"];
+const ALWAYS = ["core", "lavoro", "security", "contratto"];
+const SHORTABLE = ["workflow", "qualita", "git-flusso", "documentazione"];
 const PROFILED = [...SHORTABLE, "operativita"];
 const FULL = ["--backend", "--frontend", "--sicurezza-estesa"];
 const AREA = ["backend", "backend-architecture", "backend-app", "osservabilita", "frontend", "security-backend", "security-frontend"];
@@ -54,7 +54,7 @@ test("solo Git: copia i sei moduli previsti, senza profilo né docker", () => {
   withTarget((dir) => {
     const r = copy(dir, "--solo-git");
     assert.equal(r.code, 0, r.err);
-    assert.deepEqual(names(dir, ".claude", "rules"), sorted(["core", "lavoro", "git", "git-flusso", "git-avanzato", "workflow"]));
+    assert.deepEqual(names(dir, ".claude", "rules"), sorted(["core", "lavoro", "git-flusso", "workflow"]));
     assert.deepEqual(names(dir, ".claude", "rules-optional"), []);
     assert.match(read(dir, "CLAUDE.md"), /\*\*Profilo:\*\* \[strutturato/);
     assert.ok(existsSync(path.join(dir, "_template", "avvio-progetto.md")));
@@ -162,12 +162,12 @@ test("confronta: segnala diversi, più recenti, rimossi, fuori posto e obbligato
   withTarget((dir) => {
     copy(dir, "--profilo", "mini");
     const rules = path.join(dir, ".claude", "rules");
-    writeFileSync(path.join(rules, "git.md"), "# git\n\n> Versione 99.0 — ultima revisione: 2030-01-01.\n");
+    writeFileSync(path.join(rules, "git-flusso.md"), "# git\n\n> Versione 99.0 — ultima revisione: 2030-01-01.\n");
     writeFileSync(path.join(rules, "vecchio.md"), "# modulo non più nel template\n");
     writeFileSync(path.join(rules, "workflow.md"), read(template, ".claude", "rules", "workflow.md"));
     rmSync(path.join(rules, "security.md"));
     const { json } = compare(dir);
-    const git = json.diversi.find((d) => d.file === ".claude/rules/git.md");
+    const git = json.diversi.find((d) => d.file === ".claude/rules/git-flusso.md");
     assert.equal(git.progettoPiuRecente, true);
     assert.deepEqual(json.rimossi, [".claude/rules/vecchio.md"]);
     assert.ok(json.fuoriPosto.some((f) => f.file === ".claude/rules/workflow.md" && f.atteso === ".claude/rules-optional/workflow.md"));
@@ -189,16 +189,16 @@ test("confronta: senza profilo dichiarato non deduce spostamenti", () => {
 test("aggiorna e rimuovi salvano sempre una copia .bak senza sovrascrivere le precedenti", () => {
   withTarget((dir) => {
     copy(dir, "--profilo", "mini");
-    const file = path.join(dir, ".claude", "rules", "git.md");
+    const file = path.join(dir, ".claude", "rules", "git-flusso.md");
     for (const text of ["uno\n", "due\n"]) {
       writeFileSync(file, text);
-      const r = run("aggiorna", "--template", template, "--target", dir, "--file", ".claude/rules/git.md");
+      const r = run("aggiorna", "--template", template, "--target", dir, "--file", ".claude/rules/git-flusso.md");
       assert.equal(r.code, 0, r.err);
     }
     assert.equal(read(`${file}.bak`), "uno\n");
     assert.equal(read(`${file}.bak2`), "due\n");
-    assert.equal(read(file), read(template, ".claude", "rules", "git.md"));
-    const removed = run("rimuovi", "--target", dir, "--file", ".claude/rules/git.md");
+    assert.equal(read(file), read(template, ".claude", "rules", "git-flusso.md"));
+    const removed = run("rimuovi", "--target", dir, "--file", ".claude/rules/git-flusso.md");
     assert.equal(removed.code, 0, removed.err);
     assert.ok(!existsSync(file));
     assert.ok(existsSync(`${file}.bak3`));

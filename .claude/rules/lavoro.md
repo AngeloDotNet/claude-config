@@ -1,8 +1,8 @@
 # Regole di lavoro con Claude Code
 
-> Versione 1.5 — ultima revisione: 2026-11-27.
+> Versione 1.6 — ultima revisione: 2026-11-27.
 
-> Richiede `core.md`. Modulo breve e sempre caricato: contesto, indagine, review, contenuti non fidati e imprevisti. Non ripete ciò che `core.md` e `git.md` già dicono.
+> Richiede `core.md`. Modulo breve e sempre caricato: contesto, indagine, review, contenuti non fidati e imprevisti. Non ripete ciò che `core.md` e `git-flusso.md` (profili `standard` e `strutturato`) già dicono.
 
 ## Contesto e token
 - **Lettura mirata (PREFER):** file grandi si leggono a intervalli (`offset` e `limit`) o si cercano con `Grep`; non si rilegge un file appena modificato.
