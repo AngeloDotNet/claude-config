@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Migrazioni come passo unico prima delle repliche (passo 6 di #128, voce 2)
+**Perché:** con più repliche, la migrazione all'avvio di ogni container può far girare le migrazioni in parallelo. La documentazione EF Core (lock dal EF Core 9, con provider diversi) consiglia un passo di deploy separato quando contano rollout coordinato e alta disponibilità. Decisione dell'utente: opzione 1, documentata in ADR 0003.
+**Cosa:** `backend-app.md` §4.4 dice che le migrazioni si applicano con un passo unico (bundle come job one-shot) prima delle repliche, non da ogni container all'avvio. `docker.md` descrive il servizio `migrate` del compose e la dipendenza di `api` da `migrate`. La stringa di connessione DDL è usata solo dal job. Il lock di EF Core è una protezione in più. La segnalazione su Npgsql 11 non è stata confermata e non è stata usata per la regola.
+**Dove:** `.claude/rules/backend-app.md` (1.11), `.claude/rules-optional/docker.md` (1.8), `docs/adr/0003-migrazioni-passo-unico.md` (nuovo).
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Il passo di migrazione in Docker non è stato eseguito su un compose: va verificato in un progetto di prova.
+
 ### Migrazioni expand/contract e rollback (passo 6 di #128, voce 1)
 **Perché:** durante un rilascio la versione precedente dell'app può girare sullo schema nuovo; senza una regola, una migrazione che rinomina o elimina una colonna rompe il rollback. Approvato dall'utente (priorità alta).
 **Cosa:** `backend-app.md` §4.4 ha due punti: migrazioni compatibili con la versione precedente (expand, poi codice, poi contract in un rilascio successivo) e rollback del rilascio (il codice precedente legge lo schema nuovo; una migrazione applicata non si modifica, si annulla con una nuova).
