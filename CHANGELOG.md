@@ -4,6 +4,16 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Rilascio 3.4.1
+**Corretto:** la descrizione del plugin `kit` diceva «push e tag sempre consentiti», in contrasto con `git-flusso.md` (#148, PR #157). Il testo ora dice che push e tag richiedono il via dell'utente. Nessun cambio di comportamento.
+**Sicurezza:** nessuna.
+
+### Descrizione del plugin: push e tag con il via dell'utente (#148)
+**Perché:** la descrizione di `kit` diceva «push e tag sempre consentiti», in contrasto con `git-flusso.md` (push e tag con il via dell'utente, decisione del 2026-11-26).
+**Cosa:** la descrizione dice che push e tag richiedono il via dell'utente e che l'hook blocca solo i comandi distruttivi e il tag fuori da `main`. Nessun cambio di comportamento dell'hook.
+**Dove:** `plugins/kit/.claude-plugin/plugin.json`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
 ### Rilascio 3.4.0
 **Modificato:** le regole di sicurezza frontend (`security-frontend.md`, ora `frontend.md` §9) si caricano sempre sui file frontend, in ogni profilo, anche senza la «sicurezza estesa». Un progetto frontend le riceve per la prima volta: è un cambio di comportamento.
 **Sicurezza:** nessuna regola indebolita; le regole frontend ora vincolano anche i progetti che prima non le caricavano.
