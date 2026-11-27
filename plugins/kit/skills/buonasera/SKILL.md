@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Rispondi in italiano. Non committare nulla (nemmeno la wiki).
 
-1. Rileggi la riga «GitHub CLI (gh) installata» nel `CLAUDE.md` (sezione «Eccezioni alle regole globali»). Se manca, dice «no» o `gh` non è autenticata (`gh auth status`), non scrivere nelle issue: dillo, chiedi una sola domanda su come salvare lo stato, e salta i passi 3 e 4 (`git.md`, «Integrazione GitHub»).
+1. Rileggi la riga «GitHub CLI (gh) installata» nel `CLAUDE.md` (sezione «Eccezioni alle regole globali»). Se manca, dice «no» o `gh` non è autenticata (`gh auth status`), non scrivere nelle issue: dillo, chiedi una sola domanda su come salvare lo stato, e salta i passi 3 e 4 (`git-flusso.md`, «Integrazione GitHub»).
 2. Leggi in sola lettura le issue aperte (`gh issue list --state open`) e `git status --short`. La **issue padre** è quella aperta che ha sub-issue aperte; se ce n'è più di una, chiedi con una sola domanda quale aggiornare. Tre casi:
    - **nessuna issue padre e nessuna modifica non committata:** non c'è lavoro in corso, non creare nulla, dillo e termina;
    - **nessuna issue padre ma modifiche non committate:** prosegui senza i passi 3 e 4; nel riepilogo elenca le modifiche non committate come stato di ripartenza;

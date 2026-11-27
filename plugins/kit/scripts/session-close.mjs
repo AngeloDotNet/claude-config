@@ -4,7 +4,7 @@
 // tornano finché la situazione resta: non c'è uno stato per sessione.
 // - site-reminder (core.md §5b, lib/sito.mjs): se CHANGELOG.md o README.md sono modificati e il sito
 //   di documentazione della voce `sito` non ha modifiche, ricorda di aggiornarlo.
-// - check-close (core.md §5b, §0b, frontend.md §10): sulle modifiche non ancora committate ricorda
+// - check-close (core.md §5b, qualita.md §0b, frontend.md §10): sulle modifiche non ancora committate ricorda
 //   codice modificato senza CHANGELOG.md, modello EF cambiato senza migrazione, chiavi it.json /
 //   en.json diverse. Usa `git status`; attivo solo nei progetti con il kit.
 // - model-log (lib/modelli.mjs): una volta per sessione, al primo cambio di modello letto dal registro
@@ -79,7 +79,7 @@ function closeFindings(paths, root) {
     notes.push("codice modificato senza CHANGELOG.md aggiornato (core.md §5b)");
   }
   if (paths.some((p) => MODEL.test(p)) && !paths.some((p) => MIGRATION.test(p))) {
-    notes.push("modello EF modificato senza una nuova migrazione (core.md §0b)");
+    notes.push("modello EF modificato senza una nuova migrazione (qualita.md §0b)");
   }
   const i18nDirs = [...new Set(paths.filter((p) => I18N.test(p)).map((p) => path.posix.dirname(p)))];
   for (const dir of i18nDirs) notes.push(...parityNotes(root, dir));

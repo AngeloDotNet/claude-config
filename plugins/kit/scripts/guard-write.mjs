@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Hook PreToolUse su Write, Edit e MultiEdit: unisce due controlli bloccanti (exit 2, motivo su stderr).
 // I messaggi restano quelli dei singoli controlli, con il loro nome logico: guard-secrets e guard-patterns.
-// - guard-secrets (security.md «Dati e Segreti», core.md §0b): blocca la scrittura di segreti reali.
+// - guard-secrets (security.md «Dati e Segreti», qualita.md §0b): blocca la scrittura di segreti reali.
 //   appsettings*.json: valori reali in chiavi come Password, Secret, Token, ApiKey, Key (es. Jwt:Key) o
 //   password in una stringa di connessione; docker-compose*/compose* (.yml e .yaml) e Dockerfile: password o chiavi in chiaro;
 //   qualunque file: chiavi private PEM, chiavi AWS (AKIA…), token JWT completi (esclusi i .md).
@@ -70,7 +70,7 @@ const RULES = [
     id: "skip",
     files: TEST_FILE,
     re: /\[(?:Fact|Theory)\s*\(\s*Skip\b|\[Ignore\b|\b(?:it|test|describe)\.skip\s*\(|\b(?:xit|xdescribe|fit|fdescribe)\s*\(|\.only\s*\(/,
-    why: "test saltato o isolato (core.md §4: mai skip, Ignore o soglie abbassate)",
+    why: "test saltato o isolato (qualita.md §4: mai skip, Ignore o soglie abbassate)",
   },
   {
     id: "angular-legacy",
@@ -106,13 +106,13 @@ const RULES = [
     id: "npm-install",
     files: /(^|[\\/])Dockerfile[^\\/]*$/i,
     re: /\bnpm\s+(?:install|i)\b|\bnpm\s+ci\b(?![^\n]*--ignore-scripts)/,
-    why: "installazione npm non conforme (security.md, Supply chain: npm ci --ignore-scripts)",
+    why: "installazione npm non conforme (security-strutturato.md, Supply chain: npm ci --ignore-scripts)",
   },
   {
     id: "tls-disattivato",
     files: /(^|[\\/])appsettings[^\\/]*\.json$/i,
     re: /TrustServerCertificate\s*=\s*true|SslMode\s*=\s*(?:Disable|Prefer|Allow)\b|Encrypt\s*=\s*(?:false|no)\b/i,
-    why: "connessione al database senza cifratura o senza verifica del certificato (security.md, Dati e Segreti)",
+    why: "connessione al database senza cifratura o senza verifica del certificato (security-strutturato.md, Dati e Segreti)",
   },
   {
     id: "catch-vuoto",

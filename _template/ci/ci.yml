@@ -2,7 +2,7 @@
 # Copiare in .github/workflows/ del progetto e adattare cartelle, versioni e comandi (tabella Comandi del CLAUDE.md).
 # Cancellare il job che non serve (solo API o solo frontend). Le action sono fissate al commit SHA, con la
 # versione in commento (verificate il 2026-11-10 sui repository ufficiali; rifarlo al primo uso).
-# Non incluso: CodeQL, gitleaks, Trivy, SBOM e DAST (security.md): si aggiungono con lo stesso criterio di pinning.
+# Non incluso: CodeQL, gitleaks, Trivy, SBOM e DAST (operativita.md; security-strutturato.md): si aggiungono con lo stesso criterio di pinning.
 name: ci
 
 on:

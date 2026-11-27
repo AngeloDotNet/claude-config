@@ -1,11 +1,10 @@
-# Sicurezza avanzata: progettazione, crittografia, test di input e regola operativa
+# Sicurezza avanzata: progettazione, crittografia e test di input
 
-> Versione 2.0 — ultima revisione: 2026-11-23.
-> Richiede `security.md` e `core.md`. Estratto da `security.md` con gli stessi titoli di sezione. Caricato nei profili standard e strutturato. Le sezioni ASVS, supply chain, scansione dinamica, mobile, test di sicurezza automatici e dettaglio di dati e segreti sono in `security-strutturato.md` (solo profilo strutturato).
+> Versione 2.2 — ultima revisione: 2026-11-25.
+> Richiede `security.md` e `core.md`. Estratto da `security.md` con gli stessi titoli di sezione. Caricato nei profili standard e strutturato. Le sezioni ASVS, supply chain, scansione dinamica, mobile, test di sicurezza automatici, threat model e dettaglio di dati e segreti sono in `security-strutturato.md` (solo profilo strutturato).
 
 ## Progettazione sicura e fail closed
 (OWASP Top 10 2025: A06 «Insecure Design» e A10 «Mishandling of Exceptional Conditions».)
-- **Threat model leggero per le funzionalità sensibili:** prima di scrivere codice per una funzionalità che tocca autenticazione, dati personali, upload o integrazioni con servizi esterni, Claude redige un breve ADR in `docs/adr/` (formato di `core.md` §5b) con: asset da proteggere, attori (anonimo, utente, altro utente, amministratore, servizio esterno), abuse case (come un attore ostile userebbe la funzionalità: enumerazione, abuso di risorse, accesso ai dati altrui, replay) e mitigazione di ciascuno con il test che la verifica. Una pagina basta; non si scrive per modifiche che non toccano questi temi. L'ADR è un passo del piano (`core.md` §6, punto 15) e si approva con l'utente prima del codice.
 - **Fail closed:** quando un controllo non può dare un esito (eccezione, timeout, servizio di autorizzazione o dipendenza non raggiungibile, configurazione mancante o non valida), il default è **negare**, mai concedere. Un errore nel codice di autorizzazione o di validazione produce 401, 403 o 5xx con `ProblemDetails`, non l'accesso. Un `catch` non trasforma un errore di sicurezza in un successo. Una configurazione di sicurezza mancante o ancora a segnaposto in un ambiente non di sviluppo impedisce l'avvio (`ValidateOnStart`).
 - **Eccezioni e stato coerente:** le eccezioni non previste non lasciano operazioni a metà (transazione o compensazione) né informazioni nella risposta (vedi la voce «Errori» in `security-backend.md`, «Vulnerabilità applicative ricorrenti»); i timeout e i limiti sulle chiamate verso l'esterno sono sempre impostati.
 
@@ -21,7 +20,3 @@
 ## Test di sicurezza automatici (minimo)
 Si scrivono nel progetto `IntegrationTests` (vedi `backend-app.md` §4.5) e fanno fallire la build.
 - **Input malevoli (obbligatori per ogni modifica che tocca input, autenticazione o dati):** ogni endpoint o validatore nuovo o modificato ha test con payload ostili: frammenti SQL/XSS/path traversal nei campi, stringhe oltre i limiti, caratteri di controllo e a capo, JSON malformato o con tipi errati, overposting (campi non ammessi come `Role`, `OwnerId`, `TenantId`), identificatori di altri utenti. L'esito atteso è un rifiuto controllato (400, 404, 413 o 422 con `ProblemDetails`), mai un 500 né il dato elaborato. Gli unit test coprono i validatori, gli integration test l'endpoint.
-
-## Regola operativa
-- Se il codice richiesto introduce un rischio (es. disabilitare CORS o la validazione), Claude lo segnala prima di procedere.
-- **Security review prima della consegna:** per ogni funzionalità che tocca autenticazione, autorizzazione, upload, URL esterni, query dinamiche o dati personali, Claude esegue la skill `/security-review` sulle modifiche e riporta i risultati nella consegna. Le modifiche solo cosmetiche o di documentazione ne sono escluse. Un problema trovato si corregge in un commit `fix(security)` a sé (vedi `git.md`) o si segnala all'utente se la correzione esula dal compito.

@@ -1,7 +1,7 @@
 // Funzioni condivise dai hook che leggono il testo scritto da Claude (Write, Edit, MultiEdit).
 // Fail-open: nessuna funzione lancia eccezioni verso il chiamante.
 
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 
 /** Testo scritto dallo strumento: Write -> content; Edit -> new_string; MultiEdit -> edits[].new_string. */
@@ -25,6 +25,19 @@ export function isWaived(lines, index, id) {
     if (m && m[1] === id) return true;
   }
   return false;
+}
+
+// Riga «Profilo» del CLAUDE.md. Il segnaposto del modello inizia con "[" e quindi non corrisponde.
+const PROFILE_LINE = /^[ \t]*(?:-[ \t]*)?(?:\*\*)?Profilo:(?:\*\*)?[ \t]*`?(mini|standard|strutturato)\b/im;
+
+/** Profilo dichiarato nel CLAUDE.md di `root`; senza dichiarazione leggibile vale `strutturato` (ADR 0001). */
+export function projectProfile(root) {
+  try {
+    const match = PROFILE_LINE.exec(readFileSync(path.join(root, "CLAUDE.md"), "utf8"));
+    return match ? match[1].toLowerCase() : "strutturato";
+  } catch {
+    return "strutturato";
+  }
 }
 
 /** I controlli valgono solo nei progetti che usano le regole del template (marcatore: .claude/rules/core.md). */

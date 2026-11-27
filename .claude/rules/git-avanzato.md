@@ -1,6 +1,6 @@
 # Regole Git avanzate: pull request, rilascio e skill
 
-> Versione 1.0 — ultima revisione: 2026-11-22.
+> Versione 1.1 — ultima revisione: 2026-11-26.
 > Richiede `git.md` e `core.md`. Estratto da `git.md` con gli stessi titoli di sezione: pull request, rilascio, skill del plugin `kit` ed esempio. Caricato nei profili standard e strutturato; nel profilo mini sta in `.claude/rules-optional/`.
 
 ## Pull Request (apertura con la skill o su conferma, merge a cura dell'utente)
@@ -8,7 +8,7 @@ Claude apre PR con `gh` solo se la GitHub CLI è installata sul PC, come registr
 - Una PR per issue o funzionalità, con titolo Conventional Commits; la serie di commit sul branch resta leggibile (nessun commit di "pulizia" in coda).
 - La descrizione riporta: cosa cambia e perché, come è stato testato, impatti (migrazioni, variabili d'ambiente, breaking change), riferimento all'issue (`Closes #N`) e, per la UI, screenshot o note sui temi/lingue verificati.
 - Il commit di merge (se il progetto non usa squash) ha oggetto `merge: <sintesi> (#NNN)` e un corpo che riassume l'insieme della funzionalità, con eventuali garanzie importanti (es. sicurezza, dati salvati, comportamento di default).
-- La PR deve rispettare la checklist di consegna (`core.md` §0b) e avere la CI verde prima della richiesta di review (a cura dell'utente: Claude non legge lo stato della CI, vedi «Integrazione GitHub»).
+- La PR deve rispettare la checklist di consegna (`qualita.md` §0b) e avere la CI verde prima della richiesta di review (a cura dell'utente: Claude non legge lo stato della CI, vedi «Integrazione GitHub»).
 - **Strategia di merge con git flow (a cura dell'utente):**
   - `feature/*` e `bugfix/*` verso `develop`: **squash**. Il titolo della PR diventa l'oggetto del commit, quindi segue Conventional Commits.
   - Ogni PR che coinvolge `main` (`develop` → `main`, `release/*` → `main`, `hotfix/*` → `main`) e il ritorno di `main` in `develop`: **merge commit**, mai squash né rebase. Lo squash scarta la storia dei commit: dopo uno squash di `develop` in `main` le due linee non hanno più un antenato comune aggiornato e la PR successiva va in conflitto (`add/add`) su tutti i file già portati.
@@ -25,9 +25,9 @@ Claude apre PR con `gh` solo se la GitHub CLI è installata sul PC, come registr
 
 ## Skill del plugin `kit` per commit e PR
 Tre skill a lancio manuale applicano queste regole; il lancio da parte dell'utente è il via libera e le skill non chiedono altre conferme (restano la regola della domanda unica nei casi anomali e l'hook `guard-commands` attivo). **Prerequisito delle sole skill PR, verificato come primo passo:** la GitHub CLI è installata (`gh --version`) e autenticata (`gh auth status`); altrimenti la skill termina subito e dice cosa manca. I commit locali non richiedono `gh`:
-- `/kit:commit-passo`: commit locali in sequenza e senza conferme intermedie, mai su `main` o `develop` (crea direttamente il branch di lavoro), con il piano come issue padre; il tipo di commit si chiede solo se ambiguo, ci si ferma con una domanda solo nei casi anomali (vedi «Commit multipli»).
+- `/kit:commit-passo`: commit locali in sequenza e senza conferme intermedie, mai su `main` o `develop` (crea direttamente il branch di lavoro), con le issue solo quando le prevede «Commit multipli» di `git-flusso.md`; il tipo di commit si chiede solo se ambiguo, ci si ferma con una domanda solo nei casi anomali (vedi «Commit multipli»).
 - `/kit:pr-develop`: PR da `feature/*` o `bugfix/*` verso `develop`, push e creazione senza altra conferma (titolo Conventional Commits, squash a cura dell'utente). Al termine di `/kit:commit-passo` Claude propone la PR con una sola domanda e, solo con il sì dell'utente, esegue la skill: è l'unica skill di PR che Claude può lanciare da sé (le altre skill che scrivono, committano, pubblicano o cancellano restano a lancio manuale).
-- `/kit:pr-main`: PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, push e creazione senza altra conferma; dopo il merge (confermato dall'utente ogni volta) pulizia dei branch di lavoro locali e remoti confermati e allineamento di `main` e `develop` con `git pull --ff-only`; con controllo di `main` avanti rispetto a `develop` e merge commit.
+- `/kit:pr-main`: PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, push e creazione senza altra conferma; dopo il merge, con `/kit:pr-main pulizia` (il lancio conferma che il merge è avvenuto, verificato comunque con `gh`), pulizia dei branch di lavoro locali e remoti la cui PR risulta mergiata e allineamento di `main` e `develop` con `git pull --ff-only`; con controllo di `main` avanti rispetto a `develop` e merge commit.
 
 ## Esempio di riferimento
 ```

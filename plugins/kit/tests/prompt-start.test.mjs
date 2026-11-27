@@ -46,3 +46,56 @@ test("limit-one-question: input malformato o senza domande non blocca (fail-open
   assert.equal(run("limit-one-question.mjs", "non json").code, 0);
   assert.equal(run("limit-one-question.mjs", { tool_input: {} }).code, 0);
 });
+
+/** Cartella temporanea di progetto: con o senza le regole del kit e con il CLAUDE.md indicato. */
+function project({ kit = true, claudeMd } = {}) {
+  const dir = mkdtempSync(path.join(os.tmpdir(), "kit-prj-"));
+  if (kit) {
+    mkdirSync(path.join(dir, ".claude", "rules"), { recursive: true });
+    writeFileSync(path.join(dir, ".claude", "rules", "core.md"), "# core\n");
+  }
+  if (claudeMd !== undefined) writeFileSync(path.join(dir, "CLAUDE.md"), claudeMd);
+  return dir;
+}
+
+/** Riga del promemoria emessa per il progetto indicato. */
+function reminderFor(options) {
+  const dir = project(options);
+  try {
+    const r = run("prompt-start.mjs", { cwd: dir }, { cwd: dir });
+    assert.equal(r.code, 0);
+    return r.out.split("\n").find((line) => line.startsWith("[Regola inviolabile")) ?? "";
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+}
+
+const PLAN = /issue padre/;
+
+test("promemoria: con standard, strutturato o profilo non dichiarato richiama il piano per il lavoro non piccolo", () => {
+  const cases = [
+    undefined,
+    "- **Profilo:** standard\n",
+    "- **Profilo:** strutturato\n",
+    "- **Profilo:** [strutturato (default) | standard | mini] — `mini` (script)\n",
+  ];
+  for (const claudeMd of cases) {
+    const line = reminderFor({ claudeMd });
+    assert.match(line, PLAN, String(claudeMd));
+    assert.match(line, /lavoro non piccolo/, String(claudeMd));
+  }
+});
+
+test("promemoria: con il profilo mini non richiama piano e issue", () => {
+  for (const claudeMd of ["- **Profilo:** mini — `mini` (script, tool interno)\n", "- **Profilo:** `mini`\r\n", "Profilo: mini\n"]) {
+    const line = reminderFor({ claudeMd });
+    assert.match(line, /UNA SOLA domanda/, claudeMd);
+    assert.doesNotMatch(line, PLAN, claudeMd);
+  }
+});
+
+test("promemoria: in un progetto senza le regole del kit resta solo la regola della domanda unica", () => {
+  const line = reminderFor({ kit: false, claudeMd: "- **Profilo:** strutturato\n" });
+  assert.match(line, /UNA SOLA domanda/);
+  assert.doesNotMatch(line, PLAN);
+});

@@ -1,6 +1,6 @@
 # Regole Git: flusso, commit e integrazione GitHub
 
-> Versione 1.0 — ultima revisione: 2026-11-23.
+> Versione 1.1 — ultima revisione: 2026-11-26.
 > Estratto da `git.md` con gli stessi titoli di sezione. Richiede `core.md`. Caricato nei profili standard e strutturato; le pull request, il rilascio e le skill sono in `git-avanzato.md`.
 
 ## Integrazione GitHub: operazioni consentite e GitHub CLI
@@ -45,7 +45,7 @@
 Una funzionalità non è un unico commit gigante: è una **serie di commit piccoli e ordinati sul branch**, ciascuno che builda e passa i test. Ordine tipico:
 1. `feat(scope)`: modello/entità, configurazione EF e migrazione (+ servizio applicativo, se piccolo);
 2. `feat(scope)`: endpoint o UI che usano il servizio;
-3. `test(scope)`: test del servizio e dell'isolamento tra utenti; test di integrazione per ciò che gli unit test non coprono, nel progetto `IntegrationTests` con il database di prova (vedi `core.md` §4 e `backend-app.md` §4.5);
+3. `test(scope)`: test del servizio e dell'isolamento tra utenti; test di integrazione per ciò che gli unit test non coprono, nel progetto `IntegrationTests` con il database di prova (vedi `qualita.md` §4 e `backend-app.md` §4.5);
 4. `docs(scope)` / `chore(...)`: aggiornamento di `README.md` e `CHANGELOG.md` (a ogni step del piano, vedi `core.md` §5b), ADR se servono.
 - I **test stanno in commit `test(scope)` separati** dal codice di produzione, ma nella stessa PR; mai una PR con funzionalità senza test.
 - Un `fix` è un commit a sé, con la causa radice nel corpo. Un bug di sicurezza usa `fix(security)`.
@@ -56,9 +56,9 @@ Una funzionalità non è un unico commit gigante: è una **serie di commit picco
 
 ## Commit multipli: piano e passo-passo
 **Con `/kit:commit-passo`** il lancio è il via libera: la skill crea tutti i commit in sequenza senza ok a ciascuno e si ferma con una domanda solo nei casi anomali elencati nella skill (controllo fallito, possibile segreto, tipo ambiguo, file con modifiche per commit diversi, build o test rossi, hook fallito). Il resto di questa sezione vale **fuori dalle skill**, quando le modifiche sono più di un'unità logica (o l'utente chiede "committa tutto"): Claude crea i commit uno alla volta, come sotto, senza chiedere ok per ciascuno.
-1. **Piano:** prima di ogni commit elenca quelli che intende fare, numerati e in ordine ("Granularità e sequenza"), con oggetto e file. Segnala i file che non rientrano in nessun commit (segreti, generati, estranei) e quelli con **modifiche destinate a commit diversi**: `git add -p` non è disponibile, quindi **chiede caso per caso** se spezzarli (patch parziale con `git apply --cached`, mostrata prima) o unire i commit; non sceglie da solo. Il piano della serie è una **issue padre** con una sub-issue per commit, chiusa dopo ogni commit; nessun file locale. Quando tutte le sub-issue sono chiuse, Claude chiude la issue padre.
+1. **Piano:** prima di ogni commit elenca quelli che intende fare, numerati e in ordine ("Granularità e sequenza"), con oggetto e file. Segnala i file che non rientrano in nessun commit (segreti, generati, estranei) e quelli con **modifiche destinate a commit diversi**: `git add -p` non è disponibile, quindi **chiede caso per caso** se spezzarli (patch parziale con `git apply --cached`, mostrata prima) o unire i commit; non sceglie da solo. **Dove sta il piano della serie** (nessun file locale), primo caso che corrisponde: (a) se il lavoro ha già una issue padre, non se ne apre un'altra e a fine serie si commenta con hash e oggetto dei commit; (b) altrimenti, fuori dal profilo `mini` e con almeno tre commit, è una **issue padre** con una sub-issue per commit, chiusa dopo ogni commit, e quando tutte sono chiuse Claude chiude la issue padre; (c) negli altri casi (profilo `mini`, uno o due commit, `gh` non disponibile) il piano resta nella chat.
 2. **Un commit alla volta:** crea il commit n. 1 (file per nome, `git status` e `git diff --staged` controllati), mostra hash e oggetto, poi passa al successivo (`n/N`, oggetto) senza chiedere, purché build e test siano verdi. Se un passo fallisce o le modifiche sono ambigue, si ferma e chiede.
-3. **Commit in autonomia:** i commit non richiedono ok (decisione B, 2026-11-22). Il piano della serie è la issue padre con una sub-issue per commit; le domande restano solo per i casi anomali (file con modifiche destinate a commit diversi, segreti, build o test rossi).
+3. **Commit in autonomia:** i commit non richiedono ok (decisione B, 2026-11-22). Il piano della serie sta dove dice il punto 1; le domande restano solo per i casi anomali (file con modifiche destinate a commit diversi, segreti, build o test rossi).
 4. **Chiusura:** riepiloga commit creati e rimasti e segnala che sono pronti per il `push` (su richiesta o con conferma). Poiché ogni commit è verificato prima, il push può essere a lotti: Claude **propone i punti sensati per un push intermedio** (gruppo coerente con build e test verdi), senza eseguirlo.
 5. **Se un commit fallisce** (hook, test rossi): corregge la causa, ricrea quel commit e ripresenta il punto; non passa al successivo.
 

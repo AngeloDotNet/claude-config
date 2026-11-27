@@ -23,19 +23,19 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Build e test verdi prima di dichiarare chiuso un passo | `core.md` §6.7, §6.21 | mini |
 | Dipendenze gratuite con licenza permissiva; lock file committato | `core.md` §3 | mini |
 | Log tramite `ILogger`, nessun dato personale nei log | `osservabilita.md` | mini |
-| `CHANGELOG.md` aggiornato a ogni rilascio; `README.md` minimo | `core.md` §5b | mini |
+| `CHANGELOG.md` aggiornato a ogni step del piano; `README.md` aggiornato a ogni step che cambia comportamento, configurazione o struttura | `core.md` §5b | mini |
 | Piano come issue padre con sub-issue per il lavoro non piccolo | `core.md` §6.15 | standard (sotto la soglia di §6.15c: nessun piano) |
 | Problemi trovati lavorando come issue, una per problema | `core.md` §6.22 | standard |
 | Test per ogni funzionalità nuova; test con input malevoli su input, auth e dati | `qualita.md` (§4), `security-avanzata.md` | standard |
 | Commenti XML in inglese sui membri pubblici | `core.md` §5b | standard |
 | Audit dei pacchetti (`npm audit`, `dotnet list package --vulnerable`) | `core.md` §3 | standard |
 | Analyzer di sicurezza Roslyn, algoritmi crittografici moderni | `security-avanzata.md`, «Crittografia» | standard |
-| Migrazione EF inclusa quando il modello cambia | `core.md` §0b | standard |
+| Migrazione EF inclusa quando il modello cambia | `qualita.md` §0b | standard |
 | Ambienti dev e prod separati, sezione Docker su richiesta | `core.md` §5a | standard |
 | ADR per le scelte che deviano dalle regole | `core.md` §5b | standard |
 | Fail closed con test; `ValidateOnStart` su configurazioni di sicurezza | `security-avanzata.md`, «Progettazione sicura» | standard |
-| Copertura ≥ 80% sul codice nuovo | `core.md` §4 | strutturato |
-| Threat model (ADR) prima del codice per funzionalità sensibili | `security-avanzata.md`, «Progettazione sicura» | strutturato |
+| Copertura ≥ 80% sul codice nuovo | `qualita.md` §4 | strutturato |
+| Threat model (ADR) prima del codice per funzionalità sensibili | `security-strutturato.md`, «Threat model» | strutturato |
 | Endpoint protetti di default, test di ruoli e proprietà (anti-IDOR) | `security-strutturato.md`, «Test di sicurezza automatici» | strutturato |
 | Log di sicurezza con eventi nominati, alert, retention | `security-strutturato.md`, «Log di sicurezza e allerta» | strutturato |
 | Livello ASVS, DAST con ZAP, `SECURITY.md`, runbook | `security-strutturato.md` | strutturato |
@@ -45,7 +45,7 @@ Le regole sono pensate per un progetto grande e strutturato: ASVS, threat model,
 | Osservabilità OpenTelemetry, Prometheus, Grafana | `osservabilita.md` | strutturato |
 | Rate limit, timeout, `pageSize` massimo | `security-backend.md`, «Abuso di risorse» | strutturato |
 | Dipendenze: nome, versione e motivo dichiarati prima di aggiungere un pacchetto | `core.md` §6.8 | mini |
-| Funzionalità con autenticazione, upload o dato personale: security review prima della consegna e test con input malevoli (regola 3 di questo ADR: si attiva con la funzionalità) | `security-avanzata.md`, «Regola operativa» e «Test di sicurezza automatici» | mini (si attiva con la funzionalità) |
+| Funzionalità con autenticazione, upload o dato personale: security review prima della consegna e test con input malevoli (regola 3 di questo ADR: si attiva con la funzionalità) | `security.md`, «Regola operativa» (dettaglio dei test in `security-avanzata.md`) | mini (si attiva con la funzionalità) |
 | Chiavi di traduzione IT/EN fornite con ogni superficie UI (Definition of Done) | `workflow.md` §6, punto 6 | standard |
 | Test di architettura, solo con Clean Architecture | `backend-architecture.md` §2b | strutturato |
 
