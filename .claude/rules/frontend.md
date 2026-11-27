@@ -11,8 +11,8 @@ paths:
 
 # Regole Frontend (Angular, TypeScript & UI)
 
-> Versione 1.17 — ultima revisione: 2026-11-27.
-> Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md` e `security-frontend.md`.
+> Versione 1.18 — ultima revisione: 2026-11-27.
+> Richiede `core.md` (contratto con il backend, licenze, workflow). Per la sicurezza vedi anche `security.md` e la sezione 9 di questo file.
 
 ## 1. Stack Frontend
 - **Framework:** Angular (ultima versione stabile compatibile con PrimeNG; minimo 20, dove zoneless è stabile). Componenti Standalone e Signals in modo nativo.
@@ -169,7 +169,18 @@ paths:
 ---
 
 ## 9. Sicurezza Frontend
-Le regole di sicurezza del frontend sono in `security-frontend.md`, che è l'unica fonte: qui non si ripetono. Se il progetto non include `security-frontend.md` (regole di sicurezza estese non scelte), Claude lo segnala e chiede se importarlo.
+- Vietati `innerHTML` e `bypassSecurityTrust*` senza sanitizzazione e motivazione esplicita. ▲ Avviso `check-quality` del plugin.
+- Nessun dato sensibile in `localStorage`, `sessionStorage`, URL o console.
+- Nonce CSP in Angular: `CSP_NONCE` / attributo `ngCspNonce`, un valore diverso a ogni richiesta (un CDN o una cache davanti che memorizza `index.html` darebbe lo stesso nonce a tutti).
+- **Questa sezione è l'unica fonte per la sicurezza del frontend:** `frontend.md` §9 e §12 rimandano qui senza ripetere le regole.
+- **CSP di base** (OWASP CSP Cheat Sheet, letta il 2026-11-04): policy rigida a nonce o hash, `script-src 'nonce-…' 'strict-dynamic'; object-src 'none'; base-uri 'none'`, più `style-src` configurato a parte (Angular non lo copre da solo), `frame-ancestors` e `form-action 'self'`; come fallback non rigido `default-src 'self'; frame-ancestors 'self'; form-action 'self'`. Si introduce prima con `Content-Security-Policy-Report-Only` e un endpoint di report, poi si passa alla modalità bloccante quando le violazioni sono spiegate.
+- **Trusted Types** (guida Angular, riletta il 2026-11-13): `Content-Security-Policy: trusted-types angular; require-trusted-types-for 'script'`. Le policy `angular#unsafe-bypass` e `angular#unsafe-jit` si aggiungono solo se il codice usa davvero `bypassSecurityTrust*` o la compilazione JIT, e quindi vanno motivate (`angular#unsafe-upgrade` solo per un ibrido AngularJS). La guida elenca anche `angular#bundler`, usata dal bundler della CLI per creare i file dei chunk lazy: poiché il lazy loading è la regola (`frontend.md` §2), prima di imporre la policy la si prova in `Content-Security-Policy-Report-Only` e si aggiunge `angular#bundler` solo se i report mostrano la violazione. I browser senza Trusted Types restano protetti dal sanificatore di Angular.
+- **Script e risorse di terze parti:** il default è nessuno; se servono, versione fissata, origine in allow-list nella CSP e Subresource Integrity (`integrity` + `crossorigin`) quando la risorsa è statica. Nessun script caricato da CDN senza motivazione.
+- **`postMessage`:** si indica sempre l'origine di destinazione (mai `*`), il ricevente confronta `event.origin` con una allow-list con uguaglianza esatta (non con controlli su sottostringhe) e tratta `event.data` come input non fidato (mai `eval` né `innerHTML`). Gli `iframe` con contenuto non fidato usano `sandbox`.
+- **Storage:** gli identificatori di sessione e i token non stanno né in `localStorage` né in `sessionStorage` (entrambi leggibili da qualunque XSS; coerente con `frontend.md` §5, «Credenziali»): cookie `HttpOnly` o BFF (vedi «Autenticazione e Autorizzazione» in `security-backend.md`). `sessionStorage` resta ammesso per stato non sensibile che non deve sopravvivere alla scheda.
+- **Build e segreti:** nessun segreto, chiave o token nel bundle e in `config.json` (il file è pubblico: solo URL e impostazioni non sensibili); source map di produzione non pubblicate (o servite solo a chi le deve usare, per esempio caricate nello strumento di monitoraggio); nessun commento o URL interno nei file distribuiti.
+- **Service worker e PWA:** non memorizzano nella cache risposte autenticate o con dati utente; al logout si svuotano le cache dell'utente; l'aggiornamento del service worker è documentato (vedi `frontend.md` per la PWA).
+- **Test:** vedi «Test di sicurezza automatici» (voce «Frontend»).
 
 ---
 
@@ -208,5 +219,5 @@ Non sono il default. Il caricamento a richiesta per feature si ottiene già con 
 - **Struttura:** una shell (host) che carica i remote tramite lazy loading delle route; ogni remote è un'app Angular a sé con le stesse regole di questo file (standalone, signals, OnPush, file separati per componente, test). Angular, PrimeNG, RxJS e la libreria di traduzione sono dipendenze condivise come singleton, con versioni compatibili e bloccate; il tema (§4.1), il `TranslationService` (§4.2) e l'autenticazione (§5) vivono nella shell e sono condivisi, mai duplicati nei remote.
 - **Confini:** valgono le regole di §2: un remote non importa da un altro remote. Il codice comune sta in una libreria condivisa o nella shell. La comunicazione tra remote passa da servizi condivisi basati su signal o da contratti espliciti, mai da dipendenze dirette.
 - **Docker e configurazione a runtime:** gli URL dei remote si leggono da configurazione a runtime (come `config.json`, §2), non incorporati nella build. Una sola immagine per tutti gli ambienti resta valida per ogni applicazione (shell e ciascun remote); il numero di immagini e di servizi nel compose si concorda con l'utente (con Docker, `docker.md`).
-- **Sicurezza:** CSP e origini dei remote in allow-list esplicita (`security-frontend.md`); un remote caricato da origine non fidata è vietato. Gli stessi controlli di tipo `innerHTML`/`bypassSecurityTrust*` valgono nei remote.
+- **Sicurezza:** CSP e origini dei remote in allow-list esplicita (§9); un remote caricato da origine non fidata è vietato. Gli stessi controlli di tipo `innerHTML`/`bypassSecurityTrust*` valgono nei remote.
 - **Test:** unit test in ogni remote (§10); E2E Playwright sulla shell con i remote reali per i flussi principali.

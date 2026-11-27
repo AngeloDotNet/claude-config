@@ -48,7 +48,7 @@ const ALWAYS = ["core", "lavoro", "security", "contratto"];
 const SHORTABLE = ["workflow", "qualita", "git-flusso", "documentazione"];
 const PROFILED = [...SHORTABLE, "operativita"];
 const FULL = ["--backend", "--frontend", "--sicurezza-estesa"];
-const AREA = ["backend", "backend-architecture", "backend-app", "osservabilita", "frontend", "security-backend", "security-frontend"];
+const AREA = ["backend", "backend-architecture", "backend-app", "osservabilita", "frontend", "security-backend"];
 
 test("solo Git: copia i sei moduli previsti, senza profilo né docker", () => {
   withTarget((dir) => {

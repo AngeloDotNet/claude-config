@@ -4,6 +4,16 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Rilascio 3.4.0
+**Modificato:** le regole di sicurezza frontend (`security-frontend.md`, ora `frontend.md` §9) si caricano sempre sui file frontend, in ogni profilo, anche senza la «sicurezza estesa». Un progetto frontend le riceve per la prima volta: è un cambio di comportamento.
+**Sicurezza:** nessuna regola indebolita; le regole frontend ora vincolano anche i progetti che prima non le caricavano.
+
+### Sicurezza frontend nel modulo frontend (passo 7 di #128, fusione facoltativa)
+**Perché:** le regole di sicurezza frontend stavano in `security-frontend.md`, che si caricava solo con la «sicurezza estesa». Un progetto frontend senza quella scelta non le vedeva, anche con `innerHTML`, storage e CSP in gioco. Decisione dell'utente: fondere il modulo (analisi di #132, «sarei favorevole»).
+**Cosa:** le regole di `security-frontend.md` sono nella sezione 9 di `frontend.md`, che si carica sempre sui file frontend in ogni profilo. `security-frontend.md` non esiste più; i riferimenti in regole, `CLAUDE.md`, `avvio-progetto.md`, hook (`check-write`), skill `sicurezza` e script `regole.mjs` puntano a `frontend.md` §9. Conseguenza: il progetto frontend riceve le regole di sicurezza anche senza la sicurezza estesa, come previsto nell'analisi.
+**Dove:** `.claude/rules/frontend.md` (1.18), `.claude/rules/security.md` (3.3), `.claude/rules/security-strutturato.md` (1.6), `CLAUDE.md`, `_template/avvio-progetto.md`, `plugins/kit/scripts/check-write.mjs`, `plugins/kit/scripts/regole.mjs`, `plugins/kit/skills/revisione/temi/sicurezza.md`, `plugins/kit/tests/regole.test.mjs`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
 ### Rilascio 3.3.0
 **Aggiunto:** modulo opzionale `mobile.md` (regole di base per un'app mobile, da attivare solo se il progetto ha un client mobile); `docs/fonti.md` (date di verifica delle fonti, fuori dal caricamento); sezione «GDPR operativo lato server» in `security-avanzata.md` (inventario, retention, cancellazione, esportazione); procedura del test di contratto OpenAPI; ADR 0003 (migrazioni come passo unico prima delle repliche); servizio `migrate` nella sezione Docker.
 **Modificato:** Git in due moduli: `git-flusso.md` (anche PR e rilascio) e `core.md` §5c (regole minime). `git.md` e `git-avanzato.md` non esistono più: `/kit:regole` li rimuove nei progetti che li hanno, con `.bak` e un solo ok. Il profilo `standard` copia quattro moduli brevi. `operativita.md` si carica solo sui file `.github/**`. **Le migrazioni non si applicano più all'avvio di ogni container ma con un passo unico prima delle repliche (ADR 0003): i progetti che le applicavano all'avvio devono cambiare.** I moduli sempre caricati sono più leggeri (profilo `strutturato`: 84 → 82 KiB).
