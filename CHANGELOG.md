@@ -10,6 +10,10 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Dove:** `plugins/kit/.claude-plugin/plugin.json`.
 **Verifica:** test del plugin 173/173; `git diff --check` pulito.
 
+### Rilascio 3.4.0
+**Modificato:** le regole di sicurezza frontend (`security-frontend.md`, ora `frontend.md` §9) si caricano sempre sui file frontend, in ogni profilo, anche senza la «sicurezza estesa». Un progetto frontend le riceve per la prima volta: è un cambio di comportamento.
+**Sicurezza:** nessuna regola indebolita; le regole frontend ora vincolano anche i progetti che prima non le caricavano.
+
 ### Sicurezza frontend nel modulo frontend (passo 7 di #128, fusione facoltativa)
 **Perché:** le regole di sicurezza frontend stavano in `security-frontend.md`, che si caricava solo con la «sicurezza estesa». Un progetto frontend senza quella scelta non le vedeva, anche con `innerHTML`, storage e CSP in gioco. Decisione dell'utente: fondere il modulo (analisi di #132, «sarei favorevole»).
 **Cosa:** le regole di `security-frontend.md` sono nella sezione 9 di `frontend.md`, che si carica sempre sui file frontend in ogni profilo. `security-frontend.md` non esiste più; i riferimenti in regole, `CLAUDE.md`, `avvio-progetto.md`, hook (`check-write`), skill `sicurezza` e script `regole.mjs` puntano a `frontend.md` §9. Conseguenza: il progetto frontend riceve le regole di sicurezza anche senza la sicurezza estesa, come previsto nell'analisi.
