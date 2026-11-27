@@ -10,6 +10,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Dove:** `.claude/rules/frontend.md` (1.18), `.claude/rules/security.md` (3.3), `.claude/rules/security-strutturato.md` (1.6), `CLAUDE.md`, `_template/avvio-progetto.md`, `plugins/kit/scripts/check-write.mjs`, `plugins/kit/scripts/regole.mjs`, `plugins/kit/skills/revisione/temi/sicurezza.md`, `plugins/kit/tests/regole.test.mjs`.
 **Verifica:** test del plugin 173/173; `git diff --check` pulito.
 
+### Rilascio 3.3.0
+**Aggiunto:** modulo opzionale `mobile.md` (regole di base per un'app mobile, da attivare solo se il progetto ha un client mobile); `docs/fonti.md` (date di verifica delle fonti, fuori dal caricamento); sezione «GDPR operativo lato server» in `security-avanzata.md` (inventario, retention, cancellazione, esportazione); procedura del test di contratto OpenAPI; ADR 0003 (migrazioni come passo unico prima delle repliche); servizio `migrate` nella sezione Docker.
+**Modificato:** Git in due moduli: `git-flusso.md` (anche PR e rilascio) e `core.md` §5c (regole minime). `git.md` e `git-avanzato.md` non esistono più: `/kit:regole` li rimuove nei progetti che li hanno, con `.bak` e un solo ok. Il profilo `standard` copia quattro moduli brevi. `operativita.md` si carica solo sui file `.github/**`. **Le migrazioni non si applicano più all'avvio di ogni container ma con un passo unico prima delle repliche (ADR 0003): i progetti che le applicavano all'avvio devono cambiare.** I moduli sempre caricati sono più leggeri (profilo `strutturato`: 84 → 82 KiB).
+**Corretto:** contraddizioni tra moduli su branch, commit, push e bump; titoli duplicati; rimandi per profilo (nuovo test); file di configurazione e pacchetti nei `paths:`.
+**Sicurezza:** nessuna regola indebolita. Aggiunti: GDPR operativo lato server; utente DDL usato solo dal job di migrazione.
+**Note:** `/kit:regole` (rimozione dei due file vecchi), il servizio `migrate` del compose e il template CI non sono stati provati su un progetto di prova.
+
 ### CI: controlli obbligatori, cache e release (passo 6 di #128, voce 5)
 **Perché:** la regola CI diceva «build, test, lint» senza elencare cosa blocca una PR né come si avvia una release; il template `_template/ci/ci.yml` non era collegato alle regole. Decisione dell'utente: opzione 1.
 **Cosa:** `operativita.md` §5 elenca i controlli obbligatori per ogni PR (build senza avvisi, test, lint, formattazione, audit), la cache legata al lock file, la pipeline di release con conferma per ogni esecuzione, e `_template/ci/ci.yml` come punto di partenza con le action fissate al commit SHA.
