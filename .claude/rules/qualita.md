@@ -35,7 +35,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti al pro
 - **Frontend:** unit test ed E2E come da `frontend.md` §10.
 - **Regola:** ogni nuova feature arriva con i suoi test.
 - **Analisi statica:** analyzers Roslyn, `.editorconfig`, ESLint, Prettier. Build senza warning.
-- **Copertura:** minimo 80% sulla logica di business (handler, validatori, servizi) del codice nuovo o modificato; la copertura non sostituisce test sensati. Si misura nel backend con `coverlet.collector` (MIT) e il report con `ReportGenerator` (Apache-2.0), nel frontend con la copertura di Vitest (provider v8); licenze e versioni si verificano al primo uso (§3) e gli strumenti si dichiarano come dipendenze. Per ogni bug corretto, un test che lo riproduce.
+- **Copertura (dal profilo `strutturato`, ADR 0001):** minimo 80% sulla logica di business (handler, validatori, servizi) del codice nuovo o modificato; la copertura non sostituisce test sensati. Si misura nel backend con `coverlet.collector` (MIT) e il report con `ReportGenerator` (Apache-2.0), nel frontend con la copertura di Vitest (provider v8); licenze e versioni si verificano al primo uso (§3) e gli strumenti si dichiarano come dipendenze. Per ogni bug corretto, un test che lo riproduce.
 - **Test di contratto:** lo schema OpenAPI è versionato; una modifica incompatibile fa fallire la CI.
 - **Accessibilità automatica:** `@axe-core/playwright` sulle pagine principali, con zero violazioni gravi.
 - **Dati di test:** builder o fixture dedicati, indipendenti tra loro; i test non dipendono dall'ordine di esecuzione.

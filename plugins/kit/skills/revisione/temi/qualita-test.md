@@ -32,4 +32,4 @@ Questa skill revisiona i test e segnala i problemi, con una gravità per ciascun
 6. **Isolamento.** Nei test unitari le dipendenze sono sostituite, senza database. Nei test di integrazione i dati sono creati dal test stesso con builder o fixture (`qualita.md` §4).
 7. **Esito.** Chiudi con un elenco per gravità: il file, la riga, il problema e la correzione proposta. Non modificare i file: le correzioni si applicano con una richiesta separata.
 
-Riferimenti: `qualita.md` §4; `backend-app.md` §4.5; `backend.md` §2 (voce «Tempo»); `frontend.md` §10; `security.md` («Regola operativa»); `security-avanzata.md` («Test di sicurezza automatici (minimo)»); `security-strutturato.md` («Test di sicurezza automatici»).
+Riferimenti: `qualita.md` §4; `backend-app.md` §4.5; `backend.md` §2 (voce «Tempo»); `frontend.md` §10; `security.md` («Regola operativa»); `security-avanzata.md` («Test di sicurezza di base»); `security-strutturato.md` («Test di sicurezza automatici»).

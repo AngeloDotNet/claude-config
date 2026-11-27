@@ -24,8 +24,8 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 | V10 OAuth and OIDC | provider esterno (punto 4), Authorization Code + PKCE |
 | V11 Cryptography | «Crittografia»; hashing delle password in `security-backend.md`, «Chiavi e password (.NET)» |
 | V12 Secure Communication | HTTPS, HSTS, «Database e canali interni» (`security-avanzata.md`) |
-| V13 Configuration | «Dati e Segreti», «Configurazione e superficie esposta», «Supply chain» (`security-avanzata.md`) |
-| V14 Data Protection | «Dati e Segreti» (backup, `no-store`), «Database, rotazione e dati personali» (`security-avanzata.md`) |
+| V13 Configuration | «Dati e Segreti (dettaglio)», «Configurazione e superficie esposta», «Supply chain» (`security-avanzata.md`) |
+| V14 Data Protection | «Dati e Segreti (dettaglio)» (backup, `no-store`), «Database, rotazione e dati personali» (`security-avanzata.md`) |
 | V15 Secure Coding and Architecture | «Progettazione sicura e fail closed», «Supply chain» (`security-avanzata.md`) |
 | V16 Security Logging and Error Handling | «Log di sicurezza e allerta», voce «Errori» (`security-backend.md`), fail closed |
 | V17 WebRTC | nessuna regola: se il progetto lo usa, si chiede e si scrive una regola dedicata |
@@ -67,7 +67,7 @@ Si scrivono nel progetto `IntegrationTests` (vedi `backend-app.md` §4.5) e fann
 
 
 
-## Dati e Segreti
+## Dati e Segreti (dettaglio)
 ▲ Verificato dal plugin `kit`: hook `guard-secrets` (valori reali in `appsettings*.json`, password in chiaro in compose e Dockerfile, chiavi PEM, token JWT bloccati) e `check-quality` (avvisi).
 - Data Protection di ASP.NET Core e hashing delle password: regole in `security-backend.md`, «Chiavi e password (.NET)».
 - Nessun segreto nel repository: User Secrets in sviluppo; in produzione variabili d'ambiente valorizzate da `.env` fuori dal repository (mai servizi cloud a pagamento come Azure Key Vault o AWS Secrets Manager).

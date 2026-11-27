@@ -17,7 +17,7 @@
 - **Confronti a tempo costante:** credenziali, token, hash e firme si confrontano con `CryptographicOperations.FixedTimeEquals`, mai con `==` o `string.Equals`.
 
 
-## Test di sicurezza automatici (minimo)
+## Test di sicurezza di base
 Si scrivono nel progetto `IntegrationTests` (vedi `backend-app.md` §4.5) e fanno fallire la build.
 - **Input malevoli (obbligatori per ogni modifica che tocca input, autenticazione o dati):** ogni endpoint o validatore nuovo o modificato ha test con payload ostili: frammenti SQL/XSS/path traversal nei campi, stringhe oltre i limiti, caratteri di controllo e a capo, JSON malformato o con tipi errati, overposting (campi non ammessi come `Role`, `OwnerId`, `TenantId`), identificatori di altri utenti. L'esito atteso è un rifiuto controllato (400, 404, 413 o 422 con `ProblemDetails`), mai un 500 né il dato elaborato. Gli unit test coprono i validatori, gli integration test l'endpoint.
 
