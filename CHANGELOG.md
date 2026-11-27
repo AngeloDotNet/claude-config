@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### GDPR operativo lato server (passo 6 di #128, voce 3)
+**Perché:** l'inventario dei dati personali, la retention, la cancellazione e l'esportazione erano una riga, e valeva solo nel profilo `strutturato`. Un dato personale attiva le sue regole in ogni profilo (ADR 0001, regola 3). Decisione dell'utente: opzione 1.
+**Cosa:** `security-avanzata.md` ha una sezione «GDPR operativo lato server»: inventario, retention dichiarata nel `CLAUDE.md`, cancellazione o anonimizzazione (anche nei log e con la scadenza dei backup), esportazione all'interessato autenticato. Le basi giuridiche restano al titolare del trattamento. La skill `gdpr-dati` rimanda alla nuova sezione.
+**Dove:** `.claude/rules/security-avanzata.md` (2.5), `plugins/kit/skills/revisione/temi/gdpr-dati.md`.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
 ### Migrazioni come passo unico prima delle repliche (passo 6 di #128, voce 2)
 **Perché:** con più repliche, la migrazione all'avvio di ogni container può far girare le migrazioni in parallelo. La documentazione EF Core (lock dal EF Core 9, con provider diversi) consiglia un passo di deploy separato quando contano rollout coordinato e alta disponibilità. Decisione dell'utente: opzione 1, documentata in ADR 0003.
 **Cosa:** `backend-app.md` §4.4 dice che le migrazioni si applicano con un passo unico (bundle come job one-shot) prima delle repliche, non da ogni container all'avvio. `docker.md` descrive il servizio `migrate` del compose e la dipendenza di `api` da `migrate`. La stringa di connessione DDL è usata solo dal job. Il lock di EF Core è una protezione in più. La segnalazione su Npgsql 11 non è stata confermata e non è stata usata per la regola.

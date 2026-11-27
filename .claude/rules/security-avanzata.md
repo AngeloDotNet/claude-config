@@ -1,6 +1,6 @@
 # Sicurezza avanzata: progettazione, crittografia e test di input
 
-> Versione 2.4 — ultima revisione: 2026-11-27.
+> Versione 2.5 — ultima revisione: 2026-11-27.
 > Richiede `security.md` e `core.md`. Estratto da `security.md` con gli stessi titoli di sezione. Caricato nei profili standard e strutturato. Contiene anche supply chain, rotazione dei segreti, connessione al database e dati personali (base, valgono da `standard`). Le sezioni ASVS, scansione dinamica, mobile, threat model e test di sicurezza automatici sono in `security-strutturato.md` (solo profilo strutturato).
 
 ## Progettazione sicura e fail closed
@@ -36,3 +36,10 @@ Si scrivono nel progetto `IntegrationTests` (vedi `backend-app.md` §4.5) e fann
 - Rotazione dei segreti: i segreti hanno una data di scadenza o rotazione dichiarata nel `CLAUDE.md` di progetto; un segreto compromesso o finito per errore nel repository si considera bruciato e va sostituito, non solo rimosso.
 - **Database e canali interni:** il database si raggiunge con connessione cifrata e certificato verificato (SQL Server `Encrypt=True` con `TrustServerCertificate=False`; PostgreSQL `SslMode=VerifyFull`); se il server usa un certificato proprio, la CA fidata si concorda per progetto (host gestito dall'utente). Utente applicativo senza DDL e utente separato per le migrazioni: vedi `backend-app.md` §4.4. Redis e RabbitMQ richiedono sempre autenticazione (segreti da variabili d'ambiente valorizzate da `.env`) e non espongono porte sull'host in produzione (con Docker, `docker.md`); se il traffico esce dalla rete interna del compose, passa su TLS. Nessun servizio interno (database, cache, broker, pannelli di gestione) è raggiungibile da Internet.
 - Dati personali: minimizzazione, cifratura dei campi sensibili, retention e diritto all'oblio (GDPR).
+
+## GDPR operativo lato server
+Questa sezione vale in ogni profilo in cui il progetto tratta dati personali (ADR 0001, regola 3). Le basi giuridiche, la valutazione d'impatto e gli obblighi verso gli interessati si decidono con il titolare del trattamento, non da Claude.
+- **Inventario dei dati personali:** un elenco di tabelle e campi che contengono dati personali, con categoria, scopo e durata prevista, in un file del progetto (per esempio `docs/dati-personali.md`). Una migrazione che aggiunge dati personali lo aggiorna nello stesso commit.
+- **Retention:** per ogni categoria, il tempo di conservazione è dichiarato nel `CLAUDE.md`. Alla scadenza un job o una procedura cancella o anonimizza i dati, e il comportamento è testato.
+- **Cancellazione su richiesta:** una procedura (o un endpoint protetto da autorizzazione) cancella o anonimizza i dati di un interessato, incluse le copie nei log, e dichiara la scadenza delle copie nei backup. Un integration test verifica che, dopo la cancellazione, il dato non sia più leggibile dall'applicazione.
+- **Esportazione:** su richiesta dell'interessato, i suoi dati sono consegnati in un formato leggibile (per esempio JSON), solo a lui dopo l'autenticazione, senza dati di altre persone.
