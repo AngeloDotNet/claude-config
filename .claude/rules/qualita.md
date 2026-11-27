@@ -1,6 +1,6 @@
 # Regole di qualità e checklist di consegna
 
-> Versione 1.2 — ultima revisione: 2026-11-27.
+> Versione 1.3 — ultima revisione: 2026-11-27.
 > Richiede `core.md`. Estratto da `core.md` §0b (checklist di consegna) e §4 (test e qualità), con la stessa numerazione: i riferimenti «§0b» e «§4» restano validi. Caricato nei profili standard e strutturato; nel profilo mini sta in `.claude/rules-optional/`.
 
 ## 0b. Checklist di consegna
@@ -36,7 +36,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti al pro
 - **Regola:** ogni nuova feature arriva con i suoi test.
 - **Analisi statica:** analyzers Roslyn, `.editorconfig`, ESLint, Prettier. Build senza warning.
 - **Copertura (dal profilo `strutturato`, ADR 0001):** minimo 80% sulla logica di business (handler, validatori, servizi) del codice nuovo o modificato; la copertura non sostituisce test sensati. Si misura nel backend con `coverlet.collector` (MIT) e il report con `ReportGenerator` (Apache-2.0), nel frontend con la copertura di Vitest (provider v8); licenze e versioni si verificano al primo uso (§3) e gli strumenti si dichiarano come dipendenze. Per ogni bug corretto, un test che lo riproduce.
-- **Test di contratto:** lo schema OpenAPI è versionato; una modifica incompatibile fa fallire la CI.
+- **Test di contratto:** lo schema OpenAPI generato dalla build è committato (per esempio in `docs/openapi/`). La CI confronta lo schema attuale con quello committato e fallisce su una modifica incompatibile: endpoint o campo rimosso, tipo cambiato, campo obbligatorio aggiunto. La versione dello schema cambia quando la modifica è incompatibile. Lo strumento di confronto si sceglie per progetto e se ne verifica la licenza (`core.md` §3).
 - **Accessibilità automatica:** `@axe-core/playwright` sulle pagine principali, con zero violazioni gravi.
 - **Dati di test:** builder o fixture dedicati, indipendenti tra loro; i test non dipendono dall'ordine di esecuzione.
 - **Progetti esistenti senza test:** Claude non retrofitta test su tutto il codice. Il codice che tocca o aggiunge ha test (la soglia dell'80% vale sul codice nuovo o modificato, non sull'intero progetto); prima di un refactoring di codice non coperto scrive test di caratterizzazione che fissano il comportamento attuale, in un commit `test` separato. Le lacune più ampie le segnala, senza colmarle di iniziativa.

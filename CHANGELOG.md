@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Test di contratto sullo schema OpenAPI (passo 6 di #128, voce 4)
+**Perché:** «lo schema è versionato e la CI fallisce» non diceva come verificarlo: dove sta lo schema, cosa confronta la CI, quali modifiche sono incompatibili.
+**Cosa:** lo schema generato dalla build è committato (per esempio in `docs/openapi/`); la CI lo confronta con quello attuale e fallisce su una modifica incompatibile (endpoint o campo rimosso, tipo cambiato, campo obbligatorio aggiunto). Lo strumento di confronto si sceglie per progetto e se ne verifica la licenza. Decisione dell'utente: opzione 1.
+**Dove:** `.claude/rules/qualita.md` (1.3), `_template/rules-standard/qualita.md` (1.3).
+**Verifica:** test del plugin 173/173; `git diff --check` pulito. Nessuno strumento è stato scelto né provato su un progetto: la scelta resta per progetto.
+
 ### GDPR operativo lato server (passo 6 di #128, voce 3)
 **Perché:** l'inventario dei dati personali, la retention, la cancellazione e l'esportazione erano una riga, e valeva solo nel profilo `strutturato`. Un dato personale attiva le sue regole in ogni profilo (ADR 0001, regola 3). Decisione dell'utente: opzione 1.
 **Cosa:** `security-avanzata.md` ha una sezione «GDPR operativo lato server»: inventario, retention dichiarata nel `CLAUDE.md`, cancellazione o anonimizzazione (anche nei log e con la scadenza dei backup), esportazione all'interessato autenticato. Le basi giuridiche restano al titolare del trattamento. La skill `gdpr-dati` rimanda alla nuova sezione.

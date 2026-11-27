@@ -1,6 +1,6 @@
 # Regole di qualità e checklist di consegna (versione standard)
 
-> Versione 1.2 — ultima revisione: 2026-11-27.
+> Versione 1.3 — ultima revisione: 2026-11-27.
 > Versione breve per il profilo `standard`, estratto di `core.md` §0b e §4. Il testo completo è in `.claude/rules-optional/dettaglio/qualita.md`, da leggere su richiesta. Richiede `core.md`.
 
 ## 0b. Checklist di consegna
@@ -25,7 +25,7 @@ Prima di dichiarare concluso un compito, verifica (le voci non pertinenti si ign
 - **Backend:** xUnit v3 per i progetti nuovi (un progetto esistente su xUnit v2 resta tale), con unit test (logica isolata, senza database né rete) e integration test (endpoint e accesso ai dati) dove hanno senso; se uno dei due non si applica, lo si dichiara. Un test che richiede un database diverso da quello di prova (es. SQLite) si chiede prima; mai EF Core InMemory. Con Clean Architecture un progetto di unit test per livello; con Vertical Slice uno solo (testo completo, §4).
 - **Frontend:** unit test con Vitest ed E2E con Playwright.
 - **Regola:** ogni funzionalità nuova arriva con i suoi test; ogni bug corretto ha un test che lo riproduce.
-- **Test di contratto:** lo schema OpenAPI è versionato; una modifica incompatibile fa fallire la CI.
+- **Test di contratto:** lo schema OpenAPI generato dalla build è committato (per esempio in `docs/openapi/`). La CI confronta lo schema attuale con quello committato e fallisce su una modifica incompatibile: endpoint o campo rimosso, tipo cambiato, campo obbligatorio aggiunto. La versione dello schema cambia quando la modifica è incompatibile. Lo strumento di confronto si sceglie per progetto e se ne verifica la licenza (`core.md` §3).
 - **Analisi statica:** analyzer Roslyn, ESLint, Prettier; build senza warning.
 - **Codice non coperto:** prima di un refactoring si scrivono test di caratterizzazione in un commit `test` separato.
 - **Test rossi non correlati:** si riportano con l'errore così com'è, senza correggerli né nasconderli.
