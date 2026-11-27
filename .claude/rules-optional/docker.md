@@ -8,7 +8,7 @@ paths:
 
 # Regole Docker e Docker Compose
 
-> Versione 1.6 — ultima revisione: 2026-11-13.
+> Versione 1.7 — ultima revisione: 2026-11-27.
 
 > Richiede `core.md`. **Modulo opzionale, in `.claude/rules-optional/`: non si chiede all'avvio e non si presume che il progetto usi Docker.** Si attiva solo su richiesta esplicita dell'utente (per esempio «crea un Dockerfile»), spostandolo in `.claude/rules/` e annotandolo nel `CLAUDE.md` (`avvio-progetto.md` §4, «Aggiunta di un modulo»). Estratto da `core.md` (ex §5a).
 
@@ -30,7 +30,7 @@ Una volta attivato il modulo, il deploy avviene con `Dockerfile` e `docker-compo
 - **Cache dei layer:** copia prima i file di dipendenze (`*.csproj`, `Directory.Packages.props`, `package*.json`), poi `restore`/`npm ci`, poi il resto del codice. Con BuildKit, i `RUN` di `dotnet restore` e `npm ci` possono usare una cache montata (`RUN --mount=type=cache,target=...`) che non finisce nei layer. `dotnet publish` con `--no-restore` e `-p:UseAppHost=false` (l'immagine non ha bisogno dell'eseguibile nativo). Le opzioni si verificano sulla versione di Docker e dell'SDK in uso.
 - **Immagini piccole** (runtime-only, niente SDK in produzione). Nessun healthcheck, né nel Dockerfile né nel compose. **Stato dell'app per un monitor esterno (solo se concordato per progetto, annotato nel `CLAUDE.md`, «Note per Claude»):** `/health/live` (processo vivo, senza dipendenze) e `/health/ready` (dipendenze essenziali, per esempio il database), con `AddHealthChecks` e `MapHealthChecks` e un filtro per tag; non pubblici (`security-backend.md`, «Endpoint operativi»), interrogati da un probe esterno e mai da un `HEALTHCHECK` nel container.
 - **Porte:** l'app ascolta su una porta non privilegiata (es. 8080) via `ASPNETCORE_HTTP_PORTS`; HTTPS e certificati sono responsabilità dell'host/reverse proxy; per gli header `X-Forwarded-*` e i proxy fidati vedi `security-backend.md` ("Dietro un reverse proxy").
-- **Arresto graduale (vedi `osservabilita.md`):** l'`ENTRYPOINT` è in forma exec (`["dotnet", "App.dll"]`, non in forma shell), così il processo riceve `SIGTERM` direttamente; nel compose `stop_grace_period` è maggiore del `ShutdownTimeout` dell'host dell'app, altrimenti i job in corso vengono interrotti dal `SIGKILL`.
+- **Arresto graduale (vedi `backend.md` §5b):** l'`ENTRYPOINT` è in forma exec (`["dotnet", "App.dll"]`, non in forma shell), così il processo riceve `SIGTERM` direttamente; nel compose `stop_grace_period` è maggiore del `ShutdownTimeout` dell'host dell'app, altrimenti i job in corso vengono interrotti dal `SIGKILL`.
 - **Log su stdout/stderr**, mai su file dentro il container, salvo diversa scelta esplicita concordata per il logging (vedi `osservabilita.md`).
 
 ## docker-compose

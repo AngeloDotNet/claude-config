@@ -1,6 +1,6 @@
 # Regole Core (sempre caricate)
 
-> Versione 4.4 — ultima revisione: 2026-11-27.
+> Versione 4.5 — ultima revisione: 2026-11-27.
 > Questo file contiene il minimo che vale in ogni progetto. Il profilo (`mini`, `standard`, `strutturato`) è dichiarato nel `CLAUDE.md`. Il resto sta nei moduli indicati qui sotto, con la stessa numerazione, e si carica nei profili `standard` e `strutturato`.
 > **Mappa:** §1 e §2 in `contratto.md`; §5 e §5a in `operativita.md`; §5b in `documentazione.md`; §5c qui e in `git-flusso.md`; §6 punti 15, 16, 19, 21, 22 in `workflow.md` (profili `standard` e `strutturato`).
 
@@ -23,6 +23,7 @@ Checklist di consegna (§0b) e test e qualità (§4): in `qualita.md` (profili `
 - **Eccezione axe-core (strumenti di test di accessibilità):** `axe-core` e `@axe-core/playwright` sono ammessi anche se la loro licenza è copyleft debole (MPL-2.0, per quanto noto), perché si usano solo in sviluppo e in CI, non entrano nella build distribuita e non vengono modificati. La licenza attuale si verifica al primo uso sul repository ufficiale, senza darla per scontata; l'eccezione non si estende ad altre librerie copyleft.
 - **PrimeNG solo versione gratuita (open source):** mai componenti, template o servizi PrimeNG a pagamento (PrimeBlocks, Premium Templates, licenze Pro).
 - **Niente servizi cloud a pagamento** (Azure, AWS, Google Cloud o simili) per identità, segreti, storage, code, database o monitoraggio: tutto è self-hosted in container.
+- **Versione e licenza:** prima di usare un pacchetto o uno strumento, Claude ne verifica versione e licenza sulla fonte ufficiale; le date di verifica stanno in `docs/fonti.md`.
 - Se una soluzione richiede una funzione a pagamento, Claude la segnala e propone un'alternativa gratuita.
 - **Audit:** `npm audit` e `dotnet list package --vulnerable --include-transitive` (transitive incluse) eseguiti a ogni passo del piano che aggiunge o aggiorna pacchetti e in CI a ogni PR, con `NuGetAudit` attivo nel build (gestione degli avvisi `NU190x` con `TreatWarningsAsErrors`: `backend.md` §2); aggiornamenti automatici (Dependabot/Renovate). Un pacchetto vulnerabile si aggiorna, oppure si segnala all'utente con il motivo se non esiste una correzione: mai ignorato. Versioni fisse tramite lock file. Source mapping NuGet, `npm ci --ignore-scripts`, attesa del bot sulle versioni nuove e pinning delle GitHub Actions: `security-avanzata.md` («Supply chain», dal profilo `standard`).
 

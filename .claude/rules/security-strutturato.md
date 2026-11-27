@@ -1,6 +1,6 @@
 # Sicurezza strutturata: ASVS, scansione, dati dettagliati
 
-> Versione 1.4 — ultima revisione: 2026-11-27.
+> Versione 1.5 — ultima revisione: 2026-11-27.
 > Richiede `security.md`, `security-avanzata.md` e `core.md`. Contiene le sezioni solo del profilo `strutturato`: threat model, ASVS, scansione dinamica, test di sicurezza automatici e dati e segreti dettagliati. Supply chain, rotazione dei segreti e connessione al database stanno in `security-avanzata.md`, che si carica anche nel profilo `standard`. Caricato solo nel profilo `strutturato`; nei profili `standard` e `mini` sta in `.claude/rules-optional/`.
 
 ## Threat model
@@ -8,7 +8,7 @@
 
 
 ## Mappa ASVS 5.0 e livelli
-Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2026-11-04 su `github.com/OWASP/ASVS/tree/v5.0.0/5.0/en`. Il livello di ogni singolo requisito (L1/L2/L3) non è stato letto requisito per requisito: la tabella dice dove cercare e cosa il kit aggiunge per livello, non sostituisce il testo dell'ASVS, che si consulta per il livello scelto. Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
+Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli. La tabella dice dove cercare e cosa il kit aggiunge per livello; non sostituisce il testo dell'ASVS, che si consulta per il livello scelto (note di verifica in `docs/fonti.md`). Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `security-frontend.md`.
 
 | Capitolo ASVS | Dove nelle regole |
 |---|---|
@@ -37,7 +37,7 @@ Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli, elenco dei titoli letto il 2
 
 
 ## Scansione dinamica, segnalazioni e risposta agli incidenti
-(Scelte del kit; OWASP ZAP è Apache-2.0, licenza verificata il 2026-11-04.)
+(Scelte del kit; OWASP ZAP è Apache-2.0.)
 - **DAST con OWASP ZAP baseline (opzionale):** scansione passiva contro un'istanza di prova avviata in CI (mai produzione), con report salvato come artefatto. Il progetto la attiva se ha un ambiente avviabile in CI e lo annota nel `CLAUDE.md`; i falsi positivi si gestiscono in un file di regole versionato, ognuno con il motivo, non si ignora l'intera scansione. Le action o le immagini usate sono fissate come in «Supply chain». Claude scrive il workflow; l'esecuzione è dell'utente.
 - **`SECURITY.md`:** nella root di ogni progetto, con come segnalare una vulnerabilità (canale privato, per esempio il reporting privato di GitHub o un indirizzo email), versioni supportate, tempi di risposta attesi e divieto di aprire issue pubbliche per falle non corrette. Contatti e tempi li fornisce l'utente: Claude non li inventa.
 - **Runbook minimo** in `docs/runbook-sicurezza.md`, breve e senza segreti, con i passi per: segreto trapelato (considerarlo bruciato, ruotarlo, verificare gli accessi, poi la pulizia della cronologia, come in `git-flusso.md`); account compromesso (revoca di sessioni e token, reset delle credenziali, controllo dei log di sicurezza, avviso al titolare); dipendenza vulnerabile (aggiornare o segnalare, `core.md` §3); violazione di dati personali (avviso al titolare del trattamento: il GDPR prevede la notifica al Garante entro 72 ore). Chi decide e chi esegue lo indica l'utente.

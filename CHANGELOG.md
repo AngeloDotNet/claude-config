@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-27
 
+### Riduzione dei moduli caricati: note, duplicati e paragrafi (passo 5 di #128, parte 2)
+**Perché:** i moduli sempre caricati contenevano date di lettura delle fonti, ripetizioni della verifica di licenza, voci duplicate (più container, shutdown) e paragrafi molto lunghi, che pesano nel contesto senza servire ogni volta.
+**Cosa:** le note di verifica (date e fonti) passano in `docs/fonti.md`, che non si carica; la regola «verifica versione e licenza» è detta una volta in `core.md` §3 e tolta dai moduli backend e sicurezza. «Shutdown» e «Più container» vanno da `osservabilita.md` a `backend.md` §5b, dove ci sono già le regole sui più container; `docker.md` punta lì. Il paragrafo OpenAPI e quello su C# 14 di `backend.md` sono divisi in sotto-punti, senza cambiare le regole. Non cambiate per scelta: la regola inviolabile (in testa a `core.md` e nel punto 5 del §6, più dettagliato) e i punti 20-21 del §6, che rimandano al punto 15.
+**Dove:** `docs/fonti.md` (nuovo), `.claude/rules/core.md` (4.5), `.claude/rules/backend.md` (1.15), `.claude/rules/osservabilita.md` (1.2), `.claude/rules/security-avanzata.md` (2.4), `.claude/rules/security-strutturato.md` (1.5), `.claude/rules-optional/docker.md` (1.7).
+**Misura** (moduli sempre caricati): `mini` 14,8 → 15,0 KiB (cresce per la regola unica sulla licenza e le regole minime di Git spostate in `core.md` §5c); `standard` 37,6 KiB; `strutturato` 84,0 → 81,9 KiB.
+**Verifica:** test del plugin 173/173; `git diff --check` pulito.
+
 ### Regole mobile in un modulo opzionale (passo 5 di #128, parte 1)
 **Perché:** la sezione Mobile di `security-strutturato.md` si caricava sempre nel profilo `strutturato`, anche senza un client mobile; circa 2 KiB su un profilo che pesa 84 KiB.
 **Cosa:** le regole di base per un'app mobile passano in `.claude/rules-optional/mobile.md`, da attivare solo se il progetto ha un client mobile (`CLAUDE.md`, «Sviluppo mobile»). `security-strutturato.md` perde la sezione e il titolo «mobile». Il modulo è in elenco tra gli opzionali in `CLAUDE.md`, `avvio-progetto.md` e nel codice di `regole.mjs`. Misura (profili con i moduli sempre caricati): `mini` 14,8 KiB, `standard` 37,6 KiB, `strutturato` 84,0 → 82,1 KiB.
