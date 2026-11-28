@@ -21,9 +21,13 @@ export function gitState(repo) {
   if (branch === null) return { versionata: false, branch: null, modificato: false, haDevelop: false };
   const status = git(repo, ["status", "--porcelain"]) ?? "";
   const develop = git(repo, ["rev-parse", "--verify", "--quiet", "refs/heads/develop"]);
+  // Un merge o un rebase in corso lascia MERGE_HEAD o REBASE_HEAD: la sincronizzazione non parte.
+  const inCorso = ["MERGE_HEAD", "REBASE_HEAD"].some((ref) => git(repo, ["rev-parse", "--verify", "--quiet", ref]) !== null);
   return {
     versionata: true,
     branch: branch.trim(),
+    staccata: branch.trim() === "HEAD",
+    inCorso,
     modificato: status.trim().length > 0,
     haDevelop: develop !== null,
   };

@@ -170,6 +170,7 @@ test("file personalizzato e template cambiato: domanda di conflitto, il file res
     applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
     commitAll(d.project, "chore(repo): registro");
     writeAll(d.project, { ".claude/rules/backend.md": "mio backend\n" });
+    commitAll(d.project, "chore(repo): mio backend");
     writeAll(d.template, { ".claude/rules/backend.md": "backend v2\n" });
     commitAll(d.template, "chore(repo): backend v2");
     git(d.template, "tag", "1.1.0");
@@ -222,6 +223,7 @@ test("modulo rimosso dal template ma modificato nel progetto: domanda, nessuna r
     applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
     commitAll(d.project, "chore(repo): registro");
     writeAll(d.project, { ".claude/rules/backend.md": "mio backend\n" });
+    commitAll(d.project, "chore(repo): mio backend");
     git(d.template, "rm", "-q", ".claude/rules/backend.md");
     writeAll(d.template, { "_template/moduli.json": JSON.stringify({ schema: 1, moduli: MODULI.filter((m) => m.nome !== "backend") }, null, 2) });
     commitAll(d.template, "chore(repo): tolgo backend");
@@ -255,6 +257,7 @@ test("modulo nuovo nel template: domanda, non copiato; rifiutato nel registro: n
     const registro = JSON.parse(read(d.project, ".claude/kit-regole.json"));
     registro.moduli.rifiutati = ["lavoro"];
     writeAll(d.project, { ".claude/kit-regole.json": JSON.stringify(registro, null, 2) });
+    commitAll(d.project, "chore(repo): rifiuto del modulo");
     const dopo = pianifica({ template: d.template, target: d.project });
     assert.equal(dopo.domande.some((q) => q.modulo === "lavoro"), false);
   });
@@ -337,6 +340,57 @@ test("su main pulito con develop: crea bugfix/kit-regole da develop prima di scr
     assert.equal(esito.stato, "applicata", esito.motivo);
     assert.equal(git(d.project, "rev-parse", "--abbrev-ref", "HEAD").trim(), piano.branch.nome);
     assert.equal(exists(d.project, ".claude/kit-regole.json"), true);
+  });
+});
+
+test("su un branch di lavoro con modifiche non committate: rimandata, nessuna modifica", () => {
+  withDirs((d) => {
+    setup(d);
+    writeAll(d.project, { ".claude/rules/backend.md": "modifica in corso\n" });
+    const piano = pianifica({ template: d.template, target: d.project });
+    assert.equal(piano.stato, "rifiutato");
+    assert.match(piano.motivo, /rimandata/);
+    assert.equal(exists(d.project, ".claude/kit-regole.json"), false);
+    assert.equal(read(d.project, ".claude/rules/backend.md"), "modifica in corso\n");
+  });
+});
+
+test("su main con il nome bugfix del giorno già occupato: usa il primo nome libero (-2)", () => {
+  withDirs((d) => {
+    setup(d);
+    git(d.project, "checkout", "-q", "-b", "develop");
+    git(d.project, "checkout", "-q", "-b", "main");
+    const oggi = new Date();
+    const data = `${oggi.getFullYear()}-${String(oggi.getMonth() + 1).padStart(2, "0")}-${String(oggi.getDate()).padStart(2, "0")}`;
+    git(d.project, "branch", `bugfix/kit-regole-${data}`, "develop");
+    const piano = pianifica({ template: d.template, target: d.project });
+    assert.equal(piano.stato, "pronto", piano.motivo);
+    assert.equal(piano.branch.nome, `bugfix/kit-regole-${data}-2`);
+    assert.equal(applica(piano, { target: d.project }).stato, "applicata");
+    assert.equal(git(d.project, "rev-parse", "--abbrev-ref", "HEAD").trim(), `bugfix/kit-regole-${data}-2`);
+  });
+});
+
+test("HEAD staccata: rifiuto senza modifiche", () => {
+  withDirs((d) => {
+    setup(d);
+    git(d.project, "checkout", "-q", "--detach");
+    const piano = pianifica({ template: d.template, target: d.project });
+    assert.equal(piano.stato, "rifiutato");
+    assert.match(piano.motivo, /HEAD staccata/);
+    assert.equal(exists(d.project, ".claude/kit-regole.json"), false);
+  });
+});
+
+test("merge in corso: rifiuto senza modifiche", () => {
+  withDirs((d) => {
+    setup(d);
+    const head = git(d.project, "rev-parse", "HEAD").trim();
+    writeFileSync(path.join(d.project, ".git", "MERGE_HEAD"), `${head}\n`);
+    const piano = pianifica({ template: d.template, target: d.project });
+    assert.equal(piano.stato, "rifiutato");
+    assert.match(piano.motivo, /merge o rebase in corso/);
+    assert.equal(exists(d.project, ".claude/kit-regole.json"), false);
   });
 });
 

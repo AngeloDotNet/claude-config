@@ -4,6 +4,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Branch di lavoro per la sincronizzazione (#141)
+**Perché:** la sincronizzazione non deve mai scrivere sopra un lavoro in corso né su `main` o `develop`; il lavoro di regole va su un branch dedicato, senza commit né push automatici.
+**Cosa:** regole di `lib/sync.mjs` e `lib/git.mjs`. Con modifiche non committate, su qualunque branch: nessuna modifica (decisione del 2026-11-28). Con HEAD staccata, merge o rebase in corso, o senza `develop` su `main`/`develop`: nessuna modifica. Su `main` o `develop` puliti crea `bugfix/kit-regole-AAAA-MM-GG` da `develop`; se il nome esiste, usa il primo libero (`-2`, `-3`, ...). Senza modifiche da fare non crea alcun branch. Nessun commit, nessun push.
+**Dove:** `plugins/kit/scripts/lib/sync.mjs`, `plugins/kit/scripts/lib/git.mjs`, `plugins/kit/tests/sync.test.mjs`.
+**Verifica:** test di sincronizzazione 27/27 (nome occupato, HEAD staccata, merge in corso, modifiche su branch di lavoro).
+
 ### Motore di sincronizzazione e registro (#140)
 **Perché:** la sincronizzazione all'avvio deve calcolare un piano prima di toccare qualunque file, distinguere file non modificati, personalizzati e in conflitto, e non lasciare mai un progetto a metà.
 **Cosa:** nuovi `lib/registro.mjs` (registro `.claude/kit-regole.json`: impronte SHA-256, tag, profilo, moduli rifiutati; validazione stretta, nessun percorso locale), `lib/sync.mjs` (`pianifica`: calcola il piano senza scrivere; `applica`: backup in `.claude/kit-backup/`, lock `.claude/kit-regole.lock` con scadenza di 10 minuti, rollback se una scrittura fallisce), `lib/git.mjs` (comandi git di sola lettura, condivisi). Il comando `regole.mjs sincronizza [--dry-run]` mostra o applica il piano. Regole: non modificato e template cambiato → aggiornamento automatico; personalizzato e template invariato → nessuna azione; personalizzato e template cambiato → domanda; non modificato e fuori posto → spostamento; non modificato e rimosso dal template → rimozione; moduli nuovi, file fuori posto modificati e primo avvio → domande (non applicate); sezione «Regole» di `CLAUDE.md` → mai automatica. Su `main` o `develop` con modifiche non committate, o senza `develop`, o in cartella non versionata: nessuna modifica. Su `main` pulito crea `bugfix/kit-regole-AAAA-MM-GG` da `develop`. Decisione dell'utente: un modulo nuovo rifiutato va in `moduli.rifiutati` e non si ripropone. Il motore non è ancora collegato all'avvio di Claude Code (#142).

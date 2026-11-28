@@ -293,14 +293,13 @@ function calcola({ template, target }) {
   if (scrive) {
     const stato = gitState(target);
     if (!stato.versionata) return rifiuto("cartella non versionata: nessuna modifica (la sincronizzazione lavora solo su repository git)");
+    // Con modifiche non committate la sincronizzazione aspetta il commit, su qualunque branch (decisione del 2026-11-28).
+    if (stato.modificato) return rifiuto("modifiche non committate: sincronizzazione rimandata, nessuna modifica");
+    if (stato.staccata) return rifiuto("HEAD staccata: nessuna modifica");
+    if (stato.inCorso) return rifiuto("merge o rebase in corso: nessuna modifica");
     if (stato.branch === "main" || stato.branch === "develop") {
-      if (stato.modificato) return rifiuto(`su ${stato.branch} ci sono modifiche non committate: nessuna modifica`);
       if (!stato.haDevelop) return rifiuto("manca il branch develop: non creo il branch di lavoro, serve la tua risposta");
-      const nome = `bugfix/kit-regole-${dataIso(new Date())}`;
-      if (git(target, ["rev-parse", "--verify", "--quiet", `refs/heads/${nome}`]) !== null) {
-        return rifiuto(`il branch ${nome} esiste già: nessuna modifica`);
-      }
-      branch = { nome, da: "develop" };
+      branch = { nome: nomeLibero(target, `bugfix/kit-regole-${dataIso(new Date())}`), da: "develop" };
     }
   }
 
@@ -316,6 +315,14 @@ function calcola({ template, target }) {
     registroCambia,
     testoRegistro: scriviRegistro(nuovoRegistro),
   };
+}
+
+/** Primo nome di branch libero: il nome di base, poi con -2, -3, ... (non si riusa né si cancella un branch esistente). */
+function nomeLibero(repo, base) {
+  for (let n = 1; ; n++) {
+    const nome = n === 1 ? base : `${base}-${n}`;
+    if (git(repo, ["rev-parse", "--verify", "--quiet", `refs/heads/${nome}`]) === null) return nome;
+  }
 }
 
 const dataIso = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
