@@ -4,6 +4,16 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Banner in testata del README
+
+**Perché:** il README apre direttamente con il titolo, senza un'immagine che presenti il template a chi arriva dal repository.
+
+**Cosa:** nuovo banner SVG (1280×320, sfondo chiaro, linea d'accento, titolo e sottotitolo) in testa al README, con l'elenco reale dei moduli principali di `.claude/rules/`. Nessun testo del README è cambiato. Il file è locale al repository, senza servizi esterni.
+
+**Dove:** `docs/assets/banner.svg`, `README.md`, `CHANGELOG.md`.
+
+**Verifica:** resa controllata con una cattura headless di Edge (il banner si legge bene a 1280 px); il file è un SVG statico senza script. Da guardare anche su GitHub, in tema scuro, al primo push.
+
 ### Regole backend e frontend divise per area (#124)
 
 **Perché:** `backend.md` (32 KB) e `frontend.md` (38 KB) erano troppo lunghi per essere letti e aggiornati come un unico file. Il limite proposto è 20 KB per modulo. Nell'analisi i duplicati veri sono pochi (1-3 KB, senza righe identiche) e non giustificano da soli la riduzione: la divisione per area è il passo che porta i moduli sotto il limite.
