@@ -2,6 +2,15 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto. Le voci fino al 15 novembre 2026 sono archiviate in `docs/changelog/` (un file per mese).
 
+## 2026-11-28
+
+### ADR sulla sincronizzazione automatica delle regole (#137)
+**Perché:** l'allineamento delle regole all'avvio scrive file e crea branch in progetti altrui: il disegno e il threat model vanno approvati prima del codice (#135).
+**Cosa:** nuovo ADR `0004` in stato «proposta»: avvio con hook `SessionStart` spento per default, origine al tag `X.Y.Z` locale, registro `.claude/kit-regole.json` senza dati personali, conflitti chiesti un file alla volta, copie di salvataggio, branch `bugfix/` su `main` o `develop`, e undici abusi con mitigazione e test. Nessun codice cambia.
+**Dove:** `docs/adr/0004-sincronizzazione-automatica-regole.md` (nuovo), `README.md` (nota che l'automatismo non è ancora attivo).
+**Verifica:** solo documentazione; nessun codice toccato. Test del plugin da eseguire prima del push.
+**Note:** la decisione è da approvare; finché non è accettata l'ADR non autorizza il codice.
+
 ## 2026-11-27
 
 ### Archivio del CHANGELOG fino al 15 novembre (#123)
