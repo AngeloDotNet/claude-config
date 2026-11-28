@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "nota": "Elenco dei moduli di regole del template. Lo legge plugins/kit/scripts/regole.mjs (copia, confronto, moduli nuovi). I file di root e di riferimento restano nel codice. Campi: cartella (rules o rules-optional, come posizione di base); applicabilita (sempre | profilo | backend | frontend | sicurezza-estesa | opzionale); profiloMinimo (sotto questo profilo il modulo sta in rules-optional); soloGit (copiato anche nella modalità solo Git); richiedeBackend (con sicurezza-estesa, solo se c'è il backend); versioneBreve (versione breve dello standard, relativa al template); copiaSempre (opzionale copiato sempre in rules-optional); descrizione (per la domanda sui moduli nuovi). Ogni modulo `.md` in .claude/rules e .claude/rules-optional del template deve avere una voce, e viceversa: lo controlla il test moduli.test.mjs.",
+  "moduli": [
+    {
+      "nome": "core",
+      "cartella": "rules",
+      "applicabilita": "sempre",
+      "soloGit": true,
+      "descrizione": "Regole minime: Git, lingua, interazione con l'utente, verifica."
+    },
+    {
+      "nome": "lavoro",
+      "cartella": "rules",
+      "applicabilita": "sempre",
+      "soloGit": true,
+      "descrizione": "Contesto, indagine dei difetti, review, contenuti non fidati, imprevisti."
+    },
+    {
+      "nome": "security",
+      "cartella": "rules",
+      "applicabilita": "sempre",
+      "descrizione": "Segreti e principi minimi di sicurezza (base)."
+    },
+    {
+      "nome": "contratto",
+      "cartella": "rules",
+      "applicabilita": "sempre",
+      "descrizione": "Contratto tra backend e frontend: API, errori, DTO."
+    },
+    {
+      "nome": "git-flusso",
+      "cartella": "rules",
+      "applicabilita": "profilo",
+      "profiloMinimo": "standard",
+      "soloGit": true,
+      "versioneBreve": "_template/rules-standard/git-flusso.md",
+      "descrizione": "Flusso Git completo: branch, commit, pull request, rilascio."
+    },
+    {
+      "nome": "workflow",
+      "cartella": "rules",
+      "applicabilita": "profilo",
+      "profiloMinimo": "standard",
+      "soloGit": true,
+      "versioneBreve": "_template/rules-standard/workflow.md",
+      "descrizione": "Regole di interazione estese: piano, issue, definition of done."
+    },
+    {
+      "nome": "qualita",
+      "cartella": "rules",
+      "applicabilita": "profilo",
+      "profiloMinimo": "standard",
+      "versioneBreve": "_template/rules-standard/qualita.md",
+      "descrizione": "Checklist di consegna, test e qualità."
+    },
+    {
+      "nome": "documentazione",
+      "cartella": "rules",
+      "applicabilita": "profilo",
+      "profiloMinimo": "standard",
+      "versioneBreve": "_template/rules-standard/documentazione.md",
+      "descrizione": "README, changelog, ADR, commenti."
+    },
+    {
+      "nome": "operativita",
+      "cartella": "rules",
+      "applicabilita": "profilo",
+      "profiloMinimo": "standard",
+      "descrizione": "Operatività dei workflow GitHub (solo file .github)."
+    },
+    {
+      "nome": "backend",
+      "cartella": "rules",
+      "applicabilita": "backend",
+      "descrizione": "Regole backend .NET."
+    },
+    {
+      "nome": "backend-architecture",
+      "cartella": "rules",
+      "applicabilita": "backend",
+      "descrizione": "Architettura backend (Vertical Slice o Clean)."
+    },
+    {
+      "nome": "backend-app",
+      "cartella": "rules",
+      "applicabilita": "backend",
+      "descrizione": "Dati, migrazioni, test di integrazione del backend."
+    },
+    {
+      "nome": "osservabilita",
+      "cartella": "rules",
+      "applicabilita": "backend",
+      "descrizione": "Log, metriche e tracce del backend."
+    },
+    {
+      "nome": "frontend",
+      "cartella": "rules",
+      "applicabilita": "frontend",
+      "descrizione": "Regole frontend Angular, incluse quelle di sicurezza."
+    },
+    {
+      "nome": "security-avanzata",
+      "cartella": "rules",
+      "applicabilita": "sicurezza-estesa",
+      "profiloMinimo": "standard",
+      "descrizione": "Sicurezza avanzata: progettazione, crittografia, supply chain, dati personali."
+    },
+    {
+      "nome": "security-strutturato",
+      "cartella": "rules",
+      "applicabilita": "sicurezza-estesa",
+      "profiloMinimo": "strutturato",
+      "descrizione": "Sicurezza strutturata: ASVS, scansione dinamica, test di sicurezza, threat model."
+    },
+    {
+      "nome": "security-backend",
+      "cartella": "rules",
+      "applicabilita": "sicurezza-estesa",
+      "richiedeBackend": true,
+      "descrizione": "Sicurezza del backend: autenticazione, API, abuso di risorse, upload."
+    },
+    {
+      "nome": "feature-workflow",
+      "cartella": "rules-optional",
+      "applicabilita": "opzionale",
+      "descrizione": "Ordine di lavoro per le nuove entità che attraversano più strati."
+    },
+    {
+      "nome": "backend-email",
+      "cartella": "rules-optional",
+      "applicabilita": "opzionale",
+      "descrizione": "Invio email dal backend (MailKit, SMTP)."
+    },
+    {
+      "nome": "backend-infra",
+      "cartella": "rules-optional",
+      "applicabilita": "opzionale",
+      "descrizione": "Infrastruttura backend: cache, messaggistica, job in background."
+    },
+    {
+      "nome": "mobile",
+      "cartella": "rules-optional",
+      "applicabilita": "opzionale",
+      "descrizione": "Sviluppo di un client mobile (solo se il progetto lo ha)."
+    },
+    {
+      "nome": "docker",
+      "cartella": "rules-optional",
+      "applicabilita": "opzionale",
+      "copiaSempre": true,
+      "descrizione": "Docker e compose: solo su richiesta esplicita."
+    }
+  ]
+}

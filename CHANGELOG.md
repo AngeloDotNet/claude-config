@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Manifest dei moduli nel template (#138)
+**Perché:** l'elenco dei moduli era scritto in quattro costanti di `regole.mjs`: per la sincronizzazione automatica serve una fonte unica, con applicabilità, cartella e versione breve di ogni modulo.
+**Cosa:** nuovo `_template/moduli.json` con i 22 moduli (applicabilità, profilo minimo, `soloGit`, `richiedeBackend`, `versioneBreve`, `copiaSempre`, descrizione). `regole.mjs` lo legge in `copia`, `confronta` e `aggiorna` e lo valida (nomi ripetuti, applicabilità o profilo sconosciuti, versioni brevi mancanti: errore, nessuna scrittura). `confronta` aggiunge `descrizioniNuovi` per la domanda sui moduli nuovi; gli altri campi di output non cambiano. I file di root e di riferimento restano nel codice.
+**Dove:** `_template/moduli.json` (nuovo), `plugins/kit/scripts/regole.mjs`, `plugins/kit/tests/moduli.test.mjs` (nuovo), `README.md`.
+**Verifica:** test del plugin 179/179 (173 esistenti, 6 nuovi su coerenza del manifest, versioni brevi, moduli nuovi e manifest malformato); `regole.test.mjs` e `profili.test.mjs` invariati nei risultati.
+**Note:** il manifest va tenuto allineato quando si aggiunge o sposta un modulo: il test di coerenza fallisce altrimenti.
+
 ### ADR sulla sincronizzazione automatica delle regole (#137)
 **Perché:** l'allineamento delle regole all'avvio scrive file e crea branch in progetti altrui: il disegno e il threat model vanno approvati prima del codice (#135).
 **Cosa:** nuovo ADR `0004` in stato «proposta»: avvio con hook `SessionStart` spento per default, origine al tag `X.Y.Z` locale, registro `.claude/kit-regole.json` senza dati personali, conflitti chiesti un file alla volta, copie di salvataggio, branch `bugfix/` su `main` o `develop`, e undici abusi con mitigazione e test. Nessun codice cambia.
