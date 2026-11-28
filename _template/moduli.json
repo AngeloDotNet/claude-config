@@ -76,6 +76,12 @@
       "descrizione": "Regole backend .NET."
     },
     {
+      "nome": "backend-regole",
+      "cartella": "rules",
+      "applicabilita": "backend",
+      "descrizione": "Regole backend: struttura, convenzioni, validazione, errori, configurazione e job (sezione 2 di backend)."
+    },
+    {
       "nome": "backend-architecture",
       "cartella": "rules",
       "applicabilita": "backend",
@@ -98,6 +104,18 @@
       "cartella": "rules",
       "applicabilita": "frontend",
       "descrizione": "Regole frontend Angular, incluse quelle di sicurezza."
+    },
+    {
+      "nome": "frontend-angular",
+      "cartella": "rules",
+      "applicabilita": "frontend",
+      "descrizione": "Regole Angular e TypeScript: componenti, template, DI, stato (sezione 2 di frontend)."
+    },
+    {
+      "nome": "frontend-sicurezza-test",
+      "cartella": "rules",
+      "applicabilita": "frontend",
+      "descrizione": "Sicurezza del frontend e test (sezioni 9 e 10 di frontend)."
     },
     {
       "nome": "security-avanzata",

@@ -45,7 +45,7 @@ Prima di copiare qualunque file Claude pone queste domande all'utente **una per 
 
 0. **Profilo** (non in modalità solo Git; si pone subito dopo la domanda su solo Git, perché decide i default e quali domande servono): `strutturato` (default) · `standard` · `mini`. Si chiede una sola volta: se il `CLAUDE.md` del progetto ha già il campo «Profilo», non si chiede. Con `mini` si applicano i default della riga «Default del profilo `mini`» del `CLAUDE.md` (§1b). Il profilo scelto va nel campo «Profilo» del `CLAUDE.md` e nel piano del §2b.
 1. **Tipo di progetto:** solo API · solo frontend · fullstack · **solo Git** (solo per progetti esistenti già in sviluppo, di cui si vogliono governare solo branch e commit).
-2. **Regole di sicurezza estese** (non in modalità solo Git): sì · no. `security.md` (segreti, dati, security review e test con input malevoli) si copia comunque, perché contiene obblighi che valgono in ogni profilo (`docs/adr/0001-profili.md` del template). La domanda riguarda solo i moduli estesi: `security-avanzata.md`, `security-strutturato.md`, `security-backend.md`, secondo profilo e tipo di progetto (le regole frontend sono in `frontend.md` §9) (CORS, header, upload, crittografia, ecc.). Se il progetto richieda anche autenticazione/autorizzazione è una domanda distinta, posta da `security-backend.md` quando diventa rilevante, non all'avvio.
+2. **Regole di sicurezza estese** (non in modalità solo Git): sì · no. `security.md` (segreti, dati, security review e test con input malevoli) si copia comunque, perché contiene obblighi che valgono in ogni profilo (`docs/adr/0001-profili.md` del template). La domanda riguarda solo i moduli estesi: `security-avanzata.md`, `security-strutturato.md`, `security-backend.md`, secondo profilo e tipo di progetto (le regole frontend sono in `frontend-sicurezza-test.md` §9) (CORS, header, upload, crittografia, ecc.). Se il progetto richieda anche autenticazione/autorizzazione è una domanda distinta, posta da `security-backend.md` quando diventa rilevante, non all'avvio.
 3. *(numero non più usato)* **Docker** non si chiede all'avvio: `docker.md` è opzionale e si attiva solo su richiesta esplicita dell'utente (§4, «Aggiunta di un modulo»). I numeri delle altre domande restano invariati.
 4. **Stato:** nuovo progetto · progetto esistente.
 5. **Tecnologia frontend** (solo se il tipo include un frontend): Angular (default, regole in `frontend.md`) · Blazor.
@@ -71,7 +71,7 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | Motore del database e versione | «Database» | `backend.md` §1 |
 | Database e mock EF nei test | «Database nei test», «Mock EF nei test unitari» | `qualita.md` §4, `backend-app.md` §4.5 |
 | Utenti del database e connessione cifrata | «Utenti del database» | `backend-app.md` §4.4 |
-| Esposizione del documento OpenAPI | «Esposizione del documento OpenAPI» | `backend.md` §2 |
+| Esposizione del documento OpenAPI | «Esposizione del documento OpenAPI» | `backend-regole.md` §2 |
 | Tecnologia frontend e sviluppo mobile | «Tecnologia frontend», «Sviluppo mobile» | questo file, §1 |
 | Micro frontend | «Micro frontend» | `frontend.md` §12 |
 | Autenticazione e autorizzazione (se serve, JWT, granularità, sessione SPA) | «Sicurezza backend», «Token JWT», «Granularità», «Sessione SPA» | `security-backend.md`, «Autenticazione e Autorizzazione» |
@@ -85,7 +85,7 @@ Oltre alle domande di avvio, queste scelte non si presumono né si copiano dal p
 | Logging (provider, sink, formato, livelli) | «Logging» | `osservabilita.md` |
 | Osservabilità | «Osservabilità» | `osservabilita.md` |
 | Cache | «Cache» | `backend-infra.md` |
-| File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend.md` §2 e §5, moduli opzionali |
+| File storage, email, messaggistica, job in background | «File storage», «Invio email», «Messaggistica», «Job in background» | `backend-regole.md` §2 e `backend.md` §5, moduli opzionali |
 | Backup, RPO/RTO, scadenza dei segreti | «Backup», «RPO / RTO e retention backup», «Scadenza/rotazione segreti» | `docker.md` (se attivo), `security-strutturato.md` (backup, RPO/RTO), `security-avanzata.md` (rotazione) |
 | Lingua di README e CHANGELOG | «Lingua della documentazione» | `core.md` §5b |
 | Fine riga del repository | «Fine riga» | `git-flusso.md`, «Repository, fine riga e hook» |
@@ -103,8 +103,8 @@ Nel progetto nuovo i moduli sono già nella copia del template: quelli non scelt
 | `contratto.md` | solo quando si tocca un file backend o frontend (`paths:`); non si copia nella modalità solo Git |
 | `workflow.md`, `qualita.md`, `git-flusso.md`, `documentazione.md`, `operativita.md`, `security-avanzata.md` | profili standard e strutturato: in `.claude/rules/`. Profilo `mini` (domanda 0): in `.claude/rules-optional/`. `security-avanzata.md` solo con le regole di sicurezza estese (domanda 2). In modalità solo Git si copia solo `workflow.md`, `git-flusso.md` e `git-flusso.md` (vedi sotto) |
 | `security-strutturato.md` | solo profilo `strutturato`: in `.claude/rules/`. Profili `standard` e `mini`: in `.claude/rules-optional/`. Solo con le regole di sicurezza estese (domanda 2) |
-| `backend.md`, `backend-architecture.md`, `backend-app.md`, `osservabilita.md` | solo API o fullstack (i tre moduli backend vanno sempre insieme; `osservabilita.md` si copia con il backend) |
-| `frontend.md` | solo frontend o fullstack, con frontend Angular (non con Blazor) |
+| `backend.md`, `backend-regole.md`, `backend-architecture.md`, `backend-app.md`, `osservabilita.md` | solo API o fullstack (i tre moduli backend vanno sempre insieme; `osservabilita.md` si copia con il backend) |
+| `frontend.md`, `frontend-angular.md`, `frontend-sicurezza-test.md` | solo frontend o fullstack, con frontend Angular (non con Blazor) |
 | `feature-workflow.md` | **solo fullstack** e solo se l'utente ha risposto sì alla domanda 8 (anche per la migrazione Blazor → Angular, §3d); mai in solo API, solo frontend o solo Git. Sta in `rules-optional/` |
 | `backend-email.md` | **non all'avvio**: si attiva quando il progetto deve inviare email (§4, "Aggiunta di un modulo"). Sta in `rules-optional/` |
 | `mobile.md` | **non all'avvio**: si attiva solo se il progetto ha un client mobile (`CLAUDE.md`, «Sviluppo mobile»), spostandolo in `.claude/rules/` |

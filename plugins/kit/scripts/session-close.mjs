@@ -4,7 +4,7 @@
 // tornano finché la situazione resta: non c'è uno stato per sessione.
 // - site-reminder (core.md §5b, lib/sito.mjs): se CHANGELOG.md o README.md sono modificati e il sito
 //   di documentazione della voce `sito` non ha modifiche, ricorda di aggiornarlo.
-// - check-close (core.md §5b, qualita.md §0b, frontend.md §10): sulle modifiche non ancora committate ricorda
+// - check-close (core.md §5b, qualita.md §0b, frontend-sicurezza-test.md §10): sulle modifiche non ancora committate ricorda
 //   codice modificato senza CHANGELOG.md, modello EF cambiato senza migrazione, chiavi it.json /
 //   en.json diverse. Usa `git status`; attivo solo nei progetti con il kit.
 // - model-log (lib/modelli.mjs): una volta per sessione, al primo cambio di modello letto dal registro
