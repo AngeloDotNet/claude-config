@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Prova end-to-end della sincronizzazione (#144)
+**Perché:** i test unitari del motore non dicono se copia, aggiornamento, conflitto e ripetizione funzionano insieme sui file reali del template.
+**Cosa:** nuovo test che copia il template reale con `regole copia` in un progetto git, poi lo aggiorna da un tag di prova: un modulo non modificato si aggiorna da solo, un modulo personalizzato in conflitto resta con la regola personale (con copia di salvataggio), e la ripetizione non scrive nulla e lascia la domanda aperta.
+**Dove:** `plugins/kit/tests/sync-e2e.test.mjs`.
+**Verifica:** test end-to-end 1/1; suite del plugin 232/232.
+**Note:** la prova non attiva la sincronizzazione per nessun progetto reale; l'attivazione di default e il rilascio con tag restano decisioni dell'utente (#144).
+
 ### Risposte alle domande della sincronizzazione (#143)
 **Perché:** le domande della sincronizzazione (conflitti, moduli nuovi, file fuori posto, file rimossi modificati, sezione «Regole») devono poter essere risolte una alla volta, e la scelta deve restare nel registro.
 **Cosa:** `pianifica` accetta le risposte (`id` = `tipo:chiave`) e le applica prima di scrivere: `tieni` o `applica` per i conflitti (e la sezione «Regole» solo con `applica`), `accetta` o `rifiuta` per i moduli nuovi (il rifiuto va in `moduli.rifiutati`), `sposta` per i file fuori posto, `rimuovi` o `tieni` per i file rimossi e modificati. Una risposta non valida o senza domanda corrispondente rifiuta il piano. Nuovo `regole.mjs sincronizza --rispondi id=scelta`, una risposta per volta. Ogni domanda nel resoconto dell'avvio riporta il suo `id`. La skill `regole` ha il nuovo caso C, con una domanda per messaggio.
