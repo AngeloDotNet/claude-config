@@ -87,6 +87,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Corretto:** nessuno.
 **Sicurezza:** nessuna.
 
+### Rilascio 3.6.0
+**Aggiunto:** skill `/kit:rilascio` per il rilascio in tre passi (bump su `release/X.Y.Z`, tag annotato su `main`, GitHub release), con un sì per ciascun passo.
+**Modificato:** le regole backend e frontend sono divise per area, con la stessa numerazione: `backend-regole.md`, `frontend-angular.md` e `frontend-sicurezza-test.md` (nessuna regola cambiata).
+**Corretto:** nessuno.
+**Sicurezza:** nessuna.
+
 ## 2026-11-27
 
 ### Archivio del CHANGELOG fino al 15 novembre (#123)
