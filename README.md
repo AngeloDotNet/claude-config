@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Template di progetto per Claude Code: regole di sviluppo per .NET e Angular, flusso git e sicurezza" width="100%">
+</p>
+
 # Template di progetto per Claude Code
 
 Repository di partenza per i nuovi progetti sviluppati con [Claude Code](https://claude.com/claude-code).
