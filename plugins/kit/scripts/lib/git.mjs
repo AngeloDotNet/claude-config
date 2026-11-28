@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 /** Esegue un comando git nel repository; restituisce l'output o null se git fallisce. */
 export function git(repo, args) {
   try {
-    return execFileSync("git", ["-C", repo, ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 64 * 1024 * 1024 });
+    return execFileSync("git", ["-C", repo, ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 64 * 1024 * 1024, timeout: 10000 });
   } catch {
     return null;
   }

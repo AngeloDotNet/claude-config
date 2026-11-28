@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Sincronizzazione all'avvio, spenta per default (#142)
+**Perché:** le regole aggiornate devono arrivare ai progetti all'avvio, senza `/kit:regole`, ma l'automatismo scrive in progetti altrui: deve restare spento finché non si attiva per progetto.
+**Cosa:** nuovo hook `SessionStart` (`scripts/session-start.mjs`, `hooks/hooks.json`, tempo massimo 30 secondi), che lavora solo se la voce del progetto in `~/.claude/kit-progetti.json` ha `"sincronizzazione": true`, solo a `startup` e `resume`, e solo su progetti riconosciuti dal kit (`core.md` più un profilo dichiarato nel `CLAUDE.md`). Passa a Claude un resoconto e le domande in sospeso, da porre una alla volta; chiede di riaprire la sessione dopo un aggiornamento. Con la sincronizzazione attiva, `prompt-start` non mostra più l'avviso sul template e, dopo un allineamento, non chiede di rileggere le regole appena copiate. Fail-open: un errore non modifica nulla. Le chiamate git hanno un tempo massimo di 10 secondi.
+**Dove:** `plugins/kit/scripts/session-start.mjs` (nuovo), `plugins/kit/scripts/lib/avvio.mjs` (nuovo), `plugins/kit/scripts/prompt-start.mjs`, `plugins/kit/scripts/lib/git.mjs`, `plugins/kit/hooks/hooks.json`, `plugins/kit/tests/session-start.test.mjs` (nuovo), `README.md`.
+**Verifica:** 9 test dell'hook (spento per default, clear ignorato, startup e resume, repository altrui, template non impostato, modifiche non committate, promemoria dopo l'allineamento, promemoria invariato).
+**Note:** la domanda sui moduli nuovi, sui conflitti e sul primo avvio resta da porre: lo fa la skill con #143.
+
 ### Branch di lavoro per la sincronizzazione (#141)
 **Perché:** la sincronizzazione non deve mai scrivere sopra un lavoro in corso né su `main` o `develop`; il lavoro di regole va su un branch dedicato, senza commit né push automatici.
 **Cosa:** regole di `lib/sync.mjs` e `lib/git.mjs`. Con modifiche non committate, su qualunque branch: nessuna modifica (decisione del 2026-11-28). Con HEAD staccata, merge o rebase in corso, o senza `develop` su `main`/`develop`: nessuna modifica. Su `main` o `develop` puliti crea `bugfix/kit-regole-AAAA-MM-GG` da `develop`; se il nome esiste, usa il primo libero (`-2`, `-3`, ...). Senza modifiche da fare non crea alcun branch. Nessun commit, nessun push.
