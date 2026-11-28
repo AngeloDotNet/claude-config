@@ -1,6 +1,6 @@
 # 0004. Sincronizzazione automatica delle regole all'avvio di Claude Code
 
-**Stato:** proposta (2026-11-28), da approvare prima del codice (#137, parte di #135). Finché non è accettata, il codice dell'automatismo non si scrive.
+**Stato:** accettata (2026-11-28), approvata dall'utente (#137, parte di #135). Il codice dell'automatismo si scrive solo nei passi successivi del piano, secondo le decisioni aperte in fondo.
 
 ## Contesto
 Un progetto che ha già le regole del kit (`.claude/rules/`, `.claude/rules-optional/`, tre parti di `CLAUDE.md`, file di riferimento in `_template/`) resta indietro ogni volta che il template cambia. Oggi l'allineamento è manuale: si lancia `/kit:regole`, si confronta, si copia o si sposta a mano. Il rischio è duplice: regole vecchie in uso, oppure un aggiornamento fatto alla cieca che sovrascrive modifiche locali del progetto.
