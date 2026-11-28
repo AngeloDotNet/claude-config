@@ -21,7 +21,8 @@
 import { headKey, loadState, projectKey, recordSnapshot, ruleFingerprints, rulesDiff, saveState } from "./lib/rules.mjs";
 import { templateSection } from "./lib/template.mjs";
 import { pluginVersionSection } from "./lib/plugin-version.mjs";
-import { repoRoot, siteQuestion } from "./lib/sito.mjs";
+import { readConfig, repoRoot, siteQuestion } from "./lib/sito.mjs";
+import { riconosciutoDalKit, sincronizzazioneAttiva } from "./lib/avvio.mjs";
 import { projectProfile, projectUsesKit } from "./lib/text.mjs";
 
 const REMINDER = `[Regola inviolabile, sempre attiva] Se hai un dubbio, un'ambiguità o più strade ragionevoli, NON decidere in autonomia e NON procedere per assunzione: fermati, poni UNA SOLA domanda (anche con AskUserQuestion: una domanda per chiamata, mai più insieme) e attendi la risposta prima di fare altro che ne dipenda. Dettagli: core.md, sezione in testa e §6 punto 5.`;
@@ -84,7 +85,16 @@ process.stdin.on("end", () => {
     }
     const state = loadState();
     const before = JSON.stringify(state);
-    for (const section of [() => rulesChangedSection(cwd, state), () => templateSection(cwd, sessionId, state), () => pluginVersionSection(cwd, sessionId, state), () => siteQuestion(cwd)]) {
+    // Con la sincronizzazione attiva l'avviso sul template lo dà già l'hook SessionStart (lib/avvio.mjs).
+    const sincronizzata = (() => {
+      try {
+        const root = repoRoot(cwd);
+        return sincronizzazioneAttiva(readConfig(), root) && riconosciutoDalKit(root);
+      } catch {
+        return false;
+      }
+    })();
+    for (const section of [() => rulesChangedSection(cwd, state), () => (sincronizzata ? null : templateSection(cwd, sessionId, state)), () => pluginVersionSection(cwd, sessionId, state), () => siteQuestion(cwd)]) {
       try {
         const text = section();
         if (text) parts.push(text);

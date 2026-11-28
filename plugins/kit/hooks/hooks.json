@@ -1,12 +1,28 @@
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/session-start.mjs"
+            ],
+            "timeout": 30
+          }
+        ]
+      }
+    ],
     "UserPromptSubmit": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/prompt-start.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/prompt-start.mjs"
+            ]
           }
         ]
       }
@@ -18,7 +34,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/limit-one-question.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/limit-one-question.mjs"
+            ]
           }
         ]
       },
@@ -28,7 +46,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/guard-commands.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/guard-commands.mjs"
+            ]
           }
         ]
       },
@@ -38,7 +58,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/guard-write.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/guard-write.mjs"
+            ]
           }
         ]
       }
@@ -50,7 +72,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/check-write.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/check-write.mjs"
+            ]
           }
         ]
       }
@@ -61,7 +85,9 @@
           {
             "type": "command",
             "command": "node",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/session-close.mjs"]
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/scripts/session-close.mjs"
+            ]
           }
         ]
       }

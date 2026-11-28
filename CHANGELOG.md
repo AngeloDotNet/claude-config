@@ -2,6 +2,63 @@
 
 Registro delle modifiche alle regole del template: un titolo per giorno, con una sottosezione per intervento (cosa, dove e perché). Più recente in alto. Le voci fino al 15 novembre 2026 sono archiviate in `docs/changelog/` (un file per mese).
 
+## 2026-11-28
+
+### Prova end-to-end della sincronizzazione (#144)
+**Perché:** i test unitari del motore non dicono se copia, aggiornamento, conflitto e ripetizione funzionano insieme sui file reali del template.
+**Cosa:** nuovo test che copia il template reale con `regole copia` in un progetto git, poi lo aggiorna da un tag di prova: un modulo non modificato si aggiorna da solo, un modulo personalizzato in conflitto resta con la regola personale (con copia di salvataggio), e la ripetizione non scrive nulla e lascia la domanda aperta.
+**Dove:** `plugins/kit/tests/sync-e2e.test.mjs`.
+**Verifica:** test end-to-end 1/1; suite del plugin 232/232.
+**Note:** la prova non attiva la sincronizzazione per nessun progetto reale; l'attivazione di default e il rilascio con tag restano decisioni dell'utente (#144).
+
+### Risposte alle domande della sincronizzazione (#143)
+**Perché:** le domande della sincronizzazione (conflitti, moduli nuovi, file fuori posto, file rimossi modificati, sezione «Regole») devono poter essere risolte una alla volta, e la scelta deve restare nel registro.
+**Cosa:** `pianifica` accetta le risposte (`id` = `tipo:chiave`) e le applica prima di scrivere: `tieni` o `applica` per i conflitti (e la sezione «Regole» solo con `applica`), `accetta` o `rifiuta` per i moduli nuovi (il rifiuto va in `moduli.rifiutati`), `sposta` per i file fuori posto, `rimuovi` o `tieni` per i file rimossi e modificati. Una risposta non valida o senza domanda corrispondente rifiuta il piano. Nuovo `regole.mjs sincronizza --rispondi id=scelta`, una risposta per volta. Ogni domanda nel resoconto dell'avvio riporta il suo `id`. La skill `regole` ha il nuovo caso C, con una domanda per messaggio.
+**Dove:** `plugins/kit/scripts/lib/sync.mjs`, `plugins/kit/scripts/regole.mjs`, `plugins/kit/scripts/lib/avvio.mjs`, `plugins/kit/skills/regole/SKILL.md`, `plugins/kit/tests/sync.test.mjs`, `docs/skill.md`, `_template/avvio-progetto.md`, `CLAUDE.md`.
+**Verifica:** 35 test di sincronizzazione (risposte incluse); suite del plugin 231/231.
+**Note:** con modifiche non committate la risposta è rifiutata: la sincronizzazione riparte dopo il commit, come deciso per #141.
+
+### Sincronizzazione all'avvio, spenta per default (#142)
+**Perché:** le regole aggiornate devono arrivare ai progetti all'avvio, senza `/kit:regole`, ma l'automatismo scrive in progetti altrui: deve restare spento finché non si attiva per progetto.
+**Cosa:** nuovo hook `SessionStart` (`scripts/session-start.mjs`, `hooks/hooks.json`, tempo massimo 30 secondi), che lavora solo se la voce del progetto in `~/.claude/kit-progetti.json` ha `"sincronizzazione": true`, solo a `startup` e `resume`, e solo su progetti riconosciuti dal kit (`core.md` più un profilo dichiarato nel `CLAUDE.md`). Passa a Claude un resoconto e le domande in sospeso, da porre una alla volta; chiede di riaprire la sessione dopo un aggiornamento. Con la sincronizzazione attiva, `prompt-start` non mostra più l'avviso sul template e, dopo un allineamento, non chiede di rileggere le regole appena copiate. Fail-open: un errore non modifica nulla. Le chiamate git hanno un tempo massimo di 10 secondi.
+**Dove:** `plugins/kit/scripts/session-start.mjs` (nuovo), `plugins/kit/scripts/lib/avvio.mjs` (nuovo), `plugins/kit/scripts/prompt-start.mjs`, `plugins/kit/scripts/lib/git.mjs`, `plugins/kit/hooks/hooks.json`, `plugins/kit/tests/session-start.test.mjs` (nuovo), `README.md`.
+**Verifica:** 9 test dell'hook (spento per default, clear ignorato, startup e resume, repository altrui, template non impostato, modifiche non committate, promemoria dopo l'allineamento, promemoria invariato).
+**Note:** la domanda sui moduli nuovi, sui conflitti e sul primo avvio resta da porre: lo fa la skill con #143.
+
+### Branch di lavoro per la sincronizzazione (#141)
+**Perché:** la sincronizzazione non deve mai scrivere sopra un lavoro in corso né su `main` o `develop`; il lavoro di regole va su un branch dedicato, senza commit né push automatici.
+**Cosa:** regole di `lib/sync.mjs` e `lib/git.mjs`. Con modifiche non committate, su qualunque branch: nessuna modifica (decisione del 2026-11-28). Con HEAD staccata, merge o rebase in corso, o senza `develop` su `main`/`develop`: nessuna modifica. Su `main` o `develop` puliti crea `bugfix/kit-regole-AAAA-MM-GG` da `develop`; se il nome esiste, usa il primo libero (`-2`, `-3`, ...). Senza modifiche da fare non crea alcun branch. Nessun commit, nessun push.
+**Dove:** `plugins/kit/scripts/lib/sync.mjs`, `plugins/kit/scripts/lib/git.mjs`, `plugins/kit/tests/sync.test.mjs`.
+**Verifica:** test di sincronizzazione 27/27 (nome occupato, HEAD staccata, merge in corso, modifiche su branch di lavoro).
+
+### Motore di sincronizzazione e registro (#140)
+**Perché:** la sincronizzazione all'avvio deve calcolare un piano prima di toccare qualunque file, distinguere file non modificati, personalizzati e in conflitto, e non lasciare mai un progetto a metà.
+**Cosa:** nuovi `lib/registro.mjs` (registro `.claude/kit-regole.json`: impronte SHA-256, tag, profilo, moduli rifiutati; validazione stretta, nessun percorso locale), `lib/sync.mjs` (`pianifica`: calcola il piano senza scrivere; `applica`: backup in `.claude/kit-backup/`, lock `.claude/kit-regole.lock` con scadenza di 10 minuti, rollback se una scrittura fallisce), `lib/git.mjs` (comandi git di sola lettura, condivisi). Il comando `regole.mjs sincronizza [--dry-run]` mostra o applica il piano. Regole: non modificato e template cambiato → aggiornamento automatico; personalizzato e template invariato → nessuna azione; personalizzato e template cambiato → domanda; non modificato e fuori posto → spostamento; non modificato e rimosso dal template → rimozione; moduli nuovi, file fuori posto modificati e primo avvio → domande (non applicate); sezione «Regole» di `CLAUDE.md` → mai automatica. Su `main` o `develop` con modifiche non committate, o senza `develop`, o in cartella non versionata: nessuna modifica. Su `main` pulito crea `bugfix/kit-regole-AAAA-MM-GG` da `develop`. Decisione dell'utente: un modulo nuovo rifiutato va in `moduli.rifiutati` e non si ripropone. Il motore non è ancora collegato all'avvio di Claude Code (#142).
+**Dove:** `plugins/kit/scripts/lib/registro.mjs`, `lib/sync.mjs`, `lib/git.mjs`, `lib/layout.mjs` (nuovi; costanti di layout spostate da `regole.mjs`), `plugins/kit/scripts/lib/release.mjs` (usa `git.mjs`), `plugins/kit/scripts/regole.mjs`, `plugins/kit/tests/sync.test.mjs` (nuovo), `README.md`.
+**Verifica:** test del plugin 210/210 (187 esistenti, 23 nuovi: primo avvio, aggiornamento, conflitto, spostamento, rimozione, modulo nuovo e rifiutato, registro ostile, percorsi con `..`, git e branch, lock, rollback, idempotenza, comando da riga di comando, sezione «Regole»).
+**Note:** i link simbolici nel progetto sono rifiutati dal codice ma il test non li crea, perché su Windows richiedono permessi. Le domande (conflitti, moduli nuovi, primo avvio) non si pongono ancora: le pone la skill, con #143.
+
+### Lettura delle regole dall'ultimo tag (#139)
+**Perché:** la sincronizzazione automatica deve prendere le regole dall'ultimo rilascio del template, non dalla cartella di lavoro, che può avere modifiche non committate o un branch diverso.
+**Cosa:** nuova libreria `lib/release.mjs`: sceglie il tag `X.Y.Z` più alto (numerico; ignora `v`, suffissi e tag a due parti), legge `_template/moduli.json` e i file dal tag con `git show`, senza checkout. Senza tag o senza manifest leggibile restituisce il motivo e non legge nulla. Non è ancora collegata a `regole.mjs`: lo farà il motore di sincronizzazione (#140).
+**Dove:** `plugins/kit/scripts/lib/release.mjs` (nuovo), `plugins/kit/tests/release.test.mjs` (nuovo), `README.md`.
+**Verifica:** test del plugin 187/187 (179 esistenti, 8 nuovi su repository git temporanei: scelta del tag, annotated tag, lettura con disco e branch cambiati, assenza di tag, tag senza manifest, manifest non valido, cartella non git).
+**Note:** la lettura usa solo argomenti separati di `execFileSync`, nessuna shell.
+
+### Manifest dei moduli nel template (#138)
+**Perché:** l'elenco dei moduli era scritto in quattro costanti di `regole.mjs`: per la sincronizzazione automatica serve una fonte unica, con applicabilità, cartella e versione breve di ogni modulo.
+**Cosa:** nuovo `_template/moduli.json` con i 22 moduli (applicabilità, profilo minimo, `soloGit`, `richiedeBackend`, `versioneBreve`, `copiaSempre`, descrizione). `regole.mjs` lo legge in `copia`, `confronta` e `aggiorna` e lo valida (nomi ripetuti, applicabilità o profilo sconosciuti, versioni brevi mancanti: errore, nessuna scrittura). `confronta` aggiunge `descrizioniNuovi` per la domanda sui moduli nuovi; gli altri campi di output non cambiano. I file di root e di riferimento restano nel codice.
+**Dove:** `_template/moduli.json` (nuovo), `plugins/kit/scripts/regole.mjs`, `plugins/kit/tests/moduli.test.mjs` (nuovo), `README.md`.
+**Verifica:** test del plugin 179/179 (173 esistenti, 6 nuovi su coerenza del manifest, versioni brevi, moduli nuovi e manifest malformato); `regole.test.mjs` e `profili.test.mjs` invariati nei risultati.
+**Note:** il manifest va tenuto allineato quando si aggiunge o sposta un modulo: il test di coerenza fallisce altrimenti.
+
+### ADR sulla sincronizzazione automatica delle regole (#137)
+**Perché:** l'allineamento delle regole all'avvio scrive file e crea branch in progetti altrui: il disegno e il threat model vanno approvati prima del codice (#135).
+**Cosa:** nuovo ADR `0004` in stato «proposta»: avvio con hook `SessionStart` spento per default, origine al tag `X.Y.Z` locale, registro `.claude/kit-regole.json` senza dati personali, conflitti chiesti un file alla volta, copie di salvataggio, branch `bugfix/` su `main` o `develop`, e undici abusi con mitigazione e test. Nessun codice cambia.
+**Dove:** `docs/adr/0004-sincronizzazione-automatica-regole.md` (nuovo), `README.md` (nota che l'automatismo non è ancora attivo).
+**Verifica:** solo documentazione; nessun codice toccato. Test del plugin da eseguire prima del push.
+**Note:** la decisione è da approvare; finché non è accettata l'ADR non autorizza il codice.
+
 ## 2026-11-27
 
 ### Archivio del CHANGELOG fino al 15 novembre (#123)

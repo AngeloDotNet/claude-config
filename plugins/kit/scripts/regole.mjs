@@ -7,35 +7,21 @@
 //   aggiorna  --template <dir> --target <dir> --file <percorso>    (salva .bak, poi copia dal template)
 //   sposta    --target <dir> --file <percorso> --a <percorso>      (mai sopra un file esistente)
 //   rimuovi   --target <dir> --file <percorso>                     (salva .bak, poi cancella)
+//   sincronizza --template <dir> --target <dir> [--dry-run] [--rispondi id=scelta]  (piano dall'ultimo tag, poi applica le
+//             sole operazioni automatiche; le domande restano nel JSON, vedi lib/sync.mjs)
 // I percorsi di --file e --a sono relativi al progetto. L'uscita è JSON su stdout; gli errori vanno
 // su stderr con exit 1. Nessun file esistente viene sovrascritto da `copia`.
+// I moduli (nome, cartella, applicabilità, profilo minimo, versione breve) stanno nel manifest del
+// template, `_template/moduli.json`: qui non ci sono elenchi di moduli.
 // Richiede Node.js.
 
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { compareVersions, ruleVersion } from "./lib/template.mjs";
+import { applica, pianifica } from "./lib/sync.mjs";
+import { APPLICABILITA, DETAIL, EXTRA, MANIFEST, PROFILES, REFERENCE, RULES, ROOT_FILES, PROFILE_VALUE, expectedFolder, isManagedModule, modulo } from "./lib/layout.mjs";
 
-const ALWAYS = ["core", "lavoro", "security", "contratto"];
-const SHORTABLE = ["git-flusso", "workflow", "qualita", "documentazione"];
-const PROFILED = [...SHORTABLE, "operativita"];
-const SOLO_GIT = ["core", "lavoro", "git-flusso", "workflow"];
-const BACKEND = ["backend", "backend-architecture", "backend-app", "osservabilita"];
-const OPTIONAL = ["feature-workflow", "backend-email", "backend-infra", "mobile"];
-const PROFILES = ["strutturato", "standard", "mini"];
-const ROOT_FILES = ["NuGet.config", ".editorconfig", ".gitignore", ".gitattributes"];
-const REFERENCE = [
-  "_template/avvio-progetto.md",
-  "_template/settings.example.json",
-  "_template/eslint.config.example.js",
-  "_template/ci/ci.yml",
-  "_template/ci/kit-allow.yml",
-  "_template/ci/kit-allow-report.mjs",
-  "_template/ci/kit-allow-report.test.mjs",
-];
-const RULES = ".claude/rules";
-const EXTRA = ".claude/rules-optional";
-const DETAIL = `${EXTRA}/dettaglio`;
-const PROFILE_VALUE = /^[ \t]*(?:-[ \t]*)?(?:\*\*)?Profilo:(?:\*\*)?[ \t]*`?(mini|standard|strutturato)\b/im;
+
 const PLACEHOLDER = "[strutturato (default) | standard | mini]";
 
 class UserError extends Error {}
@@ -44,7 +30,7 @@ const fail = (message) => {
 };
 
 const SWITCHES = new Set(["solo-git", "backend", "frontend", "sicurezza-estesa", "dry-run"]);
-const VALUES = new Set(["template", "target", "profilo", "opzionali", "root", "file", "a"]);
+const VALUES = new Set(["template", "target", "profilo", "opzionali", "root", "file", "a", "rispondi"]);
 
 function parseArgs(argv) {
   const [command, ...rest] = argv;
@@ -74,33 +60,49 @@ function folders(options, { needTemplate = true } = {}) {
   return { target, template };
 }
 
+/** Legge il manifest dei moduli del template e ne controlla la forma; restituisce l'elenco dei moduli. */
+function loadManifest(template) {
+  const file = path.join(template, MANIFEST);
+  if (!existsSync(file)) fail(`il template non contiene ${MANIFEST}`);
+  let manifest;
+  try {
+    manifest = JSON.parse(readFileSync(file, "utf8"));
+  } catch (error) {
+    fail(`${MANIFEST} non è JSON valido: ${error.message}`);
+  }
+  if (!Array.isArray(manifest.moduli)) fail(`${MANIFEST}: manca l'elenco «moduli»`);
+  const names = new Set();
+  for (const m of manifest.moduli) {
+    if (!m.nome || names.has(m.nome)) fail(`${MANIFEST}: nome mancante o ripetuto: ${m.nome}`);
+    names.add(m.nome);
+    if (!["rules", "rules-optional"].includes(m.cartella)) fail(`${MANIFEST}: cartella non valida per ${m.nome}`);
+    if (!APPLICABILITA.includes(m.applicabilita)) fail(`${MANIFEST}: applicabilità non valida per ${m.nome}`);
+    if (m.profiloMinimo && !PROFILES.includes(m.profiloMinimo)) fail(`${MANIFEST}: profilo minimo non valido per ${m.nome}`);
+    if (m.versioneBreve && !existsSync(path.join(template, m.versioneBreve))) fail(`${MANIFEST}: manca la versione breve di ${m.nome}`);
+  }
+  return manifest.moduli;
+}
+
+
 function list(value, allowed, label) {
   const items = (value ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   for (const item of items) if (!allowed.includes(item)) fail(`${label} non ammesso: ${item} (ammessi: ${allowed.join(", ")})`);
   return items;
 }
-
-/** Cartella attesa di un modulo per il profilo: rules o rules-optional. */
-function expectedFolder(name, profile) {
-  if (profile === "mini" && [...PROFILED, "security-avanzata"].includes(name)) return EXTRA;
-  if (profile !== "strutturato" && name === "security-strutturato") return EXTRA;
-  if ([...OPTIONAL, "docker"].includes(name)) return null; // si attivano a mano: nessuna posizione attesa
-  return RULES;
-}
-
 /** File del template da cui deriva un file del progetto, o null se il template non lo ha. */
-function sourceFor(template, relative, profile) {
+function sourceFor(template, relative, profile, moduli) {
   const name = path.posix.basename(relative, ".md");
   const folder = path.posix.dirname(relative);
   const candidates = [];
-  if (folder === RULES && profile === "standard" && SHORTABLE.includes(name)) candidates.push(`_template/rules-standard/${name}.md`);
+  const breve = modulo(moduli, name)?.versioneBreve;
+  if (folder === RULES && profile === "standard" && breve) candidates.push(breve);
   if ([RULES, EXTRA, DETAIL].includes(folder)) candidates.push(`${RULES}/${name}.md`, `${EXTRA}/${name}.md`);
   else candidates.push(relative);
   return candidates.map((c) => path.join(template, c)).find((c) => existsSync(c)) ?? null;
 }
 
 /** Piano di copia: coppie [origine, destinazione relativa]. */
-function copyPlan(template, options) {
+function copyPlan(template, options, moduli) {
   const soloGit = Boolean(options["solo-git"]);
   const profile = options.profilo;
   if (soloGit) {
@@ -109,7 +111,11 @@ function copyPlan(template, options) {
   } else if (!PROFILES.includes(profile)) {
     fail(`serve --profilo con uno tra: ${PROFILES.join(", ")} (oppure --solo-git)`);
   }
-  const optional = list(options.opzionali, OPTIONAL, "modulo opzionale");
+  const optional = list(
+    options.opzionali,
+    moduli.filter((m) => m.applicabilita === "opzionale" && !m.copiaSempre).map((m) => m.nome),
+    "modulo opzionale",
+  );
   const roots = list(options.root, ROOT_FILES, "file di root");
   const plan = [];
   const add = (from, to) => plan.push([path.join(template, from), to]);
@@ -120,25 +126,32 @@ function copyPlan(template, options) {
   };
 
   if (soloGit) {
-    SOLO_GIT.forEach((n) => module(n, RULES));
+    moduli.filter((m) => m.soloGit).forEach((m) => module(m.nome, RULES));
   } else {
-    const names = [...ALWAYS, ...PROFILED];
-    if (options.backend) names.push(...BACKEND);
-    if (options.frontend) names.push("frontend");
-    if (options["sicurezza-estesa"]) {
-      names.push("security-avanzata", "security-strutturato");
-      if (options.backend) names.push("security-backend");
-    }
-    for (const name of names) {
-      const folder = expectedFolder(name, profile);
-      if (profile === "standard" && SHORTABLE.includes(name)) {
-        add(`_template/rules-standard/${name}.md`, `${RULES}/${name}.md`);
-        module(name, DETAIL);
+    const selected = moduli.filter((m) => {
+      switch (m.applicabilita) {
+        case "sempre":
+        case "profilo":
+          return true;
+        case "backend":
+          return Boolean(options.backend);
+        case "frontend":
+          return Boolean(options.frontend);
+        case "sicurezza-estesa":
+          return Boolean(options["sicurezza-estesa"]) && (!m.richiedeBackend || Boolean(options.backend));
+        default:
+          return false; // i moduli opzionali si copiano più sotto
+      }
+    });
+    for (const m of selected) {
+      if (profile === "standard" && m.versioneBreve) {
+        add(m.versioneBreve, `${RULES}/${m.nome}.md`);
+        module(m.nome, DETAIL);
       } else {
-        module(name, folder);
+        module(m.nome, expectedFolder(m, profile));
       }
     }
-    [...optional, "docker"].forEach((n) => module(n, EXTRA));
+    [...optional, ...moduli.filter((m) => m.copiaSempre).map((m) => m.nome)].forEach((n) => module(n, EXTRA));
   }
   for (const file of ["CLAUDE.md", ...roots, ...REFERENCE]) {
     if (!existsSync(path.join(template, file))) fail(`il template non contiene ${file}`);
@@ -165,7 +178,8 @@ function withProfile(text, profile) {
 function copy(options) {
   const { target, template } = folders(options);
   if (existsSync(path.join(target, RULES))) fail("il progetto ha già .claude/rules: usa il confronto (caso B)");
-  const { plan, profile } = copyPlan(template, options);
+  const moduli = loadManifest(template);
+  const { plan, profile } = copyPlan(template, options, moduli);
   const claude = path.join(target, "CLAUDE.md");
   // Il controllo del profilo viene prima di ogni scrittura.
   if (profile && existsSync(claude)) withProfile(readFileSync(claude, "utf8"), profile);
@@ -192,6 +206,7 @@ function copy(options) {
 
 function compare(options) {
   const { target, template } = folders(options);
+  const moduli = loadManifest(template);
   const claude = path.join(target, "CLAUDE.md");
   const profile = (existsSync(claude) ? PROFILE_VALUE.exec(readFileSync(claude, "utf8"))?.[1]?.toLowerCase() : null) ?? null;
   const templateModules = new Set([...mdNames(path.join(template, RULES)), ...mdNames(path.join(template, EXTRA))]);
@@ -226,8 +241,9 @@ function compare(options) {
         continue;
       }
       if (folder !== DETAIL) present.add(name);
-      check(relative, sourceFor(template, relative, profile));
-      const expected = profile && folder !== DETAIL ? expectedFolder(name, profile) : null;
+      check(relative, sourceFor(template, relative, profile, moduli));
+      const m = modulo(moduli, name);
+      const expected = profile && folder !== DETAIL && m ? expectedFolder(m, profile) : null;
       if (expected && expected !== folder) misplaced.push({ file: relative, atteso: `${expected}/${name}.md` });
     }
   }
@@ -235,14 +251,19 @@ function compare(options) {
   for (const relative of [...REFERENCE, "NuGet.config", ".editorconfig"]) {
     if (existsSync(path.join(target, relative)) && existsSync(path.join(template, relative))) check(relative, path.join(template, relative));
   }
+  const nuovi = [...templateModules].filter((n) => !present.has(n)).sort();
   return {
     profilo: profile,
     uguali: equal,
     diversi: different,
-    nuovi: [...templateModules].filter((n) => !present.has(n)).sort(),
+    nuovi,
+    descrizioniNuovi: Object.fromEntries(nuovi.map((n) => [n, modulo(moduli, n)?.descrizione ?? ""])),
     rimossi: removed,
     fuoriPosto: misplaced,
-    obbligatoriMancanti: [...ALWAYS, ...PROFILED].filter((n) => !present.has(n)),
+    obbligatoriMancanti: moduli
+      .filter((m) => m.applicabilita === "sempre" || m.applicabilita === "profilo")
+      .map((m) => m.nome)
+      .filter((n) => !present.has(n)),
   };
 }
 
@@ -250,7 +271,7 @@ function compare(options) {
 function managed(target, value, label) {
   if (!value) fail(`manca --${label}`);
   const relative = path.posix.normalize(value.replace(/\\/g, "/"));
-  const isModule = [RULES, EXTRA, DETAIL].includes(path.posix.dirname(relative)) && relative.endsWith(".md");
+  const isModule = isManagedModule(relative);
   if (!isModule && ![...REFERENCE, "NuGet.config", ".editorconfig"].includes(relative)) {
     fail(`percorso non gestito da /kit:regole: ${value}`);
   }
@@ -267,10 +288,11 @@ function backup(file) {
 
 function update(options) {
   const { target, template } = folders(options);
+  const moduli = loadManifest(template);
   const { relative, full } = managed(target, options.file, "file");
   const claude = path.join(target, "CLAUDE.md");
   const profile = existsSync(claude) ? PROFILE_VALUE.exec(readFileSync(claude, "utf8"))?.[1]?.toLowerCase() : null;
-  const source = sourceFor(template, relative, profile);
+  const source = sourceFor(template, relative, profile, moduli);
   if (!source) fail(`il template non ha un file per ${relative}`);
   const saved = existsSync(full) ? path.basename(backup(full)) : null;
   mkdirSync(path.dirname(full), { recursive: true });
@@ -298,7 +320,40 @@ function remove(options) {
   return { rimosso: relative, copiaDiSalvataggio: saved };
 }
 
-const COMMANDS = { copia: copy, confronta: compare, aggiorna: update, sposta: move, rimuovi: remove };
+/**
+ * Sincronizzazione all'avvio (ADR 0004): piano dall'ultimo tag, poi applicazione delle sole operazioni
+ * automatiche. Le domande restano nel risultato: la skill le pone una alla volta.
+ */
+function sincronizza(options) {
+  const { target, template } = folders(options);
+  const risposte = {};
+  if (options.rispondi) {
+    const cut = options.rispondi.indexOf("=");
+    if (cut < 1) fail("--rispondi vuole il formato id=scelta");
+    risposte[options.rispondi.slice(0, cut)] = options.rispondi.slice(cut + 1);
+  }
+  const piano = pianifica({ template, target, risposte });
+  const riepilogo = {
+    stato: piano.stato,
+    motivo: piano.motivo ?? null,
+    tag: piano.tag ?? null,
+    profilo: piano.profilo ?? null,
+    daScrivere: piano.stato === "pronto"
+      ? {
+          file: piano.scritture.map((s) => (s.tipo === "sposta" ? `${s.da} -> ${s.a}` : s.chiave)),
+          rimossi: piano.rimozioni.map((r) => r.chiave),
+          registro: piano.registroCambia,
+          branch: piano.branch?.nome ?? null,
+        }
+      : null,
+    domande: piano.domande ?? [],
+    dryRun: Boolean(options["dry-run"]),
+  };
+  if (piano.stato !== "pronto" || options["dry-run"]) return riepilogo;
+  return { ...riepilogo, esito: applica(piano, { target }) };
+}
+
+const COMMANDS = { copia: copy, confronta: compare, aggiorna: update, sposta: move, rimuovi: remove, sincronizza };
 
 try {
   const { command, options } = parseArgs(process.argv.slice(2));
