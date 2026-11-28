@@ -1,0 +1,22 @@
+# Test del plugin kit (plugins/kit/tests/*.test.mjs) su GitHub, a ogni pull request e a ogni push su develop e main (issue #121).
+# Le action sono fissate al commit SHA, con la versione in commento (stessi SHA di _template/ci/ci.yml, verificati il 2026-11-27).
+name: plugin-tests
+
+on:
+  pull_request:
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  kit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - name: Test del plugin kit
+        run: node --test plugins/kit/tests/*.test.mjs

@@ -12,9 +12,9 @@ import { fileURLToPath } from "node:url";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
-/** File in cui cercare i rimandi. CHANGELOG, ADR e test restano fuori: citano anche lo stato passato. */
+/** File in cui cercare i rimandi. CHANGELOG, archivio del CHANGELOG (docs/changelog), ADR e test restano fuori: citano anche lo stato passato. */
 const SCANNED = [".claude/rules", ".claude/rules-optional", "_template", "plugins/kit/skills", "plugins/kit/scripts", "docs", "README.md", "CLAUDE.md"];
-const SKIPPED = new Set(["docs/adr", "docs/devto"]);
+const SKIPPED = new Set(["docs/adr", "docs/devto", "docs/changelog"]);
 
 /** File che possono essere destinazione di un rimando (testo completo, non le versioni brevi dello standard). */
 const TARGET_DIRS = [".claude/rules", ".claude/rules-optional"];
