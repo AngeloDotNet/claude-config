@@ -4,6 +4,16 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Skill `/kit:rilascio` per bump, tag e release
+
+**Perché:** il rilascio di `git-flusso.md` («Rilascio») è in più passi (bump su `release/X.Y.Z`, tag annotato su `main`, GitHub release) e finora si faceva a mano. La skill guida i passi e chiede il sì per ciascuno, senza creare tag o release da sola. Issue #122.
+
+**Cosa:** nuova skill `plugins/kit/skills/rilascio/SKILL.md` con argomenti `bump X.Y.Z`, `tag` e `gh`, `disable-model-invocation: true`. Il tag si crea solo su `main` dopo il merge, e la release richiede `gh` dichiarata nel `CLAUDE.md`. Registrata in `docs/skill.md`, `README.md`, nella descrizione del plugin e del marketplace (ora undici comandi). Il test `skills-layout.test.mjs` attende undici skill.
+
+**Dove:** `plugins/kit/skills/rilascio/SKILL.md`, `plugins/kit/tests/skills-layout.test.mjs`, `plugins/kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `docs/skill.md`, `README.md`, `CHANGELOG.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 232/232. La skill non è stata lanciata su un rilascio reale: tag e release restano da provare al primo uso.
+
 ### Prova end-to-end della sincronizzazione (#144)
 **Perché:** i test unitari del motore non dicono se copia, aggiornamento, conflitto e ripetizione funzionano insieme sui file reali del template.
 **Cosa:** nuovo test che copia il template reale con `regole copia` in un progetto git, poi lo aggiorna da un tag di prova: un modulo non modificato si aggiorna da solo, un modulo personalizzato in conflitto resta con la regola personale (con copia di salvataggio), e la ripetizione non scrive nulla e lascia la domanda aperta.
