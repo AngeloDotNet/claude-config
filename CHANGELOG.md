@@ -59,6 +59,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 **Verifica:** solo documentazione; nessun codice toccato. Test del plugin da eseguire prima del push.
 **Note:** la decisione è da approvare; finché non è accettata l'ADR non autorizza il codice.
 
+### Rilascio 3.5.0
+**Aggiunto:** sincronizzazione automatica delle regole del template all'avvio della sessione, spenta per default e attivabile per progetto con `"sincronizzazione": true` in `~/.claude/kit-progetti.json` (ADR 0004, #135). Il manifesto dei moduli `_template/moduli.json`, il motore con registro `.claude/kit-regole.json`, le domande una alla volta (`regole.mjs sincronizza --rispondi`, caso C di `/kit:regole`) e il ramo `bugfix/kit-regole-AAAA-MM-GG` per `main` e `develop`.
+**Modificato:** `regole.mjs` legge i moduli dal manifesto invece che da costanti; `prompt-start` non mostra l'avviso sul template quando la sincronizzazione è attiva.
+**Corretto:** nessuno.
+**Sicurezza:** nessuna.
+
 ## 2026-11-27
 
 ### Archivio del CHANGELOG fino al 15 novembre (#123)
