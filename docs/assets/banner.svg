@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" role="img" aria-labelledby="t d">
+  <title id="t">Template di progetto per Claude Code</title>
+  <desc id="d">Regole di sviluppo per .NET e Angular, flusso git, sicurezza e plugin kit, con l'elenco dei moduli di regole principali.</desc>
+  <!-- Sfondo chiaro e linea d'accento in alto -->
+  <rect x="0" y="0" width="1280" height="320" rx="12" fill="#fcfcfb"/>
+  <rect x="0" y="0" width="1280" height="6" rx="3" fill="#2a78d6"/>
+
+  <!-- Colonna sinistra: etichetta, titolo, sottotitolo, stack -->
+  <text x="72" y="92" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22" font-weight="600" fill="#2a78d6" letter-spacing="0.5">claude config</text>
+  <text x="72" y="152" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="46" font-weight="700" fill="#0b0b0b">Template di progetto</text>
+  <text x="72" y="206" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="46" font-weight="700" fill="#0b0b0b">per Claude Code</text>
+  <text x="72" y="252" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="22" fill="#52514e">Regole di sviluppo per .NET e Angular, git flow, sicurezza</text>
+  <text x="72" y="288" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="18" fill="#6b6a66">Plugin kit · domanda unica · divieti tecnici sui comandi</text>
+
+  <!-- Separatore verticale -->
+  <line x1="760" y1="56" x2="760" y2="264" stroke="#d9d8d4" stroke-width="1.5"/>
+
+  <!-- Colonna destra: struttura reale di .claude/rules/ -->
+  <rect x="800" y="56" width="408" height="208" rx="10" fill="#ffffff" stroke="#d9d8d4" stroke-width="1.5"/>
+  <text x="828" y="92" font-family="Consolas, 'Courier New', monospace" font-size="18" font-weight="700" fill="#0b0b0b">.claude/rules/</text>
+  <g font-family="Consolas, 'Courier New', monospace" font-size="18" fill="#52514e">
+    <text x="828" y="128">core.md</text>
+    <text x="828" y="158">lavoro.md</text>
+    <text x="828" y="188">security.md</text>
+    <text x="828" y="218">git-flusso.md</text>
+    <text x="828" y="248">backend.md</text>
+  </g>
+  <g font-family="Consolas, 'Courier New', monospace" font-size="18" fill="#2a78d6">
+    <text x="1040" y="128">regola base</text>
+    <text x="1040" y="158">contesto</text>
+    <text x="1040" y="188">sicurezza</text>
+    <text x="1040" y="218">git</text>
+    <text x="1040" y="248">.NET</text>
+  </g>
+</svg>
