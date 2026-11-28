@@ -55,8 +55,8 @@ function qualityFindings(file, text) {
   // Frontend
   if (/\.ts$/i.test(base) && /(?::\s*|\bas\s+|<)any(?![\w$])/.test(text)) out.push("uso di `any` (qualita.md §0b: nessun any)");
   if (/\.(ts|html)$/i.test(base)) {
-    if (/\binnerHTML\b/.test(text)) out.push("uso di innerHTML (frontend.md §9: vietato senza sanitizzazione)");
-    if (/\bbypassSecurityTrust\w*/.test(text)) out.push("uso di bypassSecurityTrust* (frontend.md §9: vietato senza motivazione)");
+    if (/\binnerHTML\b/.test(text)) out.push("uso di innerHTML (frontend-sicurezza-test.md §9: vietato senza sanitizzazione)");
+    if (/\bbypassSecurityTrust\w*/.test(text)) out.push("uso di bypassSecurityTrust* (frontend-sicurezza-test.md §9: vietato senza motivazione)");
   }
   if (/\.ts$/i.test(base) && text.split("\n").some((line) => /['"`]#[0-9a-fA-F]{3,8}\b/.test(line) && HEX.test(line))) {
     out.push("colore esadecimale hardcoded (frontend.md: colori dai token del tema)");
@@ -69,14 +69,14 @@ function qualityFindings(file, text) {
   }
   if (/\.ts$/i.test(base)) {
     if (/@(?:Input|Output|ViewChild(?:ren)?|ContentChild(?:ren)?)\s*\(/.test(text)) {
-      out.push("decoratore @Input/@Output/@ViewChild/@ContentChild (frontend.md §2, Template e componenti: input(), output(), model(), viewChild())");
+      out.push("decoratore @Input/@Output/@ViewChild/@ContentChild (frontend-angular.md §2, Template e componenti: input(), output(), model(), viewChild())");
     }
-    if (/@(?:HostBinding|HostListener)\s*\(/.test(text)) out.push("@HostBinding/@HostListener (frontend.md §2, Template e componenti: proprietà `host` del decoratore)");
-    if (/^\s*(?:template|styles)\s*:\s*[`'"[]/m.test(text)) out.push("template o stili inline nel componente (frontend.md §2: file .html e .css separati)");
-    if (/\bsignal\s*[<(]/.test(text) && /\.mutate\s*\(/.test(text)) out.push("mutate() su un signal (frontend.md §2, Template e componenti: set() o update())");
-    if (/\bwaitForTimeout\s*\(/.test(text)) out.push("waitForTimeout (frontend.md §10: si attende uno stato osservabile)");
+    if (/@(?:HostBinding|HostListener)\s*\(/.test(text)) out.push("@HostBinding/@HostListener (frontend-angular.md §2, Template e componenti: proprietà `host` del decoratore)");
+    if (/^\s*(?:template|styles)\s*:\s*[`'"[]/m.test(text)) out.push("template o stili inline nel componente (frontend-angular.md §2: file .html e .css separati)");
+    if (/\bsignal\s*[<(]/.test(text) && /\.mutate\s*\(/.test(text)) out.push("mutate() su un signal (frontend-angular.md §2, Template e componenti: set() o update())");
+    if (/\bwaitForTimeout\s*\(/.test(text)) out.push("waitForTimeout (frontend-sicurezza-test.md §10: si attende uno stato osservabile)");
   }
-  if (/\.(ts|html)$/i.test(base) && /\bngClass\b|\bngStyle\b/.test(text)) out.push("ngClass/ngStyle (frontend.md §2, Template e componenti: si preferiscono i binding nativi [class] e [style])");
+  if (/\.(ts|html)$/i.test(base) && /\bngClass\b|\bngStyle\b/.test(text)) out.push("ngClass/ngStyle (frontend-angular.md §2, Template e componenti: si preferiscono i binding nativi [class] e [style])");
   if (/\.(ts|css|scss|html)$/i.test(base) && /\btransition\s*:\s*all\b/.test(text)) out.push("`transition: all` (frontend.md §3: solo le proprietà che cambiano)");
 
   return out;
@@ -140,7 +140,7 @@ const PRACTICE_RULES = [
     files: /\.ts$/i,
     exceptTests: true,
     re: /\bconsole\.log\s*\(/,
-    why: "console.log nel codice (frontend.md §9: nessun dato sensibile in console)",
+    why: "console.log nel codice (frontend-sicurezza-test.md §9: nessun dato sensibile in console)",
   },
   {
     id: "log",

@@ -48,7 +48,7 @@ const ALWAYS = ["core", "lavoro", "security", "contratto"];
 const SHORTABLE = ["workflow", "qualita", "git-flusso", "documentazione"];
 const PROFILED = [...SHORTABLE, "operativita"];
 const FULL = ["--backend", "--frontend", "--sicurezza-estesa"];
-const AREA = ["backend", "backend-architecture", "backend-app", "osservabilita", "frontend", "security-backend"];
+const AREA = ["backend", "backend-regole", "backend-architecture", "backend-app", "osservabilita", "frontend", "frontend-angular", "frontend-sicurezza-test", "security-backend"];
 
 test("solo Git: copia i sei moduli previsti, senza profilo né docker", () => {
   withTarget((dir) => {
@@ -91,7 +91,7 @@ test("mini: i moduli di profilo vanno in rules-optional; security.md resta sempr
   withTarget((dir) => {
     const r = copy(dir, "--profilo", "mini", "--backend");
     assert.equal(r.code, 0, r.err);
-    assert.deepEqual(names(dir, ".claude", "rules"), sorted([...ALWAYS, "backend", "backend-architecture", "backend-app", "osservabilita"]));
+    assert.deepEqual(names(dir, ".claude", "rules"), sorted([...ALWAYS, "backend", "backend-regole", "backend-architecture", "backend-app", "osservabilita"]));
     assert.deepEqual(names(dir, ".claude", "rules-optional"), sorted([...PROFILED, "docker"]));
   });
 });

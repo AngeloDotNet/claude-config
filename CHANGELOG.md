@@ -4,6 +4,18 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Regole backend e frontend divise per area (#124)
+
+**Perché:** `backend.md` (32 KB) e `frontend.md` (38 KB) erano troppo lunghi per essere letti e aggiornati come un unico file. Il limite proposto è 20 KB per modulo. Nell'analisi i duplicati veri sono pochi (1-3 KB, senza righe identiche) e non giustificano da soli la riduzione: la divisione per area è il passo che porta i moduli sotto il limite.
+
+**Cosa:** nessuna regola è stata tolta né riscritta: le sezioni sono state spostate con la stessa numerazione. `backend.md` (12 KB) tiene stack, comunicazione, dati, operatività e servizi di contorno; la sezione 2 va in `backend-regole.md` (21 KB). `frontend.md` (15 KB) tiene UI, i18n, GDPR, tabelle, Blazor e micro frontend; la sezione 2 va in `frontend-angular.md` (14 KB) e le sezioni 9 e 10 in `frontend-sicurezza-test.md` (9 KB). I riferimenti «backend.md §2», «frontend.md §2», «frontend.md §9» e «frontend.md §10» nelle regole, nei moduli opzionali, nelle skill di revisione, nel manifest e in `CLAUDE.md` puntano ai nuovi moduli. `_template/moduli.json` registra i tre moduli; `CLAUDE.md` e `_template/avvio-progetto.md` ne elencano i percorsi.
+
+**Dove:** `.claude/rules/backend.md`, `.claude/rules/backend-regole.md`, `.claude/rules/frontend.md`, `.claude/rules/frontend-angular.md`, `.claude/rules/frontend-sicurezza-test.md`, `.claude/rules/security-backend.md`, `.claude/rules/qualita.md`, `.claude/rules/security.md`, `.claude/rules/security-strutturato.md`, `.claude/rules/core.md`, `.claude/rules-optional/` (tre moduli), `_template/moduli.json`, `_template/avvio-progetto.md`, `CLAUDE.md`, `plugins/kit/skills/revisione/temi/`, `plugins/kit/skills/verifica/`, `plugins/kit/scripts/`, `plugins/kit/tests/regole.test.mjs`, `plugins/kit/tests/skills-layout.test.mjs`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 232/232, compreso il controllo dei riferimenti rotti (`refs.test.mjs`) e quello dei moduli (`moduli.test.mjs`).
+
+**Note:** il wiki `docs/claude-config/contenuto.md` elenca ancora i moduli precedenti alla divisione: va aggiornato in un intervento separato nel repository del wiki.
+
 ### Skill `/kit:rilascio` per bump, tag e release
 
 **Perché:** il rilascio di `git-flusso.md` («Rilascio») è in più passi (bump su `release/X.Y.Z`, tag annotato su `main`, GitHub release) e finora si faceva a mano. La skill guida i passi e chiede il sì per ciascuno, senza creare tag o release da sola. Issue #122.
