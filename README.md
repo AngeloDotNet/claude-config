@@ -51,7 +51,7 @@ Le operazioni sui file di `/kit:regole` (copia per profilo, confronto, aggiornam
 
 ## Comandi del plugin
 
-Il plugin aggiunge dieci comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
+Il plugin aggiunge undici comandi, che si lanciano solo su richiesta. Sono disponibili nel plugin:
 
 - `/kit:buongiorno`: riprende il lavoro dalle issue del progetto (issue padre e sue sub-issue), e propone il primo passo.
 - `/kit:buonasera`: salva lo stato dei lavori nelle issue (chiude le sub-issue verificate, registra la ripartenza sulla issue padre, apre le issue dei problemi nuovi), aggiorna senza conferma `README.md`, `CHANGELOG.md` e la wiki (se presente), propone la cancellazione dei file non più utili (solo con la tua conferma) e ricorda `/clear` o `/compact`.
@@ -61,6 +61,7 @@ Il plugin aggiunge dieci comandi, che si lanciano solo su richiesta. Sono dispon
 - `/kit:commit-passo`: crea i commit in sequenza e senza conferme intermedie (il lancio è il via libera), mai su `main` o `develop` (crea direttamente il branch di lavoro); apre issue per la serie solo con almeno tre commit, fuori da `mini` e se il lavoro non ne ha già una; chiede il tipo di commit solo se ambiguo e si ferma con una domanda solo nei casi anomali.
 - `/kit:pr-develop`: apre con `gh` la PR dal branch di lavoro verso `develop`, con push e creazione senza altra conferma; si può lanciare anche da `/kit:commit-passo`, che a fine commit lo propone con una domanda; il merge (squash) resta all'utente.
 - `/kit:pr-main`: apre con `gh` la PR da `develop` (o `release/*`, `hotfix/*`) verso il branch principale, dopo il controllo di `main` avanti rispetto a `develop`; il merge (merge commit) resta all'utente. Dopo il merge, con `/kit:pr-main pulizia`, verificato con `gh` che la PR risulta mergiata, cancella i branch di lavoro corrispondenti (locali e remoti) e allinea `main` e `develop` con `git pull --ff-only`, segnalando se serve la sincronizzazione di `main` in `develop`.
+- `/kit:rilascio`: prepara e, passo per passo, esegue il rilascio secondo `git-flusso.md` (commit di bump su `release/X.Y.Z`, tag annotato `X.Y.Z` su `main`, GitHub release con le note); ogni passo chiede il tuo sì.
 - `/kit:verifica`: controlla il lavoro corrente contro la checklist di consegna, poi esegue i controlli di una soluzione .NET, di un frontend Angular o di entrambi nei progetti fullstack, in base ai file toccati (build, test, lint, audit, formattazione) e riporta l'esito, senza modificare file.
 - `/kit:revisione <tema>`: revisione in sola lettura di un tema (accessi API, EF Core, GDPR, accessibilità, colori, localizzazione, test, regole del progetto, sicurezza). Senza tema elenca i temi e chiede quale usare.
 - `/kit:modelli`: mostra quali modelli sono stati usati nella sessione e per cosa (sessione, skill, subagent), leggendo il registro della sessione; sola lettura. Lo stesso log compare da solo, una volta per sessione, al primo cambio di modello.

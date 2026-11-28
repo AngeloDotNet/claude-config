@@ -8,7 +8,7 @@
 
 
 ## Mappa ASVS 5.0 e livelli
-Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli. La tabella dice dove cercare e cosa il kit aggiunge per livello; non sostituisce il testo dell'ASVS, che si consulta per il livello scelto (note di verifica in `docs/fonti.md`). Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `frontend.md` §9.
+Fonte: OWASP ASVS 5.0.0 (maggio 2025), 17 capitoli. La tabella dice dove cercare e cosa il kit aggiunge per livello; non sostituisce il testo dell'ASVS, che si consulta per il livello scelto (note di verifica in `docs/fonti.md`). Le sezioni «Autenticazione e Autorizzazione» (con la voce «Completamenti dell'autenticazione»), «Protezione dell'API», «Abuso di risorse», «Vulnerabilità applicative ricorrenti» e «Upload e parsing di file» sono in `security-backend.md`; «Frontend» è in `frontend-sicurezza-test.md` §9.
 
 | Capitolo ASVS | Dove nelle regole |
 |---|---|

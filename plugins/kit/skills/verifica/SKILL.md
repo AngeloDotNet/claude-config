@@ -35,7 +35,7 @@ Questa skill esegue i controlli e riporta l'esito. Non corregge nulla: se un con
 
 1. **Soluzione.** Cerca il file `.sln` nella cartella indicata o nella radice del repository. Se ce ne sono più di uno, chiedi una sola domanda: quale verificare.
 2. **Ripristino.** `dotnet restore <sln> --locked-mode` se il progetto ha i lock file (`packages.lock.json`), altrimenti `dotnet restore <sln>`. Se fallisce, riporta l'errore e fermati: gli altri controlli non hanno senso senza pacchetti.
-3. **Formattazione.** `dotnet format <sln> --verify-no-changes --no-restore`. Fallisce se il codice non rispetta formattazione e regole `.editorconfig` a severità `warning` o superiore (`backend.md` §2).
+3. **Formattazione.** `dotnet format <sln> --verify-no-changes --no-restore`. Fallisce se il codice non rispetta formattazione e regole `.editorconfig` a severità `warning` o superiore (`backend-regole.md` §2).
 4. **Build.** `dotnet build <sln> --no-restore --configuration Release -warnaserror`. Un avviso è un errore: `qualita.md` §4 richiede una build senza warning. Riporta ogni problema con il file e la riga.
 4b. **Using inutilizzati.** `dotnet format style <sln> --diagnostics IDE0005 --severity info --verify-no-changes --no-restore` (`backend.md`: MUST, dopo una build senza errori). Se il comando non esiste nella versione dell'SDK installata o `IDE0005` non è riportata, il controllo risulta «non verificato», non superato; verifica la sintassi sulla versione in uso (`core.md` §6.13).
 5. **Test.** `dotnet test <sln> --no-build --configuration Release`. Riporta il numero di test eseguiti, falliti e saltati. Un test saltato è segnalato, non ignorato (`qualita.md` §4).
@@ -54,4 +54,4 @@ Questa skill non lancia altro. Nel gruppo «non verificata» indica, se servono,
 - `/kit:revisione gdpr-dati`: solo se il lavoro riguarda dati personali davvero.
 - `/code-review`: sempre, per i difetti.
 
-Riferimenti: `core.md` §3; `qualita.md` §0b e §4 (profilo `mini`: `checklist-mini.md`); `backend.md` §2; `backend-app.md` §4.5.
+Riferimenti: `core.md` §3; `qualita.md` §0b e §4 (profilo `mini`: `checklist-mini.md`); `backend-regole.md` §2; `backend-app.md` §4.5.

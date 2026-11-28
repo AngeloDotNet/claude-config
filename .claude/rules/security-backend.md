@@ -97,7 +97,7 @@ paths:
 - **Mass assignment / overposting:** si deserializzano solo i `record` DTO di richiesta con i campi permessi; mai entità EF, mai campi come `Role`, `TenantId`, `IsAdmin` o `OwnerId` accettati dal client. Proprietà sensibili impostate dal server.
 - **Deserializzazione:** solo `System.Text.Json` su tipi concreti attesi. Vietati `BinaryFormatter` e deserializzatori con tipi polimorfici scelti dal client (niente `$type` non vincolato).
 - **Log: injection e contenuto:** i valori forniti dall'utente entrano nei log solo come parametri del template strutturato (`logger.LogInformation("Order {OrderId}", id)`), mai concatenati; i campi liberi vanno ripuliti da ritorni a capo. Nessun dato personale, token o segreto nei log.
-- **Errori:** nessun dettaglio interno (stack trace, nome di tabella, versione) fuori da Development: regola in `backend.md` («Eccezioni globali»).
+- **Errori:** nessun dettaglio interno (stack trace, nome di tabella, versione) fuori da Development: regola in `backend-regole.md` («Eccezioni globali»).
 
 
 ## Upload e parsing di file

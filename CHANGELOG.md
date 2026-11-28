@@ -4,6 +4,28 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Regole backend e frontend divise per area (#124)
+
+**Perché:** `backend.md` (32 KB) e `frontend.md` (38 KB) erano troppo lunghi per essere letti e aggiornati come un unico file. Il limite proposto è 20 KB per modulo. Nell'analisi i duplicati veri sono pochi (1-3 KB, senza righe identiche) e non giustificano da soli la riduzione: la divisione per area è il passo che porta i moduli sotto il limite.
+
+**Cosa:** nessuna regola è stata tolta né riscritta: le sezioni sono state spostate con la stessa numerazione. `backend.md` (12 KB) tiene stack, comunicazione, dati, operatività e servizi di contorno; la sezione 2 va in `backend-regole.md` (21 KB). `frontend.md` (15 KB) tiene UI, i18n, GDPR, tabelle, Blazor e micro frontend; la sezione 2 va in `frontend-angular.md` (14 KB) e le sezioni 9 e 10 in `frontend-sicurezza-test.md` (9 KB). I riferimenti «backend.md §2», «frontend.md §2», «frontend.md §9» e «frontend.md §10» nelle regole, nei moduli opzionali, nelle skill di revisione, nel manifest e in `CLAUDE.md` puntano ai nuovi moduli. `_template/moduli.json` registra i tre moduli; `CLAUDE.md` e `_template/avvio-progetto.md` ne elencano i percorsi.
+
+**Dove:** `.claude/rules/backend.md`, `.claude/rules/backend-regole.md`, `.claude/rules/frontend.md`, `.claude/rules/frontend-angular.md`, `.claude/rules/frontend-sicurezza-test.md`, `.claude/rules/security-backend.md`, `.claude/rules/qualita.md`, `.claude/rules/security.md`, `.claude/rules/security-strutturato.md`, `.claude/rules/core.md`, `.claude/rules-optional/` (tre moduli), `_template/moduli.json`, `_template/avvio-progetto.md`, `CLAUDE.md`, `plugins/kit/skills/revisione/temi/`, `plugins/kit/skills/verifica/`, `plugins/kit/scripts/`, `plugins/kit/tests/regole.test.mjs`, `plugins/kit/tests/skills-layout.test.mjs`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 232/232, compreso il controllo dei riferimenti rotti (`refs.test.mjs`) e quello dei moduli (`moduli.test.mjs`).
+
+**Note:** il wiki `docs/claude-config/contenuto.md` elenca ancora i moduli precedenti alla divisione: va aggiornato in un intervento separato nel repository del wiki.
+
+### Skill `/kit:rilascio` per bump, tag e release
+
+**Perché:** il rilascio di `git-flusso.md` («Rilascio») è in più passi (bump su `release/X.Y.Z`, tag annotato su `main`, GitHub release) e finora si faceva a mano. La skill guida i passi e chiede il sì per ciascuno, senza creare tag o release da sola. Issue #122.
+
+**Cosa:** nuova skill `plugins/kit/skills/rilascio/SKILL.md` con argomenti `bump X.Y.Z`, `tag` e `gh`, `disable-model-invocation: true`. Il tag si crea solo su `main` dopo il merge, e la release richiede `gh` dichiarata nel `CLAUDE.md`. Registrata in `docs/skill.md`, `README.md`, nella descrizione del plugin e del marketplace (ora undici comandi). Il test `skills-layout.test.mjs` attende undici skill.
+
+**Dove:** `plugins/kit/skills/rilascio/SKILL.md`, `plugins/kit/tests/skills-layout.test.mjs`, `plugins/kit/.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `docs/skill.md`, `README.md`, `CHANGELOG.md`.
+
+**Verifica:** `node --test plugins/kit/tests/*.test.mjs`: 232/232. La skill non è stata lanciata su un rilascio reale: tag e release restano da provare al primo uso.
+
 ### Prova end-to-end della sincronizzazione (#144)
 **Perché:** i test unitari del motore non dicono se copia, aggiornamento, conflitto e ripetizione funzionano insieme sui file reali del template.
 **Cosa:** nuovo test che copia il template reale con `regole copia` in un progetto git, poi lo aggiorna da un tag di prova: un modulo non modificato si aggiorna da solo, un modulo personalizzato in conflitto resta con la regola personale (con copia di salvataggio), e la ripetizione non scrive nulla e lascia la domanda aperta.
@@ -62,6 +84,12 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 ### Rilascio 3.5.0
 **Aggiunto:** sincronizzazione automatica delle regole del template all'avvio della sessione, spenta per default e attivabile per progetto con `"sincronizzazione": true` in `~/.claude/kit-progetti.json` (ADR 0004, #135). Il manifesto dei moduli `_template/moduli.json`, il motore con registro `.claude/kit-regole.json`, le domande una alla volta (`regole.mjs sincronizza --rispondi`, caso C di `/kit:regole`) e il ramo `bugfix/kit-regole-AAAA-MM-GG` per `main` e `develop`.
 **Modificato:** `regole.mjs` legge i moduli dal manifesto invece che da costanti; `prompt-start` non mostra l'avviso sul template quando la sincronizzazione è attiva.
+**Corretto:** nessuno.
+**Sicurezza:** nessuna.
+
+### Rilascio 3.6.0
+**Aggiunto:** skill `/kit:rilascio` per il rilascio in tre passi (bump su `release/X.Y.Z`, tag annotato su `main`, GitHub release), con un sì per ciascun passo.
+**Modificato:** le regole backend e frontend sono divise per area, con la stessa numerazione: `backend-regole.md`, `frontend-angular.md` e `frontend-sicurezza-test.md` (nessuna regola cambiata).
 **Corretto:** nessuno.
 **Sicurezza:** nessuna.
 

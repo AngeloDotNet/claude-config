@@ -25,22 +25,22 @@ export default tseslint.config(
     ],
     processor: angular.processInlineTemplates,
     rules: {
-      // frontend.md §2: niente `any`.
+      // frontend-angular.md §2: niente `any`.
       "@typescript-eslint/no-explicit-any": "error",
-      // frontend.md §2 («Template, componenti, Angular e TypeScript»): OnPush su ogni componente; inject() al posto del costruttore.
+      // frontend-angular.md §2 («Template, componenti, Angular e TypeScript»): OnPush su ogni componente; inject() al posto del costruttore.
       "@angular-eslint/prefer-on-push-component-change-detection": "error",
       "@angular-eslint/prefer-inject": "error",
-      // frontend.md §2 («Template, componenti, Angular e TypeScript»): input()/output() funzionali (la regola esiste dalle versioni recenti di angular-eslint).
+      // frontend-angular.md §2 («Template, componenti, Angular e TypeScript»): input()/output() funzionali (la regola esiste dalle versioni recenti di angular-eslint).
       "@angular-eslint/prefer-signals": "error",
       "@angular-eslint/no-input-rename": "error",
       "@angular-eslint/no-output-native": "error",
-      // frontend.md §2: selettori con prefisso del progetto.
+      // frontend-angular.md §2: selettori con prefisso del progetto.
       "@angular-eslint/component-selector": ["error", { type: "element", prefix: "app", style: "kebab-case" }],
       "@angular-eslint/directive-selector": ["error", { type: "attribute", prefix: "app", style: "camelCase" }],
     },
   },
   {
-    // frontend.md §2 (struttura cartelle): core/ e shared/ non importano da features/.
+    // frontend-angular.md §2 (struttura cartelle): core/ e shared/ non importano da features/.
     files: ["**/core/**/*.ts", "**/shared/**/*.ts"],
     rules: {
       "no-restricted-imports": [
@@ -64,7 +64,7 @@ export default tseslint.config(
     files: ["**/*.html"],
     extends: [...angular.configs.templateRecommended, ...angular.configs.templateAccessibility, prettier],
     rules: {
-      // frontend.md §2 («Template, componenti, Angular e TypeScript»): control flow nativo, NgOptimizedImage, uguaglianza stretta.
+      // frontend-angular.md §2 («Template, componenti, Angular e TypeScript»): control flow nativo, NgOptimizedImage, uguaglianza stretta.
       "@angular-eslint/template/prefer-control-flow": "error",
       "@angular-eslint/template/prefer-ngsrc": "error",
       "@angular-eslint/template/eqeqeq": "error",

@@ -13,7 +13,7 @@ const skills = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "sk
 const dirs = readdirSync(skills).filter((n) => statSync(path.join(skills, n)).isDirectory());
 
 test("ogni cartella di skills/ ha un SKILL.md con frontmatter description", () => {
-  assert.equal(dirs.length, 10, `attese 10 skill, trovate ${dirs.length}: ${dirs.join(", ")}`);
+  assert.equal(dirs.length, 11, `attese 11 skill, trovate ${dirs.length}: ${dirs.join(", ")}`);
   for (const d of dirs) {
     const file = path.join(skills, d, "SKILL.md");
     assert.ok(existsSync(file), `manca SKILL.md in ${d}`);
