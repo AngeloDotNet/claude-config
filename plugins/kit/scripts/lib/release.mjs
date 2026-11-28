@@ -2,18 +2,9 @@
 // Un tag di rilascio è X.Y.Z senza prefisso (niente `v`, niente suffissi): gli altri si ignorano.
 // Richiede Git nel PATH; i comandi sono lanciati con argomenti separati, mai tramite shell.
 
-import { execFileSync } from "node:child_process";
+import { git } from "./git.mjs";
 
 const RELEASE = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
-
-/** Esegue un comando git nel repository; restituisce null se git fallisce (per esempio file o tag assenti). */
-function git(repo, args) {
-  try {
-    return execFileSync("git", ["-C", repo, ...args], { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 64 * 1024 * 1024 });
-  } catch {
-    return null;
-  }
-}
 
 /** Confronta due versioni X.Y.Z numericamente: negativo, zero o positivo. */
 export function compareRelease(a, b) {

@@ -7,6 +7,8 @@
 //   aggiorna  --template <dir> --target <dir> --file <percorso>    (salva .bak, poi copia dal template)
 //   sposta    --target <dir> --file <percorso> --a <percorso>      (mai sopra un file esistente)
 //   rimuovi   --target <dir> --file <percorso>                     (salva .bak, poi cancella)
+//   sincronizza --template <dir> --target <dir> [--dry-run]        (piano dall'ultimo tag, poi applica le
+//             sole operazioni automatiche; le domande restano nel JSON, vedi lib/sync.mjs)
 // I percorsi di --file e --a sono relativi al progetto. L'uscita è JSON su stdout; gli errori vanno
 // su stderr con exit 1. Nessun file esistente viene sovrascritto da `copia`.
 // I moduli (nome, cartella, applicabilità, profilo minimo, versione breve) stanno nel manifest del
@@ -16,25 +18,10 @@
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { compareVersions, ruleVersion } from "./lib/template.mjs";
+import { applica, pianifica } from "./lib/sync.mjs";
+import { APPLICABILITA, DETAIL, EXTRA, MANIFEST, PROFILES, REFERENCE, RULES, ROOT_FILES, PROFILE_VALUE, expectedFolder, isManagedModule, modulo } from "./lib/layout.mjs";
 
-const ROOT_FILES = ["NuGet.config", ".editorconfig", ".gitignore", ".gitattributes"];
-const REFERENCE = [
-  "_template/avvio-progetto.md",
-  "_template/settings.example.json",
-  "_template/eslint.config.example.js",
-  "_template/ci/ci.yml",
-  "_template/ci/kit-allow.yml",
-  "_template/ci/kit-allow-report.mjs",
-  "_template/ci/kit-allow-report.test.mjs",
-];
-const RULES = ".claude/rules";
-const EXTRA = ".claude/rules-optional";
-const DETAIL = `${EXTRA}/dettaglio`;
-const MANIFEST = "_template/moduli.json";
-const PROFILES = ["strutturato", "standard", "mini"];
-const PROFILE_RANK = { mini: 0, standard: 1, strutturato: 2 };
-const APPLICABILITA = ["sempre", "profilo", "backend", "frontend", "sicurezza-estesa", "opzionale"];
-const PROFILE_VALUE = /^[ \t]*(?:-[ \t]*)?(?:\*\*)?Profilo:(?:\*\*)?[ \t]*`?(mini|standard|strutturato)\b/im;
+
 const PLACEHOLDER = "[strutturato (default) | standard | mini]";
 
 class UserError extends Error {}
@@ -96,22 +83,12 @@ function loadManifest(template) {
   return manifest.moduli;
 }
 
-/** Il modulo con quel nome nel manifest, o null. */
-const modulo = (moduli, name) => moduli.find((m) => m.nome === name) ?? null;
 
 function list(value, allowed, label) {
   const items = (value ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   for (const item of items) if (!allowed.includes(item)) fail(`${label} non ammesso: ${item} (ammessi: ${allowed.join(", ")})`);
   return items;
 }
-
-/** Cartella attesa di un modulo per il profilo: rules o rules-optional; null se si attiva a mano. */
-function expectedFolder(modulo, profile) {
-  if (modulo.applicabilita === "opzionale") return null;
-  if (modulo.profiloMinimo && PROFILE_RANK[profile] < PROFILE_RANK[modulo.profiloMinimo]) return EXTRA;
-  return modulo.cartella === "rules-optional" ? EXTRA : RULES;
-}
-
 /** File del template da cui deriva un file del progetto, o null se il template non lo ha. */
 function sourceFor(template, relative, profile, moduli) {
   const name = path.posix.basename(relative, ".md");
@@ -294,7 +271,7 @@ function compare(options) {
 function managed(target, value, label) {
   if (!value) fail(`manca --${label}`);
   const relative = path.posix.normalize(value.replace(/\\/g, "/"));
-  const isModule = [RULES, EXTRA, DETAIL].includes(path.posix.dirname(relative)) && relative.endsWith(".md");
+  const isModule = isManagedModule(relative);
   if (!isModule && ![...REFERENCE, "NuGet.config", ".editorconfig"].includes(relative)) {
     fail(`percorso non gestito da /kit:regole: ${value}`);
   }
@@ -343,7 +320,34 @@ function remove(options) {
   return { rimosso: relative, copiaDiSalvataggio: saved };
 }
 
-const COMMANDS = { copia: copy, confronta: compare, aggiorna: update, sposta: move, rimuovi: remove };
+/**
+ * Sincronizzazione all'avvio (ADR 0004): piano dall'ultimo tag, poi applicazione delle sole operazioni
+ * automatiche. Le domande restano nel risultato: la skill le pone una alla volta.
+ */
+function sincronizza(options) {
+  const { target, template } = folders(options);
+  const piano = pianifica({ template, target });
+  const riepilogo = {
+    stato: piano.stato,
+    motivo: piano.motivo ?? null,
+    tag: piano.tag ?? null,
+    profilo: piano.profilo ?? null,
+    daScrivere: piano.stato === "pronto"
+      ? {
+          file: piano.scritture.map((s) => (s.tipo === "sposta" ? `${s.da} -> ${s.a}` : s.chiave)),
+          rimossi: piano.rimozioni.map((r) => r.chiave),
+          registro: piano.registroCambia,
+          branch: piano.branch?.nome ?? null,
+        }
+      : null,
+    domande: piano.domande ?? [],
+    dryRun: Boolean(options["dry-run"]),
+  };
+  if (piano.stato !== "pronto" || options["dry-run"]) return riepilogo;
+  return { ...riepilogo, esito: applica(piano, { target }) };
+}
+
+const COMMANDS = { copia: copy, confronta: compare, aggiorna: update, sposta: move, rimuovi: remove, sincronizza };
 
 try {
   const { command, options } = parseArgs(process.argv.slice(2));
