@@ -7,7 +7,7 @@
 //   aggiorna  --template <dir> --target <dir> --file <percorso>    (salva .bak, poi copia dal template)
 //   sposta    --target <dir> --file <percorso> --a <percorso>      (mai sopra un file esistente)
 //   rimuovi   --target <dir> --file <percorso>                     (salva .bak, poi cancella)
-//   sincronizza --template <dir> --target <dir> [--dry-run]        (piano dall'ultimo tag, poi applica le
+//   sincronizza --template <dir> --target <dir> [--dry-run] [--rispondi id=scelta]  (piano dall'ultimo tag, poi applica le
 //             sole operazioni automatiche; le domande restano nel JSON, vedi lib/sync.mjs)
 // I percorsi di --file e --a sono relativi al progetto. L'uscita è JSON su stdout; gli errori vanno
 // su stderr con exit 1. Nessun file esistente viene sovrascritto da `copia`.
@@ -30,7 +30,7 @@ const fail = (message) => {
 };
 
 const SWITCHES = new Set(["solo-git", "backend", "frontend", "sicurezza-estesa", "dry-run"]);
-const VALUES = new Set(["template", "target", "profilo", "opzionali", "root", "file", "a"]);
+const VALUES = new Set(["template", "target", "profilo", "opzionali", "root", "file", "a", "rispondi"]);
 
 function parseArgs(argv) {
   const [command, ...rest] = argv;
@@ -326,7 +326,13 @@ function remove(options) {
  */
 function sincronizza(options) {
   const { target, template } = folders(options);
-  const piano = pianifica({ template, target });
+  const risposte = {};
+  if (options.rispondi) {
+    const cut = options.rispondi.indexOf("=");
+    if (cut < 1) fail("--rispondi vuole il formato id=scelta");
+    risposte[options.rispondi.slice(0, cut)] = options.rispondi.slice(cut + 1);
+  }
+  const piano = pianifica({ template, target, risposte });
   const riepilogo = {
     stato: piano.stato,
     motivo: piano.motivo ?? null,

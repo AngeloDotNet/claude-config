@@ -33,15 +33,16 @@ export function riconosciutoDalKit(root) {
 
 /** Una domanda in sospeso, in una riga di testo per Claude. */
 function descrivi(q) {
+  const id = `[id: ${q.id}]`;
   switch (q.tipo) {
     case "nuovo-modulo":
-      return `modulo nuovo «${q.modulo}» (${q.cartella}): ${q.descrizione || "nessuna descrizione"}`;
+      return `modulo nuovo «${q.modulo}» (${q.cartella}): ${q.descrizione || "nessuna descrizione"} ${id}`;
     case "fuori-posto":
-      return `file fuori posto e modificato: ${q.da} (atteso in ${q.a})`;
+      return `file fuori posto e modificato: ${q.da} (atteso in ${q.a}) ${id}`;
     case "rimosso-modificato":
-      return `modulo rimosso dal template ma modificato nel progetto: ${q.chiave}`;
+      return `modulo rimosso dal template ma modificato nel progetto: ${q.chiave} ${id}`;
     default:
-      return `file ${q.chiave} (${q.motivo === "primo-avvio" ? "primo avvio, diverso dal template" : "conflitto con il template"})`;
+      return `file ${q.chiave} (${q.motivo === "primo-avvio" ? "primo avvio, diverso dal template" : "conflitto con il template"}) ${id}`;
   }
 }
 

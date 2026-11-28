@@ -94,6 +94,30 @@ function sostituisciRiga(testo, prefisso, nuova) {
   return righe.join(eol);
 }
 
+/**
+ * Sezione «## Regole» del progetto sostituita da quella del template: le due righe generate restano
+ * quelle del progetto (o quelle del template, se il progetto non le ha). Null se una delle due manca.
+ */
+function sostituisciRegole(testo, tpl) {
+  const eol = testo.includes("\r\n") ? "\r\n" : "\n";
+  const righe = testo.replace(/\r\n/g, "\n").split("\n");
+  const i = righe.findIndex((r) => /^## Regole\s*$/.test(r));
+  const tplRighe = tpl.replace(/\r\n/g, "\n").split("\n");
+  const ti = tplRighe.findIndex((r) => /^## Regole\s*$/.test(r));
+  if (i < 0 || ti < 0) return null;
+  let j = i + 1;
+  while (j < righe.length && !/^## /.test(righe[j])) j++;
+  let tj = ti + 1;
+  while (tj < tplRighe.length && !/^## /.test(tplRighe[tj])) tj++;
+  const generateProgetto = righe.slice(i + 1, j).filter((r) => GENERATA.some((re) => re.test(r)));
+  const corpo = tplRighe.slice(ti + 1, tj).map((r) => {
+    const k = GENERATA.findIndex((re) => re.test(r));
+    if (k < 0) return r;
+    return generateProgetto.find((g) => GENERATA[k].test(g)) ?? r;
+  });
+  return [...righe.slice(0, i + 1), ...corpo, ...righe.slice(j)].join(eol);
+}
+
 /** Versione e data di core.md nel testo del template, o null. */
 function versioneCore(testo) {
   const v = /^>\s*Versione\s+(\d+(?:\.\d+)*)/m.exec(testo)?.[1];
@@ -109,15 +133,33 @@ const rifiuto = (motivo) => ({ stato: "rifiutato", motivo });
  * Nessuna scrittura: restituisce { stato: "pronto", scritture, rimozioni, domande, registro, ... }
  * oppure { stato: "rifiutato", motivo }.
  */
-export function pianifica({ template, target }) {
+export function pianifica({ template, target, risposte = {} }) {
   try {
-    return calcola({ template, target });
+    return calcola({ template, target, risposte });
   } catch (error) {
     return rifiuto(error.message);
   }
 }
 
-function calcola({ template, target }) {
+/** Scelte ammesse per ogni tipo di domanda; l'identificatore è `tipo:chiave` (vedi `id` nelle domande). */
+export const SCELTE = {
+  conflitto: ["tieni", "applica"],
+  "nuovo-modulo": ["accetta", "rifiuta"],
+  "fuori-posto": ["sposta"],
+  "rimosso-modificato": ["rimuovi", "tieni"],
+};
+
+function calcola({ template, target, risposte }) {
+  for (const [id, scelta] of Object.entries(risposte)) {
+    const tipo = id.split(":")[0];
+    if (!SCELTE[tipo] || !SCELTE[tipo].includes(scelta)) return rifiuto(`risposta non valida: ${id}=${scelta}`);
+  }
+  const usate = new Set();
+  const risposta = (id) => {
+    if (risposte[id] !== undefined) usate.add(id);
+    return risposte[id];
+  };
+
   const fonte = releaseSource(template);
   if (fonte.errore) return rifiuto(fonte.errore);
   const moduli = fonte.moduli;
@@ -132,6 +174,7 @@ function calcola({ template, target }) {
   if (!profilo) return rifiuto("CLAUDE.md senza profilo dichiarato: nessuna sincronizzazione, nessuno spostamento");
 
   const file = { ...registro.file };
+  const rifiutati = [...registro.moduli.rifiutati];
   const scritture = [];
   const rimozioni = [];
   const domande = [];
@@ -163,7 +206,16 @@ function calcola({ template, target }) {
       file[chiave] = d.voce;
       if (d.azione === "aggiorna") scritture.push({ tipo: "file", chiave, azione: "aggiorna", testo });
     } else if (d.azione === "domanda") {
-      domande.push({ tipo: "conflitto", chiave, motivo: d.motivo });
+      const id = `conflitto:${chiave}`;
+      const r = risposta(id);
+      if (r === "tieni") {
+        file[chiave] = { modello: impronta(testo), progetto: impronta(da) };
+      } else if (r === "applica") {
+        file[chiave] = { modello: impronta(testo), progetto: impronta(testo) };
+        scritture.push({ tipo: "file", chiave, azione: "aggiorna", testo });
+      } else {
+        domande.push({ tipo: "conflitto", id, chiave, motivo: d.motivo });
+      }
     }
     return d;
   };
@@ -204,10 +256,35 @@ function calcola({ template, target }) {
           trattate.add(attesa);
           scritture.push({ tipo: "sposta", da: fuori, a: attesa, testo: testoNuovo });
         } else if (d.azione === "domanda") {
-          domande.push({ tipo: "fuori-posto", da: fuori, a: attesa, motivo: d.motivo });
+          const id = `fuori-posto:${fuori}`;
+          if (risposta(id) === "sposta") {
+            // Lo spostamento vale per il contenuto attuale: la copia resta quella dell'utente.
+            if (vecchia) delete file[vecchia];
+            file[attesa] = { modello: impronta(desiderato), progetto: impronta(testoFuori) };
+            trattate.add(attesa);
+            scritture.push({ tipo: "sposta", da: fuori, a: attesa, testo: testoFuori });
+          } else {
+            domande.push({ tipo: "fuori-posto", id, da: fuori, a: attesa, motivo: d.motivo });
+          }
         }
-      } else if (applicabile(m) && !registro.moduli.rifiutati.includes(nome)) {
-        domande.push({ tipo: "nuovo-modulo", modulo: nome, cartella: attesa, descrizione: m.descrizione ?? "" });
+      } else if (applicabile(m) && !rifiutati.includes(nome)) {
+        const id = `nuovo-modulo:${nome}`;
+        const r = risposta(id);
+        if (r === "accetta") {
+          scritture.push({ tipo: "file", chiave: attesa, azione: "aggiorna", testo: desiderato });
+          file[attesa] = { modello: impronta(desiderato), progetto: impronta(desiderato) };
+          trattate.add(attesa);
+          if (standardBreve) {
+            const dettaglio = `${DETAIL}/${nome}.md`;
+            scritture.push({ tipo: "file", chiave: dettaglio, azione: "aggiorna", testo: fullTesto });
+            file[dettaglio] = { modello: impronta(fullTesto), progetto: impronta(fullTesto) };
+            trattate.add(dettaglio);
+          }
+        } else if (r === "rifiuta") {
+          rifiutati.push(nome);
+        } else {
+          domande.push({ tipo: "nuovo-modulo", id, modulo: nome, cartella: attesa, descrizione: m.descrizione ?? "" });
+        }
       }
     }
     if (standardBreve) {
@@ -234,7 +311,16 @@ function calcola({ template, target }) {
       rimozioni.push({ chiave: k });
       delete file[k];
     } else {
-      domande.push({ tipo: "rimosso-modificato", chiave: k });
+      const id = `rimosso-modificato:${k}`;
+      const r = risposta(id);
+      if (r === "rimuovi") {
+        rimozioni.push({ chiave: k });
+        delete file[k];
+      } else if (r === "tieni") {
+        delete file[k]; // non più gestito: non si chiede più
+      } else {
+        domande.push({ tipo: "rimosso-modificato", id, chiave: k });
+      }
     }
   }
 
@@ -242,19 +328,31 @@ function calcola({ template, target }) {
   let claudeNuovo = null;
   const claude = {};
   if (claudeTesto !== null) {
-    const aggiornaParte = (parte, corrente, desiderato, forzaDomanda) => {
-      const d = decidi(corrente, desiderato, registro.claudeMd[parte]);
-      if (d.azione === "registra") claude[parte] = d.voce;
-      if (d.azione === "aggiorna" && forzaDomanda) domande.push({ tipo: "conflitto", chiave: `CLAUDE.md:${parte}`, motivo: "conflitto" });
-      else if (d.azione === "aggiorna") claude[parte] = d.voce;
-      else if (d.azione === "domanda") domande.push({ tipo: "conflitto", chiave: `CLAUDE.md:${parte}`, motivo: d.motivo });
+    // La sezione «Regole» non cambia mai da sola: con una domanda, anche quando il template non è cambiato.
+    const aggiornaParte = (parte, corrente, desiderato, sempreDomanda) => {
+      const id = `conflitto:CLAUDE.md:${parte}`;
+      let d = decidi(corrente, desiderato, registro.claudeMd[parte]);
+      if (d.azione === "aggiorna" && sempreDomanda) d = { azione: "domanda", motivo: "conflitto" };
+      if (d.azione === "domanda") {
+        const r = risposta(id);
+        if (r === "tieni") d = { azione: "registra", voce: { modello: impronta(desiderato), progetto: impronta(corrente) } };
+        else if (r === "applica") d = { azione: "aggiorna", voce: { modello: impronta(desiderato), progetto: impronta(desiderato) } };
+        else {
+          domande.push({ tipo: "conflitto", id, chiave: `CLAUDE.md:${parte}`, motivo: d.motivo });
+          return d;
+        }
+      }
+      if (d.azione === "registra" || d.azione === "aggiorna") claude[parte] = d.voce;
       return d;
     };
 
     const regoleTpl = fonte.leggi("CLAUDE.md");
     const regoleProgetto = regoleConfrontabili(claudeTesto);
     const regoleModello = regoleTpl ? regoleConfrontabili(regoleTpl) : null;
-    if (regoleProgetto !== null && regoleModello !== null) aggiornaParte("regole", regoleProgetto, regoleModello, true);
+    if (regoleProgetto !== null && regoleModello !== null) {
+      const d = aggiornaParte("regole", regoleProgetto, regoleModello, true);
+      if (d.azione === "aggiorna") claudeNuovo = sostituisciRegole(claudeTesto, regoleTpl);
+    }
 
     const core = fonte.leggi(`${RULES}/core.md`);
     const versione = core ? versioneCore(core) : null;
@@ -262,7 +360,7 @@ function calcola({ template, target }) {
     if (versione && rigaVersione !== null) {
       const nuova = `${PREFISSO_VERSIONE} \`core.md\` v${versione.v} del ${versione.d}`;
       const d = aggiornaParte("versione", rigaVersione, nuova, false);
-      if (d.azione === "aggiorna") claudeNuovo = sostituisciRiga(claudeTesto, PREFISSO_VERSIONE, nuova);
+      if (d.azione === "aggiorna") claudeNuovo = sostituisciRiga(claudeNuovo ?? claudeTesto, PREFISSO_VERSIONE, nuova);
     }
 
     const rigaModuli = rigaCon(claudeTesto, PREFISSO_MODULI);
@@ -277,13 +375,16 @@ function calcola({ template, target }) {
     }
   }
 
+  const orfane = Object.keys(risposte).filter((id) => !usate.has(id));
+  if (orfane.length) return rifiuto(`risposta senza domanda in sospeso: ${orfane.join(", ")}`);
+
   const nuovoRegistro = {
     schema: 1,
     tag: fonte.tag,
     profilo,
     file,
     claudeMd: { ...registro.claudeMd, ...claude },
-    moduli: { rifiutati: registro.moduli.rifiutati },
+    moduli: { rifiutati },
   };
   const registroCambia = registroTesto === null || scriviRegistro(nuovoRegistro) !== registroTesto;
   if (claudeNuovo !== null) scritture.push({ tipo: "claude", chiave: "CLAUDE.md", testo: claudeNuovo });

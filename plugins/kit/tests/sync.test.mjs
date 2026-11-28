@@ -524,3 +524,150 @@ test("comando sincronizza: --dry-run elenca il piano senza scrivere, poi applica
     assert.equal(exists(d.project, ".claude/kit-regole.json"), true);
   });
 });
+
+/** Stato di partenza: registro creato, poi il template cambia `backend` e il progetto lo modifica. */
+function conflittoBackend(d) {
+  setup(d);
+  applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
+  commitAll(d.project, "chore(repo): registro");
+  writeAll(d.project, { ".claude/rules/backend.md": "mio backend\n" });
+  commitAll(d.project, "chore(repo): mio backend");
+  writeAll(d.template, { ".claude/rules/backend.md": "backend v2\n" });
+  commitAll(d.template, "chore(repo): backend v2");
+  git(d.template, "tag", "1.1.0");
+}
+
+test("risposta tieni: il file resta, il registro registra la scelta e la domanda non torna", () => {
+  withDirs((d) => {
+    conflittoBackend(d);
+    const id = "conflitto:.claude/rules/backend.md";
+    const prima = pianifica({ template: d.template, target: d.project });
+    assert.ok(prima.domande.some((q) => q.id === id));
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { [id]: "tieni" } });
+    assert.equal(scelta.stato, "pronto", scelta.motivo);
+    assert.equal(scelta.scritture.some((s) => s.chiave === ".claude/rules/backend.md"), false);
+    assert.equal(applica(scelta, { target: d.project }).stato, "applicata");
+    assert.equal(read(d.project, ".claude/rules/backend.md"), "mio backend\n");
+    commitAll(d.project, "chore(repo): scelta registrata");
+    const dopo = pianifica({ template: d.template, target: d.project });
+    assert.equal(dopo.domande.some((q) => q.id === id), false);
+  });
+});
+
+test("risposta applica: il file prende il testo del template, con copia di salvataggio", () => {
+  withDirs((d) => {
+    conflittoBackend(d);
+    const id = "conflitto:.claude/rules/backend.md";
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { [id]: "applica" } });
+    assert.equal(applica(scelta, { target: d.project }).stato, "applicata");
+    assert.equal(read(d.project, ".claude/rules/backend.md"), "backend v2\n");
+    assert.equal(exists(d.project, ".claude/kit-backup"), true);
+  });
+});
+
+test("risposta accetta a un modulo nuovo: il file viene copiato e registrato", () => {
+  withDirs((d) => {
+    setup(d);
+    applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
+    commitAll(d.project, "chore(repo): registro");
+    const nuovo = [...MODULI, { nome: "lavoro", cartella: "rules", applicabilita: "sempre", descrizione: "Contesto e indagine." }];
+    writeAll(d.template, { "_template/moduli.json": JSON.stringify({ schema: 1, moduli: nuovo }, null, 2), ".claude/rules/lavoro.md": "lavoro v1\n" });
+    commitAll(d.template, "chore(repo): modulo lavoro");
+    git(d.template, "tag", "1.1.0");
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { "nuovo-modulo:lavoro": "accetta" } });
+    assert.equal(scelta.stato, "pronto", scelta.motivo);
+    assert.equal(applica(scelta, { target: d.project }).stato, "applicata");
+    assert.equal(read(d.project, ".claude/rules/lavoro.md"), "lavoro v1\n");
+    assert.notEqual(JSON.parse(read(d.project, ".claude/kit-regole.json")).file[".claude/rules/lavoro.md"], undefined);
+  });
+});
+
+test("risposta rifiuta a un modulo nuovo: va nel registro e non torna", () => {
+  withDirs((d) => {
+    setup(d);
+    applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
+    commitAll(d.project, "chore(repo): registro");
+    const nuovo = [...MODULI, { nome: "lavoro", cartella: "rules", applicabilita: "sempre", descrizione: "Contesto e indagine." }];
+    writeAll(d.template, { "_template/moduli.json": JSON.stringify({ schema: 1, moduli: nuovo }, null, 2), ".claude/rules/lavoro.md": "lavoro v1\n" });
+    commitAll(d.template, "chore(repo): modulo lavoro");
+    git(d.template, "tag", "1.1.0");
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { "nuovo-modulo:lavoro": "rifiuta" } });
+    assert.equal(applica(scelta, { target: d.project }).stato, "applicata");
+    assert.deepEqual(JSON.parse(read(d.project, ".claude/kit-regole.json")).moduli.rifiutati, ["lavoro"]);
+    commitAll(d.project, "chore(repo): rifiuto");
+    assert.equal(pianifica({ template: d.template, target: d.project }).domande.some((q) => q.modulo === "lavoro"), false);
+  });
+});
+
+test("risposta tieni a un file rimosso e modificato: non è più gestito", () => {
+  withDirs((d) => {
+    setup(d);
+    applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
+    commitAll(d.project, "chore(repo): registro");
+    writeAll(d.project, { ".claude/rules/backend.md": "mio backend\n" });
+    commitAll(d.project, "chore(repo): mio backend");
+    git(d.template, "rm", "-q", ".claude/rules/backend.md");
+    writeAll(d.template, { "_template/moduli.json": JSON.stringify({ schema: 1, moduli: MODULI.filter((m) => m.nome !== "backend") }, null, 2) });
+    commitAll(d.template, "chore(repo): tolgo backend");
+    git(d.template, "tag", "1.1.0");
+    const id = "rimosso-modificato:.claude/rules/backend.md";
+    assert.ok(pianifica({ template: d.template, target: d.project }).domande.some((q) => q.id === id));
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { [id]: "tieni" } });
+    assert.equal(applica(scelta, { target: d.project }).stato, "applicata");
+    assert.equal(read(d.project, ".claude/rules/backend.md"), "mio backend\n");
+    assert.equal(JSON.parse(read(d.project, ".claude/kit-regole.json")).file[".claude/rules/backend.md"], undefined);
+  });
+});
+
+test("risposta applica alla sezione Regole: il testo del template, con le righe generate del progetto", () => {
+  withDirs((d) => {
+    setup(d, { projExtra: { "CLAUDE.md": "# Progetto\n\n## Regole\n- **Versione delle regole copiate:** `core.md` v4.5 del 2026-11-27\n- **Moduli rimossi o non attivati (fuori ambito):** feature-workflow\n- **Lingua:** it\n\n## Progetto\n- **Profilo:** standard\n" } });
+    applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
+    commitAll(d.project, "chore(repo): registro");
+    writeAll(d.template, { "CLAUDE.md": CLAUDE_TPL.replace("## Progetto", "- **Nota:** nuova\n\n## Progetto") });
+    commitAll(d.template, "chore(repo): CLAUDE nuovo");
+    git(d.template, "tag", "1.1.0");
+    const id = "conflitto:CLAUDE.md:regole";
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { [id]: "applica" } });
+    assert.equal(applica(scelta, { target: d.project }).stato, "applicata");
+    const testo = read(d.project, "CLAUDE.md");
+    assert.match(testo, /\*\*Nota:\*\* nuova/);
+    assert.doesNotMatch(testo, /Lingua:/);
+    assert.match(testo, /\*\*Versione delle regole copiate:\*\* `core.md` v4\.5 del 2026-11-27/);
+  });
+});
+
+test("risposte non valide o senza domanda: rifiuto, nessuna modifica", () => {
+  withDirs((d) => {
+    conflittoBackend(d);
+    const id = "conflitto:.claude/rules/backend.md";
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { [id]: "forse" } });
+    assert.equal(scelta.stato, "rifiutato");
+    assert.match(scelta.motivo, /risposta non valida/);
+    const orfana = pianifica({ template: d.template, target: d.project, risposte: { "conflitto:.claude/rules/core.md": "tieni" } });
+    assert.equal(orfana.stato, "rifiutato");
+    assert.match(orfana.motivo, /senza domanda/);
+    assert.equal(read(d.project, ".claude/rules/backend.md"), "mio backend\n");
+  });
+});
+
+test("fuori posto e modificato: la risposta sposta mantiene il contenuto dell'utente", () => {
+  withDirs((d) => {
+    setup(d);
+    applica(pianifica({ template: d.template, target: d.project }), { target: d.project });
+    commitAll(d.project, "chore(repo): registro");
+    git(d.project, "mv", ".claude/rules/security-avanzata.md", ".claude/rules-optional/security-avanzata.md");
+    writeAll(d.project, { ".claude/rules-optional/security-avanzata.md": "mia sicurezza\n" });
+    commitAll(d.project, "chore(repo): sposta e modifica");
+    // Con il template invariato il file resterebbe com'è («mantieni»): la domanda c'è solo se il template è cambiato.
+    writeAll(d.template, { ".claude/rules/security-avanzata.md": "sec v2\n" });
+    commitAll(d.template, "chore(repo): sicurezza v2");
+    git(d.template, "tag", "1.1.0");
+    const id = "fuori-posto:.claude/rules-optional/security-avanzata.md";
+    assert.ok(pianifica({ template: d.template, target: d.project }).domande.some((q) => q.id === id));
+    const scelta = pianifica({ template: d.template, target: d.project, risposte: { [id]: "sposta" } });
+    assert.equal(applica(scelta, { target: d.project }).stato, "applicata");
+    assert.equal(read(d.project, ".claude/rules/security-avanzata.md"), "mia sicurezza\n");
+    assert.equal(exists(d.project, ".claude/rules-optional/security-avanzata.md"), false);
+  });
+});

@@ -44,3 +44,19 @@ Rispondi in italiano. Una sola domanda per messaggio. Il template è la cartella
    Mostra le differenze riga per riga, chiedi **un solo ok** prima di scrivere e salva il vecchio come `CLAUDE.md.bak`. Non toccare le sezioni specifiche del progetto (scopo, scelte architetturali, comandi, note). Se non è chiaro cosa sia generico e cosa specifico, o se una riga del progetto diverge dal template senza un motivo evidente, **non decidere**: fai una domanda per volta e attendi la risposta prima di proseguire.
 8. Chiudi con il riepilogo: file uguali, aggiornati, saltati (con il motivo, per esempio «versione del progetto più recente»), nuovi nel template, rimossi (cancellati con `.bak` o lasciati) e righe del `CLAUDE.md` allineate. Per il `CLAUDE.md`, che modifichi tu, se esiste già un `.bak` di una esecuzione precedente non sovrascriverlo: usa `.bak2`, `.bak3`, ... e dillo.
 9. Non creare commit.
+
+## Caso C: domande in sospeso della sincronizzazione
+
+Si usa quando il resoconto all'avvio riporta «Domande in sospeso sulla sincronizzazione», o quando l'utente chiede di allineare le regole. Lo script è `regole.mjs sincronizza`. Una domanda per messaggio, nell'ordine in cui le restituisce lo script.
+
+1. Leggi le domande con `node "${CLAUDE_PLUGIN_ROOT}/scripts/regole.mjs" sincronizza --template "<template>" --target "<progetto>" --dry-run`. Il JSON ha `stato`, `domande` (ognuna con `id`) e `daScrivere`. Se `stato` è `rifiutato`, riporta il `motivo` così com'è e fermati.
+2. Prendi la prima domanda e falla da sola, con le scelte ammesse per tipo (l'`id` ha la forma `tipo:chiave`):
+   - `conflitto`: «tieni la tua versione» (`tieni`) oppure «applica la versione del template, con copia di salvataggio» (`applica`). Per `CLAUDE.md:regole` ricorda che la sezione «Regole» cambia solo con il tuo ok.
+   - `nuovo-modulo`: spiega il modulo con il campo `descrizione` e chiedi se aggiungerlo (`accetta`) o no (`rifiuta`: non verrà più proposto).
+   - `fuori-posto`: il file è in una cartella diversa da quella prevista e modificato. Unica scelta: `sposta`.
+   - `rimosso-modificato`: il template lo ha tolto ma il progetto lo ha modificato. `rimuovi` (con copia di salvataggio) oppure `tieni` (non sarà più gestito).
+3. Con la risposta, lancia `node "${CLAUDE_PLUGIN_ROOT}/scripts/regole.mjs" sincronizza --template "<template>" --target "<progetto>" --rispondi "<id>=<scelta>"`. Una risposta per volta. Riporta l'esito (`esito.stato`, file scritti, copie di salvataggio). Se `stato` è `rifiutato`, leggi il motivo: se dice «modifiche non committate», chiedi all'utente di fare il commit e riprendi dopo.
+4. Ripeti dal punto 1 finché `domande` è vuoto. Non applicare mai una scelta che l'utente non ha dato.
+5. Chiudi con il riepilogo. Se le regole sono cambiate, ricorda di chiudere e riaprire Claude Code prima di lavorare. Non creare commit: sono dell'utente.
+
+Il caso C non sostituisce i casi A e B: la prima copia (caso A) e i file di root restano a questa skill, come da `regole`.

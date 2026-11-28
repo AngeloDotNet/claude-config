@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Risposte alle domande della sincronizzazione (#143)
+**Perché:** le domande della sincronizzazione (conflitti, moduli nuovi, file fuori posto, file rimossi modificati, sezione «Regole») devono poter essere risolte una alla volta, e la scelta deve restare nel registro.
+**Cosa:** `pianifica` accetta le risposte (`id` = `tipo:chiave`) e le applica prima di scrivere: `tieni` o `applica` per i conflitti (e la sezione «Regole» solo con `applica`), `accetta` o `rifiuta` per i moduli nuovi (il rifiuto va in `moduli.rifiutati`), `sposta` per i file fuori posto, `rimuovi` o `tieni` per i file rimossi e modificati. Una risposta non valida o senza domanda corrispondente rifiuta il piano. Nuovo `regole.mjs sincronizza --rispondi id=scelta`, una risposta per volta. Ogni domanda nel resoconto dell'avvio riporta il suo `id`. La skill `regole` ha il nuovo caso C, con una domanda per messaggio.
+**Dove:** `plugins/kit/scripts/lib/sync.mjs`, `plugins/kit/scripts/regole.mjs`, `plugins/kit/scripts/lib/avvio.mjs`, `plugins/kit/skills/regole/SKILL.md`, `plugins/kit/tests/sync.test.mjs`, `docs/skill.md`, `_template/avvio-progetto.md`, `CLAUDE.md`.
+**Verifica:** 35 test di sincronizzazione (risposte incluse); suite del plugin 231/231.
+**Note:** con modifiche non committate la risposta è rifiutata: la sincronizzazione riparte dopo il commit, come deciso per #141.
+
 ### Sincronizzazione all'avvio, spenta per default (#142)
 **Perché:** le regole aggiornate devono arrivare ai progetti all'avvio, senza `/kit:regole`, ma l'automatismo scrive in progetti altrui: deve restare spento finché non si attiva per progetto.
 **Cosa:** nuovo hook `SessionStart` (`scripts/session-start.mjs`, `hooks/hooks.json`, tempo massimo 30 secondi), che lavora solo se la voce del progetto in `~/.claude/kit-progetti.json` ha `"sincronizzazione": true`, solo a `startup` e `resume`, e solo su progetti riconosciuti dal kit (`core.md` più un profilo dichiarato nel `CLAUDE.md`). Passa a Claude un resoconto e le domande in sospeso, da porre una alla volta; chiede di riaprire la sessione dopo un aggiornamento. Con la sincronizzazione attiva, `prompt-start` non mostra più l'avviso sul template e, dopo un allineamento, non chiede di rileggere le regole appena copiate. Fail-open: un errore non modifica nulla. Le chiamate git hanno un tempo massimo di 10 secondi.
