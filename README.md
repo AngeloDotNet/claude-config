@@ -43,7 +43,7 @@ claude plugin install kit@claude-config
 3. `/reload-plugins` (o riavvia la sessione)
 4. `/plugin` per verificare che la versione sia quella del rilascio.
 
-Un progetto con le regole del kit non riceve ancora gli aggiornamenti da solo: l'allineamento automatico all'avvio è in progettazione (`docs/adr/0004-sincronizzazione-automatica-regole.md`, ancora da approvare) e non è attivo. Fino ad allora si usa `/kit:regole`.
+Un progetto con le regole del kit non riceve ancora gli aggiornamenti da solo: l'allineamento automatico all'avvio è stato approvato (`docs/adr/0004-sincronizzazione-automatica-regole.md`) ma non è ancora attivo. Fino ad allora si usa `/kit:regole`. La lettura delle regole dall'ultimo tag di rilascio è già pronta (`plugins/kit/scripts/lib/release.mjs`) e la userà il motore di sincronizzazione.
 
 Con `KIT_CONFIG_TEMPLATE_DIR` impostata, il plugin lo ricorda da solo: una volta per sessione e per progetto, se la versione installata è più vecchia di quella nel template, Claude suggerisce questi comandi. Funziona solo dal primo aggiornamento che contiene il controllo, quindi il primo si fa a mano.
 

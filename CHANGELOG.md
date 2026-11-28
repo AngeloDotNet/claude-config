@@ -4,6 +4,13 @@ Registro delle modifiche alle regole del template: un titolo per giorno, con una
 
 ## 2026-11-28
 
+### Lettura delle regole dall'ultimo tag (#139)
+**Perché:** la sincronizzazione automatica deve prendere le regole dall'ultimo rilascio del template, non dalla cartella di lavoro, che può avere modifiche non committate o un branch diverso.
+**Cosa:** nuova libreria `lib/release.mjs`: sceglie il tag `X.Y.Z` più alto (numerico; ignora `v`, suffissi e tag a due parti), legge `_template/moduli.json` e i file dal tag con `git show`, senza checkout. Senza tag o senza manifest leggibile restituisce il motivo e non legge nulla. Non è ancora collegata a `regole.mjs`: lo farà il motore di sincronizzazione (#140).
+**Dove:** `plugins/kit/scripts/lib/release.mjs` (nuovo), `plugins/kit/tests/release.test.mjs` (nuovo), `README.md`.
+**Verifica:** test del plugin 187/187 (179 esistenti, 8 nuovi su repository git temporanei: scelta del tag, annotated tag, lettura con disco e branch cambiati, assenza di tag, tag senza manifest, manifest non valido, cartella non git).
+**Note:** la lettura usa solo argomenti separati di `execFileSync`, nessuna shell.
+
 ### Manifest dei moduli nel template (#138)
 **Perché:** l'elenco dei moduli era scritto in quattro costanti di `regole.mjs`: per la sincronizzazione automatica serve una fonte unica, con applicabilità, cartella e versione breve di ogni modulo.
 **Cosa:** nuovo `_template/moduli.json` con i 22 moduli (applicabilità, profilo minimo, `soloGit`, `richiedeBackend`, `versioneBreve`, `copiaSempre`, descrizione). `regole.mjs` lo legge in `copia`, `confronta` e `aggiorna` e lo valida (nomi ripetuti, applicabilità o profilo sconosciuti, versioni brevi mancanti: errore, nessuna scrittura). `confronta` aggiunge `descrizioniNuovi` per la domanda sui moduli nuovi; gli altri campi di output non cambiano. I file di root e di riferimento restano nel codice.
